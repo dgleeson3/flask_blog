@@ -40,8 +40,122 @@ What we need
    https://www.freecodecamp.org/news/gitignore-file-how-to-ignore-files-and-folders-in-git/
 
    touch .gitignore
+   The create in code editor
 
+   D)   git init
+        git add .
+        git commit -m "first commit flask_blog"
+
+        dgleeson3@penguin:~/flask_blog$ git status
+        On branch master
+        nothing to commit, working tree clean
+
+   E)  Push to github
+
+   Username dgleeson3
+   Password   parthus _xy!  Cap A
+
+   https://github.com/orgs/community/discussions/68237
+
+       A) Setup new repo on github  -->> dgleeson3/flask_blog
+       
+       B) Construct remote to use for push pull by default
    
+          git remote add origin git@github.com:dgleeson3/flask_blog.git
+
+          
+
+       C) Setup SSH key for github
+
+       sudo apt-get install ssh-client
+
+---------------------------------------------
+dgleeson3@penguin:~/flask_blog$ ssh-keygen -t rsa -b 4096 -C "dgleeson3@gmail.com"
+p
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/dgleeson3/.ssh/id_rsa): github_ssh
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in github_ssh
+Your public key has been saved in github_ssh.pub
+The key fingerprint is:
+SHA256:B3J7edR8wZEaSJGN94a0FrKd61k9BiEAfrIO4J851iQ dgleeson3@gmail.com
+The key's randomart image is:
++---[RSA 4096]----+
+|       ...oo* .oo|
+|      .    * X o.|
+|   .  .oo.  O % .|
+|  . .  o+o + O + |
+|   . E oS + o + .|
+|    . O  o . . +.|
+|     * o    . + .|
+|    . .      o   |
+|                 |
++----[SHA256]-----+
+-------------------------------------------------
+
+Files created in flask_blog
+
+dgleeson3@penguin:~/flask_blog$ ls -a
+ .    Create_new_database_models.txt   .git         github_ssh.pub   instance     PostgressSQLDesign   run.py      'To Do.txt'
+ ..   flaskblog                        github_ssh   .gitignore       migrations   __pycache__          Status.txt   venv
+
+    D)  Setup agent and add key
+
+--------------------
+dgleeson3@penguin:~/flask_blog$ eval "$(ssh-agent -s)"
+Agent pid 4053
+dgleeson3@penguin:~/flask_blog$ ssh-add github_ssh
+Identity added: github_ssh (dgleeson3@gmail.com)
+dgleeson3@penguin:~/flask_blog$ 
+-----------------------
+
+    E)  check we are connected
+------------------------
+dgleeson3@penguin:~/flask_blog$ ssh -T git@github.com
+Hi dgleeson3! You've successfully authenticated, but GitHub does not provide shell access.
+-------------------------
+
+    F) Setup link to remote repo and Push changes
+    
+---------------------------------------------------------------------
+dgleeson3@penguin:~/flask_blog$ git remote set-url origin git@github.com:dgleeson3/flask_blog.git
+dgleeson3@penguin:~/flask_blog$ git push -u origin master
+Enumerating objects: 46, done.
+Counting objects: 100% (46/46), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (44/44), done.
+Writing objects: 100% (46/46), 2.72 MiB | 2.27 MiB/s, done.
+Total 46 (delta 7), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (7/7), done.
+remote: 
+remote: Create a pull request for 'master' on GitHub by visiting:
+remote:      https://github.com/dgleeson3/flask_blog/pull/new/master
+remote: 
+To github.com:dgleeson3/flask_blog.git
+ * [new branch]      master -> master
+Branch 'master' set up to track remote branch 'master' from 'origin'.
+------------------------------------------------------------------------------
+
+    G) DONT add SSH files to repo. This is a secret and github wont allow this.
+       So add both file names to .gitignore specifically
+
+
+    H) after closing down chromebook or terminal we need to start Agenty again and confirm link
+    to github
+
+    Check github link
+    
+----------------------------------
+dgleeson3@penguin:~/flask_blog$  ssh -T git@github.com
+Hi dgleeson3! You've successfully authenticated, but GitHub does not provide shell access.    
+-------------------------------------
+
+
+
+
+
+
 
 2) requirements.txt latest version 
 
