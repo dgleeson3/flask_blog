@@ -1,0 +1,178 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
+
+<div class="w3-container">
+  <h2>Active Tabs</h2>
+  <p> Select the Tabs below to configure different Settings for this device.   </p>
+
+  <div class="w3-bar w3-black">
+    <button class="w3-bar-item w3-button tablink w3-red" onclick="openCity(event,'London')"> Phones </button>
+    <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Paris')"> Diagnostics </button>
+    <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Tokyo')"> More > </button>
+  </div>
+  
+  <div id="London" class="w3-container w3-border city">
+ 
+    <p>List of Device Users and their Phone Nubers.</p>
+  
+ 
+      <style>
+      
+       td {
+              width: 250px;
+              text-align: center;
+              border: 5px solid black;
+              padding: 20px;
+            }
+      </style>
+      <table>
+        <thead>
+          <tr>
+              <th>     User Name</th>
+              <th>     Phone Number </th>
+          </tr>
+          </thead>
+          <tbody>
+           {% for phone_number in phone_number %}
+                  <tr>
+                      <td>{{phone_number.phone_number}}</td>
+                      <td>{{phone_number.user_name }}</td>
+
+                    </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    
+  </div>
+
+  <div id="Paris" class="w3-container w3-border city" style="display:none">
+  
+  
+    <div class="content">
+        <table>
+            <tr>
+                <th>User Name</th>
+                <th>User Phone NUmber</th>
+                <th>Actions</th>
+            </tr>
+            {% for phone_number in phone_number %}
+                <tr>
+                    <td>{{ phone_number.phone_number }}</td>
+                    <td>{{ phone_number.user_name }}</td>
+                    <td>
+                      <!--
+                      <form action="{{ url_for('delete_post', post_id=post.id) }}" method="POST">
+                        <input class="btn btn-danger" type="submit" value="Delete">
+                      </form>
+                      <br> 
+                        <a href="/update/{{post.id}}">User Update</a>
+                    -->  
+                    </td>
+                </tr>
+            {% endfor %}    
+        </table>
+
+        <div class="form">
+            <form action="/devicesettings" method="POST">
+                <input type="text" name="content_name" id="name">
+                <input type="text" name="content_number" id="phone_number">
+                <input type="submit" value="Add User">
+            </form>
+        </div>
+    </div>
+  </div>
+
+  <div id="Tokyo" class="w3-container w3-border city" style="display:none">
+  
+  
+    <h2>Tokyo</h2>
+    <p>Tokyo is the capital of Japan.</p>
+  </div>
+</div>
+
+  <!--  This Script handles the highlighting of the tab labels   
+    See  https://www.w3schools.com/w3css/w3css_tabulators.asp   
+    -->
+
+<script>
+  
+function openCity(evt, cityName) {
+  var i, x, tablinks;
+  x = document.getElementsByClassName("city");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < x.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " w3-red";
+}
+</script>
+
+<!--
+
+<title>W3.CSS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<body>
+
+<div class="w3-container">
+  <h2>Tabs</h2>
+  <p> Select the Tabs below to configure different Settings for this device.   </p>
+</div>
+
+<div class="w3-bar w3-black">
+  <button class="w3-bar-item w3-button" onclick="openCity('London')">  London  </button>
+  <button class="w3-bar-item w3-button" onclick="openCity('Paris')">  Paris  </button>
+  <button class="w3-bar-item w3-button" onclick="openCity('Tokyo')">  Tokyo  </button>
+</div>
+
+<div id="London" class="w3-container city">
+  <h2>London</h2>
+  <p>London is the capital city of England.</p>
+</div>
+
+<div id="Paris" class="w3-container city" style="display:none">
+  <h2>Paris</h2>
+  <p>Paris is the capital of France.</p> 
+</div>
+
+<div id="Tokyo" class="w3-container city" style="display:none">
+  <h2>Tokyo</h2>
+  <p>Tokyo is the capital of Japan.</p>
+</div>
+
+<script>
+function openCity(cityName) {
+  var i;
+  var x = document.getElementsByClassName("city");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  document.getElementById(cityName).style.display = "block";  
+}
+</script>
+
+-->
+
+    <!--
+<form method="post">
+     <div class="col-sm-4 col-lg-4">
+        <select title="thing" class="form-control" id="myselect" name="thing" required>
+            <option value="" {% if thing==''%} selected {% endif %} ></option>
+            <option value="Foo" name="Foo" id="Foo" {% if thing=='Foo'%} selected {% endif %} >Foo</option>
+            <option value="Bar" name="Bar" id="Bar" {% if thing=='Bar'%} selected {% endif %} >Bar</option>
+        </select>
+    </div> 
+</form>
+<button type="submit">Add this device to the Site </button>
+-->
+{% endblock content %}

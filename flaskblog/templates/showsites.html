@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="form-group">
+  <h2>All of Your Sites. </h2>
+  {{ form.submit(class="btn btn-outline-info") }}
+
+  <form action="{{ url_for('new_site') }}" method="POST">
+
+</div>
+    {% for site in sites %}
+    
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ site.user_id }}</a>
+              <small class="text-muted">{{ site.site_name }}</small>
+            </div>
+            <h2><a class="article-title" href="{{ url_for('show_device', site_id=site.id) }}">{{ site.site_name }}</a></h2>
+            <p class="article-content">{{ site.site_contact_details }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}

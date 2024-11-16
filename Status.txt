@@ -1,0 +1,1251 @@
+Good References:
+----------------
+https://www.codecademy.com/learn/learn-flask/modules/flask-templates-and-forms/cheatsheet
+https://develie.hashnode.dev/exploring-flask-sqlalchemy-queries
+CAREFUL with checking Syntax of FALSK functions.
+https://stackoverflow.com/questions/55910565/python3-flask-function-missing-1-required-positional-argument-test-output
+Tools
+------
+https://dbdiagram.io/d/Copy-of-Sample-DBD-for-Airbnb-66801bf49939893dae99e7f2
+// Below is what I used for flask migrate.
+https://www.digitalocean.com/community/tutorials/how-to-perform-flask-sqlalchemy-migrations-using-flask-migrate
+https://stackoverflow.com/questions/41448088/flask-app-getting-error-of-could-not-locate-flask-application-flask-app-e
+
+
+14/11/24
+--------
+
+Application on render
+
+https://www.youtube.com/watch?v=KdytNxveQo0
+
+What we need
+
+1) git repo setup locally           (git version 2.30.2)
+
+ ** I deactivated from venv python environment with "deactivate"
+
+   A) sudo apt install git-all              <<--- First git install takes time
+
+   B)  Set Identity
+   
+   git config --global user.name "Denis Gleeson"
+   git config --global user.email dgleeson3@gmail.com
+
+   check 
+   git config --list
+  
+   C) .gitignore
+
+   https://www.freecodecamp.org/news/gitignore-file-how-to-ignore-files-and-folders-in-git/
+
+   touch .gitignore
+
+   
+
+2) requirements.txt latest version 
+
+gunicorn  included in requirements.txt
+
+pip freeze > requirements.txt
+
+3) push project to github
+
+4) Point render at this project for rendering
+
+
+13/11/24
+--------
+
+1)  load web site onto Render
+
+2) Use fonatest to create a new device, and set configuration settings for this device.
+
+Then check these new settings with web site and psql tools
+
+  A) login to https://github.com/              dgleeson3@gmail.com   password  parthus cap A _xy!
+
+  B)  Create Repo and upload new project. DO I need to setup a repo first ?
+
+  
+
+11/11/24
+--------
+
+Created a new text file. Create_New_database.txt. This holds details on new databases and changes and database migration.
+
+Im not sure what my new process is with using migration of db.
+
+A) Try changing model -> change field names in tables
+
+For keypad_code table change to just one field outside of id and link field in models.py.
+
+NOw I have a change between my model and my database. SO now run migrate to see what I get.
+
+- Generate an initial migration
+
+ flask db migrate -m "Initial migration."
+
+This appeared to work
+
+ -----------------------------------
+(venv) dgleeson3@penguin:~/flask_blog$  flask db migrate -m "Initial migration."
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.ddl.postgresql] Detected sequence named 'site_id_seq' as owned by integer column 'site(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'device_id_seq' as owned by integer column 'device(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'open_number_white_list_id_seq' as owned by integer column 'open_number_white_list(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'post_id_seq' as owned by integer column 'post(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'keypad_code_id_seq' as owned by integer column 'keypad_code(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'out_of_hours_id_seq' as owned by integer column 'out_of_hours(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'phone_number_id_seq' as owned by integer column 'phone_number(id)', assuming SERIAL and omitting
+INFO  [alembic.autogenerate.compare] Detected added column 'keypad_code.key_code'
+INFO  [alembic.autogenerate.compare] Detected removed column 'keypad_code.name'
+INFO  [alembic.autogenerate.compare] Detected removed column 'keypad_code.country_id'
+  Generating /home/dgleeson3/flask_blog/migrations/versions/32b55c8a2a49_initial_migration.py ...  done
+(venv) dgleeson3@penguin:~/flask_blog$ 
+ ------------------------------------
+
+I think I need to also do:
+
+Then you can apply the changes described by the migration script to your database:
+
+----------------------------
+$ flask db upgrade
+
+(venv) dgleeson3@penguin:~/flask_blog$ flask db upgrade
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -> 32b55c8a2a49, Initial migration.
+--------------------------------------
+
+Also note that when we list tables in the database we get an alembic_version at the top
+
+vgr_12db=> \d
+ public | alembic_version               | table    | dgleeson3
+ public | device                        | table    | dgleeson3
+ public | device_id_seq                 | sequence | dgleeson3
+ public | keypad_code                   | table    | dgleeson3
+ public | keypad_code_id_seq            | sequence | dgleeson3
+ public | open_number_white_list        | table    | dgleeson3
+ public | open_number_white_list_id_seq | sequence | dgleeson3
+ public | out_of_hours                  | table    | dgleeson3
+ public | out_of_hours_id_seq           | sequence | dgleeson3
+ public | phone_number                  | table    | dgleeson3
+ public | phone_number_id_seq           | sequence | dgleeson3
+ public | post                          | table    | dgleeson3
+ public | post_id_seq                   | sequence | dgleeson3
+ public | site                          | table    | dgleeson3
+ public | site_id_seq                   | sequence | dgleeson3
+ public | user                          | table    | dgleeson3
+ public | user_id_seq                   | sequence | dgleeson3
+--------------------------------------------------------------------
+
+
+
+B) now add a new table in the model.  ( fix boolean type) 
+
+----------------------------------------------
+class ConfigMisc(db.Model):    
+    __tablename__ = 'config_misc'
+
+    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    device_id = db.Column(db.ForeignKey('device.id'))
+
+    security_code_enabled = db.Column(db.boolean, unique=True)
+    security_code = db.Column(db.String)
+    gate_lock_on = db.Column(db.boolean)
+    pulse_time = db.Column(db.String)
+
+    user = db.relationship('Device', primaryjoin='ConfigMisc.device_id == Device.id', backref='config_misc')
+
+------------------------------------------
+
+
+This time ( now that we have an initial migration )   do
+
+
+- flask db migrate -m "add config_misc table "  
+
+- flask db upgrade
+
+
+This didnt work and I didnt get a new migration version. But doing \d shows the new table. Im not sure whats going on
+
+
+
+------------------------------------
+
+vgr_12db=> \d
+ public | alembic_version               | table    | dgleeson3
+ public | config_misc                   | table    | dgleeson3
+ public | device                        | table    | dgleeson3
+
+
+-------------------------------------
+
+See   https://github.com/miguelgrinberg/Flask-Migrate/issues/262
+
+
+
+
+10/11/24    2nd
+--------
+
+Generate new SQL file to allow Flask db model file to be generated  ->   ok done
+
+copied to folder      ->   flask_blog/ PostgtressSQLDesign/Rev8
+
+
+need to generate a new models file and make required updates. Then run migrate to update database.
+
+-------------------
+Is it possible that the flask migrate tool needs the models in the same file as the reference to the db and alembic ?????
+
+https://github.com/miguelgrinberg/Flask-Migrate/discussions/512
+
+also see:   https://blog.miguelgrinberg.com/post/how-to-add-flask-migrate-to-an-existing-project
+
+also see:  https://www.reddit.com/r/flask/comments/sn6atr/does_flask_migrate_affect_the_data_inside_of_a/
+-------------------
+
+
+
+10/11/24
+--------
+
+Running flask migrate is generating nothing.
+
+------------------------------
+(venv) dgleeson3@penguin:~/flask_blog$ flask db migrate -m "initial migration"
+INFO  [alembic.runtime.migration] Context impl PostgresqlImpl.
+INFO  [alembic.runtime.migration] Will assume transactional DDL.
+INFO  [alembic.ddl.postgresql] Detected sequence named 'keypad_code_id_seq' as owned by integer column 'keypad_code(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'post_id_seq' as owned by integer column 'post(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'phone_number_id_seq' as owned by integer column 'phone_number(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'open_number_white_list_id_seq' as owned by integer column 'open_number_white_list(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'out_of_hours_id_seq' as owned by integer column 'out_of_hours(id)', assuming SERIAL and omitting
+INFO  [alembic.env] No changes in schema detected.
+-------------------------------------
+
+
+So next add a new table. Configuration options for voyager switch.                ok done
+
+-----------------------------
+config_misc     table
+
+id
+device_id              
+Security_code_enable   BOOLEAN
+Security_code          VARCHAR ( 4 digits limited by interface )
+gate_lock_on           BOOLEAN
+pulse_time             VARCHAR ( value 1 - 10 limited by interface )
+----------------
+
+And fix fields in phone_number, keypad_code open_number_white_list and out_of_hours tables      ok done
+
+start on tables display and elements in dbdiagram.io                    ok done
+
+
+
+8/11/24
+-------
+
+Flask-Migrate is a Flask extension based on the Alembic library, allowing you to manage database migrations.
+
+Database migration is transferring data between different database schemas without any data loss. It’s commonly used to upgrade a database, change its schema by adding new table columns or relationships, and ensure a smooth transition with minimal downtime and no data loss.
+
+To get flask migrate to work
+----------------------------------
+(venv) dgleeson3@penguin:~/flask_blog$ export FLASK_APP=run.py
+
+(venv) dgleeson3@penguin:~/flask_blog$ flask db init
+  Creating directory '/home/dgleeson3/flask_blog/migrations' ...  done
+  Creating directory '/home/dgleeson3/flask_blog/migrations/versions' ...  done
+  Generating /home/dgleeson3/flask_blog/migrations/README ...  done
+  Generating /home/dgleeson3/flask_blog/migrations/alembic.ini ...  done
+  Generating /home/dgleeson3/flask_blog/migrations/env.py ...  done
+  Generating /home/dgleeson3/flask_blog/migrations/script.py.mako ...  done
+  Please edit configuration/connection/logging settings in '/home/dgleeson3/flask_blog/migrations/alembic.ini' before proceeding.
+------------------------------------------
+
+
+
+==========================================
+Next - 
+
+1) have an error in 
+------------------
+  File "/home/dgleeson3/flask_blog/flaskblog/templates/showdevices.html", line 6, in block 'content'
+    <h2>Your Devices at this Site. Site Name: {{ devices[0].access_point_name }} </h2>
+------------------
+
+OK I just removed my efforts to give the site name at the top of the device list at that site.
+
+
+2) Find a way to change and grow the database without loosing data and existing tables
+
+*****************************
+4)  Error adding device to Site 3. Device added but still error from web site   ????
+
+OK now getting      "Your New device has been created"
+So its just about where we aer directing the web site after the commit.
+
+5) Sort device configuration tabs and updating device details from there
+
+6) Fix errors and problems. -> Target Embedded interface 
+*******************************
+
+
+
+
+28/10/24
+--------
+
+Got device id selected on device settings for phone number table.
+
+See    http://127.0.0.1:5000/devicesettings/1
+
+and  route
+---------------
+@app.route('/devicesettings/<int:device_id>',methods=['GET','POST'])
+@login_required
+def device_settings(device_id):
+---------------
+
+
+
+25/10/24
+---------
+
+I eventually found the syntax error in my flask function. Missing paramter in first line
+
+-----------------------------------------------------------
+WRONG
+-----
+
+@app.route('/devicesettings',methods=['GET','POST'])
+@login_required
+def device_settings(device_id):
+
+RIGHT
+-----
+@app.route('/devicesettings/<int:device_id>',methods=['GET','POST'])
+                            ---------------
+@login_required
+def device_settings(device_id):
+----------------------------------------------------------------------------
+
+
+NEXT:   When adding device details I need to add device id so I can pick device details by id in 
+SQL Query
+
+
+
+21/10/24
+--------
+
+ToDo
+
+1) Click on device gives config screens
+
+2) device display
+
+
+2) sequences to and back from a device to be fixed.
+
+4) List devices with a) device local name; Device Type; device phone  number
+
+5) Add new Site button should only work/exist when looking at sites. So have buton on page.
+
+6) Add new device screen needs a cancel button
+
+20/10/24
+--------
+
+1)  change names of html and route to site from post            ok
+
+2)  Get New Site and New device buttons working.
+
+3) Notes on linking Showdevices and add_device
+
+    A) we do http://127.0.0.1:5000/showsites
+    B) Click on a device   Denis Gleeson ->  http://127.0.0.1:5000/showdevices/1
+
+This uses the route in route.py   --->    /showdevices   with a GET specified -> We see a list of devices 
+for this site
+------------------CUT----------------------------------------
+#
+#  show devices given site id
+#
+# The top row lists a .html page. SO make sure .html page defined.
+@app.route("/showdevices/<int:site_id>")
+def show_device(site_id):
+    form = ShowDevicesForm()
+    if form.validate_on_submit():
+       print("device route, show devices given site id - POST")
+       print(site_id)
+
+       return redirect(url_for('home'))
+
+    elif request.method == 'GET':
+       print("showdevices route, show devices given site id - GET")
+       devices = Device.query.filter_by(site_id=site_id)
+       return render_template('showdevices.html',site_id=site_id, devices=devices, form=form)
+-----------------CUT-------------------------------
+
+In the showdevices.html we have a button that takes us to the adddevice route  -->  /adddevice
+
+As long as that link is sending a get request we will just see the page for adding a device
+
+--------------CUT--------------------
+<div class="form-group">
+  <h2>All of Your Devices. </h2>
+
+  <form action="{{ url_for('add_device', site_id=site_id) }}" method="GET">
+    <input class="btn btn-danger" type="submit" value="Add New Device to this Site">
+
+    {% for device in devices %}
+--------------CUT-----------------------  
+
+
+
+
+19/10/24
+--------
+
+To Do List
+
+1) Add a New device - not working
+2) Cliking into a device should give device configuration settings
+How do we click into device ??
+3) change device type to descriptive string instead of typedef number.
+4) List devices with a) device local name; Device Type; device phone  number
+5) Add new Site button should only work/exist when looking at sites. So have buton on page.
+
+
+11/10/24
+--------
+
+I have working display of device details.
+
+But its the same display for both sites. So the query has to be per site.
+
+I had
+    devices = Device.query.all()
+
+But using 
+
+    devices = Device.query.filter_by(site_id=site_id)
+    
+means that we filter the devices by the site_id field given to the route 
+
+@app.route("/showdevices/<int:site_id>")
+
+
+
+10/10/24
+---------
+
+Problem getting showdevices.html to display device details.  NOt sure whats happening.
+
+Find where this is falling down
+
+1) revert to something that is working like showsites.html
+2) change gradually to showdevices and see where we get the problem
+
+8/10/24
+-------
+
+1) Make it obvious -> List of Sites
+                    -> List of Devices
+
+
+                    
+
+
+On Site view page list all devices on that site allowing to click 
+   into each device for configuration.  Heading should be the site Name ONLY
+
+2) going back from device goes back through add device which isnt correct.
+
+3) Fix configuration tabs for Voyager 4G-2R switch
+
+4) Gloss up Device configuration 
+
+
+6/10/24
+-------
+Now have site_id working and getting passed into device setup
+
+To get a new device saved into device table I had to set the device_type_name as an int in python as thats 
+what it is set as in the database. Undecided whether I stick with this approach. I need to translate on occasion between inetger and actual String name for the type.
+
+Checking table contents with psql
+---------------------------------------
+
+vgr_12db=> select * FROM user;
+   user    
+-----------
+ dgleeson3
+(1 row)
+
+vgr_12db=> select * FROM site;
+ id | user_id |   site_name   | site_contact_details 
+----+---------+---------------+----------------------
+  1 |       1 | Denis Gleeson | 0872730966
+(1 row)
+
+vgr_12db=> select * FROM device;
+ id | device_type_name | device_sim_number | access_point_name | site_id 
+----+------------------+-------------------+-------------------+---------
+  1 |                3 | 0872730966        | Main Gate         |       1
+(1 row)
+
+-----------------------------------------------------------
+
+
+2/10/24_2
+-------
+
+Saving the new record for the device table I need the site_id as its the reference to the site class
+
+BUt this killed my program.  I needed to start sending the site_id to the url
+
+http://127.0.0.1:5000/adddevice    is no longer a route, we must have device_id
+
+also now added to adddevice.html
+
+        <form action="{{ url_for('adddevice', site_id=site.id) }}" method="POST">
+
+This is now getting messy. Is there an easy way to get the site_id ???
+
+2/10/24
+-------
+
+Removed Device_type form the database schema and the models.py file. It was over complicated.
+
+Need to also remove from routes.py etc     ok
+
+Now need to get back to adding new site details to the database.
+
+Continue then top set device settings.
+
+Get back to input validation later
+
+
+26/9/24
+-------
+
+Using the CRUD project I got the detection of POST in the route working.
+
+Next. create a table of 2 columns amd 2 rows in the add device page.
+Get all 3 device settings and submit to the database
+
+DO the validation of the input for this device -> do we need a Flask form
+------------------------------
+A) table                                ok
+B) Flask Form for validation            
+
+-------------------------------
+
+Current example of flask form for validation
+
+See login.html and loginform
+
+and 
+
+create_post.html and postform
+
+These are very Flask dependant
+
+It woukld be easier to use html forms and use html validation. See if this makes 
+sense in flask  ???
+-------------------------------
+ 
+C) Route checks validation
+D) Save new site to database in route and then move to devicesettings.html to allow setting device config details
+
+
+25/9/24
+--------
+
+1) Problems with handling POST or form validation in Adddevice.html
+
+Setup CRUD project to test its operation with POST
+
+python3 -m venv venv
+source venv/bin/sctivate
+pip install -r /path/to/requirements.txt
+
+Great style on this project. Just need a bit lighter background BUT use this CSS
+
+
+
+20/9/24
+-------
+
+To Do
+
+
+1) Using Site table, add devices and display them for that site
+
+2) configure devices and access them repeatedly from the device list
+
+
+
+
+
+15/9/24
+-------
+
+ToDo
+
+A) Use site / device_type  tables.
+  - list sites on login. clicking on site in list gives device installed and clicking on device gives device configuration
+  
+B) link to phone number table
+    
+allow sites and devices and device configuration to be added andchanged.
+
+-------------------------------------------------------------------
+Now getting phone number table details to display           ok
+
+Next fill in actions for UPdate and Delete  
+
+
+--------------------
+
+Next
+----
+
+A)  STart using user table instead of POST table. Get current level of functionality.
+
+- In Diagnostics Tab handle user table, display and add/delete from that table
+
+    - a) do display         
+    - b) do addition                ok
+    - c) do deletion
+
+B)  Get requirements and upload site to web
+
+C)  Get Embedded platform - Arduino to read user table and get settings to program as white list
+
+look at Arduino fonatest on the silver laptop
+
+
+
+
+01/9/24
+-------
+
+1) Now able to add and delete from the device settings html pages Tab 2
+
+I discovered a problem with checking if this user owns the post he was requesting to delete.
+
+See commented out code in route \post\post_id\delete
+
+2) Still using the post table as if it was a whitelist table. -> Need to move to using user table
+
+3)
+
+-----------------------------------------------------------------
+============
+To Do
+============
+
+
+Use correct tables for Sites/Devices/settings
+---------------------------------------------
+
+White list display and UPdate
+------------------------------
+
+1)  Round + sign to add new User to white list. Brings up dialog to enter Name and Number.
+Details added to bottom of list
+
+2)  In Line on Row   --->  Edit and Remove buttons.
+
+
+Next to do
+
+1) Display users name and phone number
+2) Screen to add new user with details
+3) remove a user
+4) Edit a user
+
+
+---------------------
+Note
+
+Backup Linux Apps and files
+
+1) Bottom right, click on time -> about -> Linux -> backup.
+2) Plug in HDD and select location for BU
+
+
+25/8/24
+-------
+
+Fixed home page problem.
+
+see contents of DB with psql command line
+
+1) OPen DB      psql vgr_9db
+
+2) see tables   \dt
+
+3) See table contents
+
+vgr_9db=> SELECT * FROM post;
+
+ id |    title    |     date_posted     | content | user_id 
+----+-------------+---------------------+---------+---------
+  1 | Test Site 1 | 2016-06-22 19:10:25 | VV-IKL  |       1
+  2 | Test Site 2 | 2016-06-22 19:10:25 | 4G-2R   |       1
+  4 | Mary Smiths | 2016-06-22 19:10:25 | 4G-2R   |       1
+  6 | JJ Bryan    | 2016-06-22 19:10:25 | 4G-2R   |       1
+(4 rows)
+
+
+
+
+24/8/24
+--------
+
+MOving through screens from start to looking at device settings and viewing 3 tabs is working
+
+I had to remove references to Author for posts and html screens. It was just substituted by user_id
+Also I dont have image file so references removed
+Also the time set for posts was just all set to the same time.
+
+
+Moving around screens like going back home not all working - Not sure why
+
+Keep getting this odd white screen on occasion requiring Chrpmebook power down and up
+
+BUGS:
+-----
+
+1) Using Home and doing login is giving method NOT allowed
+
+2) now getting GET /home HTTP/1.1" 302 -  when I go to home
+
+
+21/8/24
+-------
+
+Problems on login
+
+AttributeError: 'User' object has no attribute 'is_active'
+
+https://stackoverflow.com/questions/26606391/flask-login-attributeerror-user-object-has-no-attribute-is-active
+
+
+20/8/24_4
+---------
+Getting an error on registration when python tries to add a new user to table.
+
+ flask-sqlacodegen   is not exactly generating what we had in the original models.py file
+
+I am removing the Varchar[XX] size specification from the database design and work on generating a new vgr_7db
+
+New database vgr_8db
+
+Then I had an error where the user id was NULL, I had to change the id to be serial on all tables.
+
+
+New database vgr_9db
+
+SEQUENCE to CREATING A NEW database   --------------------------------
+
+1) New diagram -> exported to .sql file
+
+copy the psql file to the project (flask_blog) folder
+
+2) create new database from command line
+
+createdb vgr_6db
+
+3) enter     psql vgr_6db
+
+4) create tables in new database using psql and .sql file
+
+\i db_design_7.sql            ---> this was the sql output from the table and database design tool
+
+ check correct tables and relationships have been setup
+
+\dt
+
+
+5) \q from psql
+6) now create flask interface file for SQLAlchemy. Creates models.py
+
+flask-sqlacodegen --flask postgresql:///vgr_10db >> models.py
+
+*** Watch out this step adds (appends) to the existing file
+
+
+7) check models.py is correct  -> I am adding a section to top of new file, copy from previous
+
+8)  Add UserMixin  to user table
+
+see models.py.bu
+
+class User(db.Model, UserMixin):
+
+9)  need to target the new database on the init_.py file
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dgleeson3:access45@localhost/vgr_11db'
+
+
+-------------------------------------------------
+
+19/8/24_3
+---------
+
+Solution below works as I am not faialing on boot.
+
+
+19/8/24_2
+-------------
+
+Last attempt still fails
+
+
+https://stackoverflow.com/questions/48999379/psycopg2-operationalerror-fatal-password-authentication-failed-for-user-my-u
+------
+
+sudo su - postgres
+CREATE USER dgleeson5 WITH PASSWORD 'access45';
+GRANT CONNECT ON DATABASE vgr_6db TO dgleeson5;
+GRANT ALL PRIVILEGES ON DATABASE vgr_6db  to dgleeson5;
+\q
+logout
+
+19/8/24_1
+-------
+
+problem with wrong password.
+
+Use postgres shell to change password
+
+--------------
+
+https://stackoverflow.com/questions/27107557/what-is-the-default-password-for-postgres
+
+[LINUX]
+
+might work for windows too
+
+After installing postgres follow following steps in order to setup password for default system account of Linux execute following in terminal:
+
+user:~$ sudo -i -u postgres
+postgres@user:~$ psql
+after executing above two commands you will get into postgres shell
+
+Execute this query in postgres shell:
+
+postgres=# ALTER USER postgres PASSWORD 'mynewpassword';
+your new password is 'mynewpassword' without quotes and now you can connect with external GUI tools like DBeaver
+
+Use 'logout' to exit shell
+
+------------------------------------
+
+18/8/24
+--------
+
+To see environmnent variables  use    
+
+env
+
+To get the specific value
+
+echo $varname 
+
+
+17/8/24
+--------
+
+1) Crete dummy db
+
+command line 
+
+createdb vgr_6db
+
+2) psql vgr_6db
+
+3) \i db_design_3.sql            ---> this was the sql output from the table and database design tool
+
+4) check correct tables and relationships have been setup
+
+5) create flask models.py for new db
+
+flask-sqlacodegen --flask postgresql:///vgr_2db >> models.py
+
+6) check models.py is correct
+
+
+
+
+-------  Next
+
+a) substitute models.py into our project
+
+VARCHAR didnt work
+
+b) point flask at the database
+
+See   https://www.digitalocean.com/community/tutorials/how-to-use-a-postgresql-database-in-a-flask-application
+
+
+
+
+
+13/8/24
+-------
+
+ToDo
+
+using example app
+
+https://medium.com/nerd-for-tech/developing-a-simple-create-read-update-and-delete-crud-application-using-flask-and-mariadb-f037a5798ee2
+
+
+    a) add to my flask App
+        edit            1) add text 2) handle press 3) new screen to allow edit
+        delete 
+        add new.
+    
+    b) all above update database as per example above
+    
+    c) add posts table and other table, change database
+
+
+12/8/24
+-------
+
+I have table displaying db table.
+
+- Next allow edit / delete / create new / save
+
+
+5/8/24 - 8/8/24
+---------------
+
+
+revert to finding flask html code to display a table of data from db 
+
+https://stackoverflow.com/questions/76007241/display-data-on-html-from-mysql-database-using-flask
+
+Now add some users to table read and display  - use psql command line to add and show first
+
+I want to keep the tab display so I should call the template showing tabs and displaying the details read.
+
+
+4/8/24
+-------
+
+So far so good
+
+I need samples of displaying database details like user tables
+And details of update/delete/save/create
+
+an interesting sample
+
+https://medium.com/@jmartinez729/full-crud-with-javascript-1c3fb77f81f
+
+https://github.com/buttcheeksio/book-lister-app-full-crud-js?source=post_page-----1c3fb77f81f--------------------------------
+
+I only have pip installed and on the python3 venv
+
+See  https://pypi.org/project/json-server/
+
+so to install json server
+
+----------------------
+
+dgleeson3@penguin:~/flask_blog$ source venv/bin/activate
+
+(venv) dgleeson3@penguin:~/bookproject$         pip install json_server                 ** Note underscore **
+
+Then run server
+
+json_server books.json                              ** Note underscore **
+
+-----------------------
+
+
+
+30/7/24
+-------
+
+Setup tabs for the configuration of the device.
+
+See:
+
+https://www.w3schools.com/w3css/w3css_tabulators.asp
+
+
+26/7/24
+-------
+
+1)  add new page to accept ID and main settings for new device.
+2) Go from add device to this page
+3) after this page display site with new device added. And any other added devices
+
+
+Next -> The Device added should be displayed on site list
+     -> clicking on device gives configuration screens for that device
+
+25/7/24
+-------
+
+1) options buttons and other UI displayed on adddevice.html
+
+
+24/7/24
+-------
+
+Finally go button to change the web page using this jinga approach
+
+SO button post page links to home page
+
+See   stackoverflow.com   "flask make a button direct to another page"
+
+       <button id="test" type="button" class="btn btn-default" onclick="window.location.href = '{{ url_for('home') }}'; " class="button">Add new Site </button>
+------------------------------------
+And then to my new page. Now just showing a button
+
+        <button id="test" type="button" class="btn btn-default" onclick="window.location.href = '{{ url_for('add_device') }}'; " class="button">Add New Device to this Site </button>
+
+
+
+
+23/7/24
+-------
+
+Error in home page login not working. Need to press login
+
+
+Cant get divert to a different page in function
+
+https://sentry.io/answers/redirect-to-a-url-in-flask/#:~:text=Redirection%20in%20Flask%20can%20be,same%20application%20and%20external%20websites
+
+
+21/7/24
+-------
+
+1) New icons required, site, device ( intercom & Switch, )
+ Registerd user and device user.
+
+2) when we click on a site we get a button "Add a new device to this site"
+
+This brings up a new page to add
+    a) select a device type
+    b) add it to the site
+    c) or cancel this operation
+
+
+Process
+a) add new form in forms.py 
+---------------------------
+
+Adding Radio Field
+See https://gist.github.com/doobeh/4667330
+
+
+  import RadioField from wtforms
+
+class AddDevice(FlaskForm):
+#    title = StringField('Site Name(Site Owner)', validators=[DataRequired()])
+#    content = TextAreaField('Product at Site', validators=[DataRequired()])
+    option = RadioField(choices=[('dog', 'Dog'), ('cat', 'Cat'), ('bird', 'Bird'), ('alien', 'Alien')])
+    submit = SubmitField('Add this Device to Site')    
+
+b) add a new route
+-------------------
+
+@app.route('/adddevice',methods=['GET','POST'])
+def hello_world():
+    form = AddDevice()
+    if form.validate_on_submit():
+        print(form.example.data)
+    else:
+        print(form.errors)
+    return render_template('adddevice.html',form=form)
+
+
+
+c) add a new html template file
+-------------------------------
+{% extends "layout.html" %}
+{% block content %}
+<div class="form-group">
+  {{ form.submit(class="btn btn-outline-info") }}
+</div>
+
+{% endblock content %}
+
+d) add button to Site view to add a new device
+----------------------------------------------
+place correctly in current post.html to show button under existing content on page
+
+
+Adding link to another internal or external page
+https://sentry.io/answers/redirect-to-a-url-in-flask/#:~:text=Redirection%20in%20Flask%20can%20be,same%20application%20and%20external%20websites
+
+Two approaches - button in HTML or button in python function
+
+1) Button in html
+
+
+
+ 
+
+-------------------------------------------------------------
+
+19/7/24 ---------------
+-------
+
+Trying to find a way to auto generate the GUI with drag and drop IDE
+
+Nothing relating to Flask or Jinga available so far 
+
+ToDo
+
+1) Find a source of html samples for 1 designed page of interface
+
+2) add html code to a new template or static html file in the project
+
+3) continue this process of creating sample html code and adding to GUI
+
+--
+First change
+
+1) change the site page to have an 
+
+add device at site. Button.
+
+This is a new page with a list of device types where 1 can be selected.
+
+Adding a device Adds that device to the device list at that site and clicking on the device allows for its configuration.
+--
+
+
+
+---------------
+Next Steps
+
+A) introduce new db and models.py to my current flask blog project. Keep current functionality. might be best to include existing items or tables into new database to keep current functionality. 
+
+B) Allow logged in user to create new sites and devices. 
+These sites should only be visible to this logged in user
+
+C) Continued work on the GUI for Site, Device, user creation  and configuration.
+---------------
+
+
+
+status  14/6/24  Part 3 -----------------------------
+---------------
+
+1) For autogeneration of models .py
+
+https://stackoverflow.com/questions/17652937/how-to-build-a-flask-application-around-an-already-existing-database
+
+https://github.com/ksindi/flask-sqlacodegen
+
+command line to generate models.py
+
+flask-sqlacodegen --flask postgresql:///vgr_2db >> models.py
+
+
+status  14/6/24  Part 2 -----------------------------
+---------------
+
+Installing sqlacodegen gave following error
+-----------------------------------------------
+(venv) dgleeson3@penguin:~/flask_blog$ pip install sqlacodegen
+Collecting sqlacodegen
+  Downloading sqlacodegen-2.3.0.post1-py2.py3-none-any.whl (13 kB)
+Collecting SQLAlchemy<2.0,>=0.9.0
+  Downloading SQLAlchemy-1.4.52-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.6 MB)
+     |████████████████████████████████| 1.6 MB 376 kB/s 
+Collecting inflect>=0.2.0
+  Downloading inflect-7.3.1-py3-none-any.whl (34 kB)
+Collecting typeguard>=4.0.1
+  Downloading typeguard-4.3.0-py3-none-any.whl (35 kB)
+Collecting more-itertools>=8.5.0
+  Downloading more_itertools-10.3.0-py3-none-any.whl (59 kB)
+     |████████████████████████████████| 59 kB 388 kB/s 
+Requirement already satisfied: greenlet!=0.4.17 in ./venv/lib/python3.9/site-packages (from SQLAlchemy<2.0,>=0.9.0->sqlacodegen) (3.0.3)
+Requirement already satisfied: typing-extensions>=4.10.0 in ./venv/lib/python3.9/site-packages (from typeguard>=4.0.1->inflect>=0.2.0->sqlacodegen) (4.12.2)
+Requirement already satisfied: importlib-metadata>=3.6 in ./venv/lib/python3.9/site-packages (from typeguard>=4.0.1->inflect>=0.2.0->sqlacodegen) (7.1.0)
+Requirement already satisfied: zipp>=0.5 in ./venv/lib/python3.9/site-packages (from importlib-metadata>=3.6->typeguard>=4.0.1->inflect>=0.2.0->sqlacodegen) (3.19.2)
+Installing collected packages: typeguard, more-itertools, SQLAlchemy, inflect, sqlacodegen
+  Attempting uninstall: SQLAlchemy
+    Found existing installation: SQLAlchemy 2.0.30
+    Uninstalling SQLAlchemy-2.0.30:
+      Successfully uninstalled SQLAlchemy-2.0.30
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+flask-sqlalchemy 3.1.1 requires sqlalchemy>=2.0.16, but you have sqlalchemy 1.4.52 which is incompatible.
+Successfully installed SQLAlchemy-1.4.52 inflect-7.3.1 more-itertools-10.3.0 sqlacodegen-2.3.0.post1 typeguard-4.3.0
+
+
+
+
+status  14/6/24 -----------------------------
+---------------
+
+1)   Working on creaing a database for the project. A simplified version of the total project
+
+using:                                                               
+------
+p
+
+Good example
+https://dbdiagram.io/d/Copy-of-Sample-DBD-for-Airbnb-66801bf49939893dae99e7f2
+
+Important on which side is foreign key in table relationship
+------------------------------------------------------------
+https://www.quora.com/What-side-gets-the-foreign-key-the-one-or-many#:~:text=The%20foreign%20key%20constraint%20is,on%20the%20%E2%80%9Cmany%E2%80%9D%20side.
+
+2) installed postgressql on chromebook. Using for running script to create database.
+
+See big green notebook
+
+Useful links on postgresql
+--------------------------
+https://medium.com/analytics-vidhya/how-to-create-a-postgres-database-394b362abfbe
+https://medium.com/codex/intro-to-postgresql-c8da31335c34
+
+
+Using new design db_design_2.sql I can now create the postgresql database witthout errors
+
+3) Next we will try and auto create flask database model file from database using the tool 
+
+https://pypi.org/project/sqlacodegen/
+
+
+
+status  21/6/24 -----------------------------
+---------------
+
+1) Just corey schafer from video 8
+2) I had to fix problem with no database available
+Taken from stack overflow'
+run.py is now
+
+-----------------------------------------
+from flaskblog import app
+from flaskblog import db
+
+if __name__ == '__main__':
+  with app.app_context():
+    db.create_all()    
+    app.run(debug=True)
+---------------------------------------------   
+
+Prior to this see Green Folder big note book, and before that copy book

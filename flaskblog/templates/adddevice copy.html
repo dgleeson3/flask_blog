@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <label for="device">Choose a device to add
+    </label><br><br>
+
+    <div class="form">
+        <form action="/" method="POST">
+            <input type="radio" name= radio_option value="Voyager 4G-2R switch">  Voyager 4G-2R switch</input><br><br>
+            <input type="radio" name= radio_option value="Voyager Voice Intercom with Keypad">  Voyager Voice Intercom with Keypad. </input><br><br>
+            <input type="radio" name= radio_option value="Voyager Voice Intercom No Keypad">  Voyager Voice Intercom No Keypad. </input><br><br>
+            <input type="radio" name= radio_option value="Voyager Voice 2 button Intercom">  Voyager Voice 2 button Intercom. </input><br><br>
+            <input type="radio" name= radio_option value="Voyager Voice 4 button Intercom">  Voyager Voice 4 button Intercom. </input><br><br>
+            <input type="radio" name= radio_option value="Voyager Voice Appartment Intercom">  Voyager Voice Appartment Intercom. </input><br><br><br>
+            <!-- Use style to create spaces around and between buttons ToDo add to CSS file  
+            <button id="test" type="button" class="btn btn-default" onclick="window.location.href = '{{ url_for('device_settings_id') }}'; " class="button"> Add this device to the Site </button> -->
+            <button style="margin:25px" type="submit"> Add this device to the Site  </button>
+            <button style="margin:25px" type="submit"> Cancel </button>
+        </form>
+    
+    </div>
+    <br>
+    
+    <!--
+    <div class="form">
+        <form action="/" method="POST">
+            <input type="text" name="content" id="content">
+            <input type="submit" value="Add Task">
+        </form>
+    </div>
+ 
+
+ 
+<form method="post">
+     <div class="col-sm-4 col-lg-4">
+        <select title="thing" class="form-control" id="myselect" name="thing" required>
+            <option value="" {% if thing==''%} selected {% endif %} ></option>
+            <option value="Foo" name="Foo" id="Foo" {% if thing=='Foo'%} selected {% endif %} >Foo</option>
+            <option value="Bar" name="Bar" id="Bar" {% if thing=='Bar'%} selected {% endif %} >Bar</option>
+        </select>
+    </div> 
+</form>
+<button type="submit">Add this device to the Site </button>
+-->
+{% endblock content %}

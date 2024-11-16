@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+
+    <label for="device">ID Settings for the New Device
+    </label><br><br>
+
+
+    <label for="device">SIM Phone Number:
+    </label>
+    <input type="text" name="SIM Phone Number for this Device" size="25" placeholder="Enter this devices SIM Phone Number" /></br></br></br>
+    
+    <label for="device">Access Point name:
+    </label>
+    <input type="text" name="Local Name for this Device. eg: front gate" size="25" placeholder="Enter local name for this Access Point eg: front gate" /></br>
+
+    <br><br>
+
+    <label for="device">Local Name for this Device. eg: front gate 
+    </label><br><br>
+
+    <!-- Use style to create spaces around and between buttons ToDo add to CSS file 
+    <button style="margin:25px" type="submit"> Save these Details </button>
+    <button style="margin:25px" type="submit"> Cancel </button>
+    <button id="test" type="button" class="btn btn-default" onclick="window.location.href = '{{ url_for('device_settings') }}'; " class="button"> Configure this device now </button>
+    -->
+    
+    <!--
+<form method="post">
+     <div class="col-sm-4 col-lg-4">
+        <select title="thing" class="form-control" id="myselect" name="thing" required>
+            <option value="" {% if thing==''%} selected {% endif %} ></option>
+            <option value="Foo" name="Foo" id="Foo" {% if thing=='Foo'%} selected {% endif %} >Foo</option>
+            <option value="Bar" name="Bar" id="Bar" {% if thing=='Bar'%} selected {% endif %} >Bar</option>
+        </select>
+    </div> 
+</form>
+<button type="submit">Add this device to the Site </button>
+-->
+{% endblock content %}

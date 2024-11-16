@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<div class="form-group">
+  <h2>Your Devices at this Site.  </h2>
+
+  <form action="{{ url_for('add_device', site_id=site_id) }}" method="GET">
+    <input class="btn btn-danger" type="submit" value="Add New Device to this Site">
+
+    {% for device in devices %}
+    
+        <article class="media content-section">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="{{ url_for('device_settings', device_id=device.id) }}"> Configure this Device </a>
+              <small class="text-muted">{{ device.device_type_name }}</small>
+              <small class="text-muted">{{ device.device_sim_number }}</small>
+              <small class="text-muted">{{ device.access_point_name }}</small>
+              <small class="text-muted">{{ device.site_id }}</small>
+
+        </article>
+    {% endfor %}
+  </form>
+  <div class="modal-footer">
+   </div>
+  
+
+  {% endblock content %}
+
+
+<!--
+<article class="media content-section">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ site.user_id }}</a>
+      <small class="text-muted">{{ site.site_name }}</small>
+    </div>
+    <h2><a class="article-title" href="{{ url_for('show_device', site_id=site.id) }}">{{ site.site_name }}</a></h2>
+    <p class="article-content">{{ site.site_contact_details }}</p>
+  </div>
+</article>
+-->
