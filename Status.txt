@@ -12,6 +12,13 @@ https://www.digitalocean.com/community/tutorials/how-to-perform-flask-sqlalchemy
 https://stackoverflow.com/questions/41448088/flask-app-getting-error-of-could-not-locate-flask-application-flask-app-e
 
 
+17/11/24
+--------
+
+Login to App   --->  dgleeson@2t-tec.com   password  ---> access45
+
+
+
 14/11/24
 --------
 
@@ -141,19 +148,29 @@ Branch 'master' set up to track remote branch 'master' from 'origin'.
        So add both file names to .gitignore specifically
 
 
-    H) after closing down chromebook or terminal we need to start Agenty again and confirm link
-    to github
+    H) after closing down chromebook or terminal we need to start Agent again and confirm link
+    to github is available
 
-    Check github link
+    How to Check github comms link
     
 ----------------------------------
 dgleeson3@penguin:~/flask_blog$  ssh -T git@github.com
 Hi dgleeson3! You've successfully authenticated, but GitHub does not provide shell access.    
 -------------------------------------
+ 
+    I)  Generate Requirements.txt
+    for some reason I didnt have permissions on pip3 and python3
+    Not sure how this happened
 
+    Make it executable for me
+    
+    sudo chmod +x python3
 
+     J)  add Gunicorn to Requirements.txt
 
-
+     I just added, to the bottom of Requirements.txt file.
+     
+     gunicorn==20.1.0
 
 
 
