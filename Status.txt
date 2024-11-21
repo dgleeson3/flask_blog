@@ -11,11 +11,98 @@ https://dbdiagram.io/d/Copy-of-Sample-DBD-for-Airbnb-66801bf49939893dae99e7f2
 https://www.digitalocean.com/community/tutorials/how-to-perform-flask-sqlalchemy-migrations-using-flask-migrate
 https://stackoverflow.com/questions/41448088/flask-app-getting-error-of-could-not-locate-flask-application-flask-app-e
 
+Deployment Details Render
+-------------------------
+https://testdriven.io/blog/flask-render-deployment/
+
+
+21/11/24
+--------
+
+For Render deployment I need to initalise the database.
+
+https://testdriven.io/blog/flask-render-deployment/
+
+see __init__.py
+
+20/11/24
+--------
+
+Tie new db to the flask app
+
+------------------------------------------------------
+Render Login
+------------
+Username dgleeson3@gmail.com
+password  parthus
+----------------------------------------
+
+Set URI Environment variable build and deploy again
+
+
+19/11/24
+---------
+
+start Postgress SQL database for Render App  (available until 19/12/24)
+
+Name for instance           2T_PostgreSQL_db
+Database Name               db
+User                        dgleeson3
+
+
+
+18/11/24  2nd  -> Success deploying  current app
+--------
+
+location:
+
+https://twot-cloud-2.onrender.com
+
+login
+
+dgleeson2@2t-tec.com
+access45
+
+
+
+
+18/11/24
+--------
+
+To solve issues with missing "app" on Render.
+
+Install gunicorn locally and get it hosting my flask_blog App
+
+running with gunicorn locally
+------------------------------------------
+(venv) dgleeson3@penguin:~/flask_blog$ gunicorn run:app
+[2024-11-18 07:54:10 +0000] [5319] [INFO] Starting gunicorn 23.0.0
+[2024-11-18 07:54:10 +0000] [5319] [INFO] Listening at: http://127.0.0.1:8000 (5319)
+[2024-11-18 07:54:10 +0000] [5319] [INFO] Using worker: sync
+[2024-11-18 07:54:10 +0000] [5320] [INFO] Booting worker with pid: 5320
+ gunicorn app:app
+
+THis starts  browser with website showing at:
+
+http://127.0.0.1:8000/showsites
+----------------------------------------------------
+
+so it needs to be gunicorn run:app
+as run.py as the app is defined inside run.py
+
+See   https://stackoverflow.com/questions/62334493/getting-modulenotfounderror-no-module-named-app-when-deploying-flask-app-to
+
+So for render where we specify how to run the page we use 
+
+gunicorn run:app
+
+
+
 
 17/11/24 2nd
 ------------
 
-ERROR in deployment
+ERROR in deployment -> Render
 
 ------------------------------------------
 
@@ -36,13 +123,19 @@ I need to try and get a Requirements.txt file that just specifies the packages u
 First off I dont need sqlacodegen for running the Web App it is used in models.py
 generation from the database
 
-
+Remove from Requirements.txt, add and check in, Push to github and start deployment again
 
 
 17/11/24
 --------
 
 Login to App   --->  dgleeson@2t-tec.com   password  ---> access45
+
+New account created locally. 
+Username    dgleeson3
+email   dgleeson3@gmail.com
+Password   access45
+
 
 
 Deploy on Render 
