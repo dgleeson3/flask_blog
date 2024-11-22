@@ -16,6 +16,30 @@ Deployment Details Render
 https://testdriven.io/blog/flask-render-deployment/
 
 
+22/11/24
+--------
+
+Set and use environment variables so we can set the db USI in Render and on my machine as required
+
+https://stackoverflow.com/questions/56529391/setting-and-retrieving-environmental-variables-in-flask-applications
+
+---------------------------------------
+Set your environment variable in the interpreter:
+
+export SECRET_KEY=123
+Call the variable with environ.get():
+----
+
+from os import environ
+from flask import Flask
+
+app = Flask(__name__)
+
+app.config['SECRET_KEY'] = environ.get('SECRET_KEY')
+----
+---------------------------------
+
+
 21/11/24
 --------
 

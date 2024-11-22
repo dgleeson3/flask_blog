@@ -6,13 +6,23 @@ from flask_login import LoginManager
 from flask_migrate import Migrate
 from sqlalchemy import create_engine
 import sqlalchemy as sa
+from os import environ
+
+
+
+
+
 
 # now interfacing to postgresql db vgr_12db ( 181124 )
 # https://stackoverflow.com/questions/62113733/how-connect-postgresql-database-with-sqlalchemy-python
 # https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
 app = Flask(__name__)
 #                                           driver://user:pass@localhost/dbname
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dgleeson3:access45@localhost/vgr_12db'
+
+# Now defined as an environment variable.
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dgleeson3:access45@localhost/vgr_12db'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
 
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 db = SQLAlchemy(app)
