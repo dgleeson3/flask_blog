@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, redirect
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, PostForm_Update, ShowSitesForm, AddDevice, ShowDevicesForm
-from flaskblog.models import User, Post, Site, PhoneNumber, OutOfHour, OpenNumberWhiteList, KeypadCode, Device
+from flaskblog.models import User_Accounts, Post, Site, PhoneNumber, OutOfHour, OpenNumberWhiteList, KeypadCode, Device
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import db
 
@@ -31,7 +31,7 @@ def home():
         return redirect(url_for('showsites'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User_Accounts.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -54,7 +54,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = User_Accounts(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -69,7 +69,7 @@ def login():
         return redirect(url_for('showsites'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
+        user = User_Accounts.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -210,7 +210,11 @@ def showsites():
     form = ShowSitesForm()
  #   form.username.data = current_user.username
 
-    sites = Site.query.all()
+    sites = Site.query.filter_by(user_id=current_user.id)
+    
+    print(" /showsites -> Current User id is: ")
+    print(current_user.id)
+
     return render_template('showsites.html', sites=sites, form=form)
 
  #   return render_template('account.html', title='Account',

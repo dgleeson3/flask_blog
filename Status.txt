@@ -16,6 +16,129 @@ Deployment Details Render
 https://testdriven.io/blog/flask-render-deployment/
 
 
+
+Next
+----
+
+1) Revert to Render, get system operating with database
+
+2) Get embedded SW interaction.
+
+
+
+26/11/24
+--------
+
+create 2 users and link only the correct sites for each user.
+
+2nd User
+
+dgleeson@2t-tec.com
+Access45_xy!
+
+dgleeson@centronsolutions.com
+access45
+
+Currently both Users get the same sites.   -> Fixed. Now selecting only sites for user_id=current_user.id
+
+
+25/11/24
+--------
+
+looks like   user    should not be used for table name with sqlalchemy
+
+SO in models.py and routes.py I changed to 
+
+user_accounts
+
+Then I tried to use migrate on database to force changes
+
+ flask --app run.py db upgrade
+
+
+for Render deployment I had setup 
+
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI') 
+
+
+export SQLALCHEMY_DATABASE_URI=postgresql://dgleeson3:access45@localhost/vgr_12db
+
+
+New registeration
+
+dgleeson@centronsolutions.com
+access45
+
+Now user still displays something specific to SQLALCHEMY user account
+but user_accounts is the user list
+
+-----------------------------------
+vgr_12db=> select * from user;
+
+   user    
+--------------------------------------
+ dgleeson3
+(1 row)
+
+vgr_12db=> select * from user_accounts;
+
+ id |             email             | username |                           password                           | image_file 
+----+-------------------------------+----------+--------------------------------------------------------------+------------
+  1 | dgleeson@centronsolutions.com | dgleeson | $2b$12$m4URNnE3Yqz3zQh25WPVIeFceuzRZHyoc5QTvfFZzEfVg3iyMqU2W | 
+
+(1 row)
+-----------------------------------------
+
+
+
+
+
+
+
+24/11/24
+---------
+
+New account for local user
+
+centron
+dgleeson@centronsolutions.com
+Ampolla49_xy!"
+
+changed user table to be 
+
+   id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+
+App says "Your account has been created" but user table in postgress looks very odd
+
+vgr_12db=> select * from user;
+   user    
+-----------
+ dgleeson3
+(1 row)
+
+Also logging in with new account gives list of sites created for user
+ 
+ 
+ dgleeson@2t-tec.com   password  ---> access45
+
+
+user table not working and user -> sites relationship is not correct
+
+
+22/11/24 2nd 
+--------
+
+Deploys ok, log shows "Init the db"
+
+add new user
+
+dgleeson3@gmail.com
+access45
+
+Registering my first user in the db gives a NOT NULL Error for the id.
+
+
+
 22/11/24
 --------
 

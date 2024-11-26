@@ -9,10 +9,6 @@ import sqlalchemy as sa
 from os import environ
 
 
-
-
-
-
 # now interfacing to postgresql db vgr_12db ( 181124 )
 # https://stackoverflow.com/questions/62113733/how-connect-postgresql-database-with-sqlalchemy-python
 # https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre

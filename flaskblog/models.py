@@ -6,7 +6,7 @@ from flask_login import UserMixin
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return User_Accounts.query.get(int(user_id))
     #return User.objects(pk=user_id).first()
 
 
@@ -104,9 +104,9 @@ class Post(db.Model):
     title = db.Column(db.String, unique=True)
     date_posted = db.Column(db.DateTime)
     content = db.Column(db.String)
-    user_id = db.Column(db.ForeignKey('user.id'))
+    user_id = db.Column(db.ForeignKey('user_accounts.id'))
 
-    user = db.relationship('User', primaryjoin='Post.user_id == User.id', backref='posts')
+    user_accounts = db.relationship('User_Accounts', primaryjoin='Post.user_id == User_Accounts.id', backref='posts')
 
 
 
@@ -114,17 +114,19 @@ class Site(db.Model):
     __tablename__ = 'site'
 
     id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    user_id = db.Column(db.ForeignKey('user.id'))
+    user_id = db.Column(db.ForeignKey('user_accounts.id'))
     site_name = db.Column(db.String)
     site_contact_details = db.Column(db.String)
 
-    user = db.relationship('User', primaryjoin='Site.user_id == User.id', backref='sites')
+    user_accounts = db.relationship('User_Accounts', primaryjoin='Site.user_id == User_Accounts.id', backref='sites')
 
 
-class User(db.Model, UserMixin):    
-    __tablename__ = 'user'
+class User_Accounts(db.Model, UserMixin):    
+    __tablename__ = 'user_accounts'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+#    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String, unique=True)
     username = db.Column(db.String)
     password = db.Column(db.String)
