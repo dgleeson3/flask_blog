@@ -2,11 +2,11 @@
 {% block content %}
 <div class="form-group">
   <h2>All of Your Sites. </h2>
-  {{ form.submit(class="btn btn-outline-info") }}
 
-  <form action="{{ url_for('new_site') }}" method="POST">
+  <form action="{{ url_for('new_site') }}" method="GET">
+    <input class="btn btn-danger" type="submit" value="Add a New Site">
 
-</div>
+   </div>
     {% for site in sites %}
     
         <article class="media content-section">
@@ -19,5 +19,8 @@
             <p class="article-content">{{ site.site_contact_details }}</p>
           </div>
         </article>
+  
+  
     {% endfor %}
+  </form>
 {% endblock content %}

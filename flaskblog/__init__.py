@@ -9,7 +9,7 @@ import sqlalchemy as sa
 from os import environ
 
 
-# now interfacing to postgresql db vgr_12db ( 181124 )
+# now interfacing to postgresql db vgr_13db ( 181124 )
 # https://stackoverflow.com/questions/62113733/how-connect-postgresql-database-with-sqlalchemy-python
 # https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
 app = Flask(__name__)
@@ -40,7 +40,7 @@ from flaskblog import routes
 # Check if the database needs to be initialized
 engine = sa.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 inspector = sa.inspect(engine)
-if not inspector.has_table("user"):
+if not inspector.has_table("user_accounts"):
     print("Init the db ")
     with app.app_context():
         db.drop_all()
@@ -48,4 +48,4 @@ if not inspector.has_table("user"):
         app.logger.info('Initialized the database!')
 else:
     print("  db  already initalised ")
-    app.logger.info('Database already contains the users table.')
+    app.logger.info('Database already contains the user_accounts table.')

@@ -12,12 +12,22 @@
   <p> Select the Tabs below to configure different Settings for this device.   </p>
 
   <div class="w3-bar w3-black">
+    <!--   THe w3-red is selecting the top item for red higlight -->
     <button class="w3-bar-item w3-button tablink w3-red" onclick="openCity(event,'London')"> Call Out Phone Numbers </button>
-    <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Paris')"> Call In Phone Numbers </button>
+    <button class="w3-bar-item w3-button tablink" {% if page == 'open_number' %}  class="active"  {% endif %} onclick="openCity(event,'Paris')"> Call In Phone Numbers </button>
     <button class="w3-bar-item w3-button tablink" onclick="openCity(event,'Tokyo')"> keypad Codes > </button>
 
   </div>
-  
+
+
+
+<!--
+  <ul class="nav nav-tabs">
+    <li role="presentation" {% if page == 'index' %}class="active"{% endif %}><a> title="Home">Home</a></li>
+    <li role="presentation" {% if page == 'projects' %}class="active"{% endif %}><a>Projects</a></li>
+    <li role="presentation" {% if page == 'about' %}class="active"{% endif %}><a> title="About">About</a></li>
+  </ul>
+ --> 
   <div id="London" class="w3-container w3-border city">
  
     <p>List of Device Users and their Phone Nubers.</p>
@@ -40,7 +50,7 @@
           </tr>
           </thead>
           <tbody>
-           {% for phone_number in phone_number %}
+           {% for phone_number in phone_numbers %}
                   <tr>
                       <td>{{phone_number.phone_number}}</td>
                       <td>{{phone_number.user_name }}</td>
@@ -98,15 +108,18 @@
 <script>
   
 function openCity(evt, cityName) {
-  var i, x, tablinks;
+  var i, x, tablinks;  // declare all variables
+  // this is setting no tabs to display -- yes hiding all tabs
   x = document.getElementsByClassName("city");
   for (i = 0; i < x.length; i++) {
     x[i].style.display = "none";
   }
+  // this is setting which tab to display the red higlight for
   tablinks = document.getElementsByClassName("tablink");
   for (i = 0; i < x.length; i++) {
     tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
   }
+  // this is setting which tab to display
   document.getElementById(cityName).style.display = "block";
   evt.currentTarget.className += " w3-red";
 }

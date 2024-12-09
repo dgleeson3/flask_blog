@@ -4,7 +4,7 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, redirect
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, PostForm_Update, ShowSitesForm, AddDevice, ShowDevicesForm
-from flaskblog.models import User_Accounts, Post, Site, PhoneNumber, OutOfHour, OpenNumberWhiteList, KeypadCode, Device
+from flaskblog.models import UserAccount, Post, Site, PhoneNumber, OutOfHour, KeypadCode, Device
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import db
 
@@ -31,7 +31,7 @@ def home():
         return redirect(url_for('showsites'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User_Accounts.query.filter_by(email=form.email.data).first()
+        user = UserAccount.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -54,7 +54,7 @@ def register():
     form = RegistrationForm()
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User_Accounts(username=form.username.data, email=form.email.data, password=hashed_password)
+        user = UserAccount(username=form.username.data, email=form.email.data, password=hashed_password)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
@@ -69,7 +69,7 @@ def login():
         return redirect(url_for('showsites'))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User_Accounts.query.filter_by(email=form.email.data).first()
+        user = UserAccount.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             next_page = request.args.get('next')
@@ -339,8 +339,9 @@ def device_settings(device_id):
             db.session.add(phone_number)
             db.session.commit()
             flash('Your New Device Phone NUmber details has been created!', 'success')
-#            return redirect('/devicesettings')
-            return render_template('devicesettings.html', device_id=device_id)
+            # having added device phone numbers to db now get them all and show the updated list 
+            phone_numbers = PhoneNumber.query.filter_by(device_id=device_id)
+            return render_template('devicesettings.html', device_id=device_id, phone_numbers=phone_numbers, page='open_number')
 
         except:
             return 'There was an issue adding your Device details, '
@@ -349,7 +350,7 @@ def device_settings(device_id):
         print("devicesettings - GET ")        
         phone_numbers = PhoneNumber.query.filter_by(device_id=device_id)
 #        phone_number = PhoneNumber.query.all()
-        return render_template('devicesettings.html', device_id=device_id, phone_numbers=phone_numbers)
+        return render_template('devicesettings.html', device_id=device_id, phone_numbers=phone_numbers, page='open_number')
 
 @app.route('/call-function') 
 def call_function(): 

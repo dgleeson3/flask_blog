@@ -1,47 +1,59 @@
 # coding: utf-8
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from flaskblog import db, login_manager
 from flask_login import UserMixin
 
+
+
 @login_manager.user_loader
 def load_user(user_id):
-    return User_Accounts.query.get(int(user_id))
+    return UserAccount.query.get(int(user_id))
     #return User.objects(pk=user_id).first()
+
+
+class CallOutPhoneNumber(db.Model):
+    __tablename__ = 'call_out_phone_numbers'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    device_id = db.Column(db.ForeignKey('device.id'))
+    phone_number = db.Column(db.String)
+    user_name = db.Column(db.String)
+
+    device = db.relationship('Device', primaryjoin='CallOutPhoneNumber.device_id == Device.id', backref='call_out_phone_numbers')
+
+
+
+class ConfigMisc(db.Model):
+    __tablename__ = 'config_misc'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    device_id = db.Column(db.ForeignKey('device.id'))
+    security_code_enabled = db.Column(db.Boolean)
+    security_code = db.Column(db.String)
+    gate_lock_on = db.Column(db.Boolean)
+    pulse_time = db.Column(db.String)
+
+    device = db.relationship('Device', primaryjoin='ConfigMisc.device_id == Device.id', backref='config_miscs')
+
 
 
 class Device(db.Model):
     __tablename__ = 'device'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    site_id = db.Column(db.ForeignKey('site.id'))
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     device_type_name = db.Column(db.Integer)
     device_sim_number = db.Column(db.String)
     access_point_name = db.Column(db.String)
+    site_id = db.Column(db.ForeignKey('site.id'))
 
     site = db.relationship('Site', primaryjoin='Device.site_id == Site.id', backref='devices')
-
-##################################################
-# class for DeviceType()   removed 2/10/24
-#  It was just overcomplicated. Just need 'Device' table
-#
-#class DeviceType(db.Model):
-#    __tablename__ = 'device_type'
-
-#    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-#    device_id = db.Column(db.ForeignKey('device.id'))
-#    device_type_name = db.Column(db.Integer)
-#    device_sim_number = db.Column(db.String)
-#    access_point_name = db.Column(db.String)
-
-#    device = db.relationship('Device', primaryjoin='DeviceType.device_id == Device.id', backref='device_types')
 
 
 
 class KeypadCode(db.Model):
     __tablename__ = 'keypad_code'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     device_id = db.Column(db.ForeignKey('device.id'))
     key_code = db.Column(db.String)
 
@@ -49,25 +61,16 @@ class KeypadCode(db.Model):
 
 
 
-class OpenNumberWhiteList(db.Model):
-    __tablename__ = 'open_number_white_list'
-
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    device_id = db.Column(db.ForeignKey('device.id'))
-    country_code = db.Column(db.String)
-    name = db.Column(db.String)
-
-    device = db.relationship('Device', primaryjoin='OpenNumberWhiteList.device_id == Device.id', backref='open_number_white_lists')
-
-
-
 class OutOfHour(db.Model):
     __tablename__ = 'out_of_hours'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     device_id = db.Column(db.ForeignKey('device.id'))
-    country_code = db.Column(db.String)
-    name = db.Column(db.String)
+    out_of_hours_enabled = db.Column(db.Boolean)
+    start_time = db.Column(db.String)
+    end_time = db.Column(db.String)
+    days = db.Column(db.String)
+    alternative_phone_no = db.Column(db.String)
 
     device = db.relationship('Device', primaryjoin='OutOfHour.device_id == Device.id', backref='out_of_hours')
 
@@ -76,55 +79,42 @@ class OutOfHour(db.Model):
 class PhoneNumber(db.Model):
     __tablename__ = 'phone_number'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     device_id = db.Column(db.ForeignKey('device.id'))
     phone_number = db.Column(db.String)
     user_name = db.Column(db.String)
 
     device = db.relationship('Device', primaryjoin='PhoneNumber.device_id == Device.id', backref='phone_numbers')
 
-class ConfigMisc(db.Model):    
-    __tablename__ = 'config_misc'
-
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
-    device_id = db.Column(db.ForeignKey('device.id'))
-
-    security_code_enabled = db.Column(db.Boolean, unique=True)
-    security_code = db.Column(db.String)
-    gate_lock_on = db.Column(db.Boolean)
-    pulse_time = db.Column(db.String)
-
-    user = db.relationship('Device', primaryjoin='ConfigMisc.device_id == Device.id', backref='config_misc')
 
 
 class Post(db.Model):
     __tablename__ = 'post'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String, unique=True)
     date_posted = db.Column(db.DateTime)
     content = db.Column(db.String)
     user_id = db.Column(db.ForeignKey('user_accounts.id'))
 
-    user_accounts = db.relationship('User_Accounts', primaryjoin='Post.user_id == User_Accounts.id', backref='posts')
+    user = db.relationship('UserAccount', primaryjoin='Post.user_id == UserAccount.id', backref='posts')
 
 
 
 class Site(db.Model):
     __tablename__ = 'site'
 
-    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(db.ForeignKey('user_accounts.id'))
     site_name = db.Column(db.String)
     site_contact_details = db.Column(db.String)
 
-    user_accounts = db.relationship('User_Accounts', primaryjoin='Site.user_id == User_Accounts.id', backref='sites')
+    user = db.relationship('UserAccount', primaryjoin='Site.user_id == UserAccount.id', backref='sites')
 
 
-class User_Accounts(db.Model, UserMixin):    
+
+class UserAccount(db.Model, UserMixin):
     __tablename__ = 'user_accounts'
-
-#    id = db.Column(db.Integer, primary_key=True, server_default=db.FetchedValue())
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     email = db.Column(db.String, unique=True)

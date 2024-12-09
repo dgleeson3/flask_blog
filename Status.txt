@@ -15,14 +15,127 @@ Deployment Details Render
 -------------------------
 https://testdriven.io/blog/flask-render-deployment/
 
+Calling Routes with values
+----------------------------
+https://www.digitalocean.com/community/tutorials/processing-incoming-request-data-in-flask
 
 
+
+
+09/12/24
+--------
+
+
+
+
+
+============================================================
 Next
 ----
 
+1) Get remote access through URLs or get and set tool from web browser silver laptop
+
+2) Get embedded SW creating records in db
+
+3) encrypt interaction with db
+
+
+Problems with APP
+------------------
+
+1) creating device bringing us to a temp page                                       To Fix
+
+2) adding users in device settings, looks like data saving in db        
+
+But its not being shown when I add it on web page.                                      ok now
+
+If I go back a page to the list of devices and then enter the device settings again 
+
+3) Fix Device settings so that we see updated tab when something added. 
+Now we are always diverted to the first tab.
+
+** Solution is to save tab locally and reuse that on page reload
+
+https://www.geeksforgeeks.org/how-to-keep-the-active-tab-when-navigating-between-pages/
+
+
+4) Fix "add a New Site Button" so it works on the page                              ok done
+
+5) List username of person logged in on side bar, with email address.
+====================================================================================
+
+
+28/11/24
+---------
+
+1) New database vgr_13db                    Done
+
+2) test local operation                     
+
+- setup 2 Installer Users               ok
+
+    dgleeson
+    dgleeson@2t-tec.com
+    Access45_xy!
+
+    dgleeson1
+    dgleeson@centronsolutions.com
+    access45
+    
+- setup 2 sites for first user and 2 for second user                ok
+
+- for 2nd user setup 2 devices and set some Open phone numbers for 1       Not working !!!!!
+
+
+27/11/24
+---------
+
+1)  Solve database problem -> all tables have 
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)        ->  Change made to models.py   27/11/24
+
+
+do migration locally
+
+flask --app run.py  db migrate -m "change generation of id with autoincrement for all tables. Getting NULLs on Render"  
+
+Migrate not working because of table user and foreign key references to it. Migration sees I have stopped using Table user but it cant drop that table because there are foreign keys referencing it.
+
+Best to create a new empty database vgr_13db with new table names and references.       Done
+
+
+
+
+2) Get database migration operating on Render
+-------------------------------------------
+https://render.com/docs/deploy-django?_gl=1*o56swb*_gcl_au*MTk2NTYzODM1Ni4xNzMxODgxOTQ3*_ga*MTY3NDIxOTQ3LjE3MzE1MzY3NjM.*_ga_QK9L9QJC5N*MTczMjY4NjY4OC4xNS4xLjE3MzI2ODY3NjIuNjAuMC4w#create-a-build-script
+
+3) setup 2 users -> on Render -> setup new sites -> configure devices
+---------------
+
+dgleeson@2t-tec.com
+Access45_xy!
+
+dgleeson@centronsolutions.com
+access45
+
+
+4) Get embedded SW interaction.
+
+
+
+26/11/24
+--------
+
 1) Revert to Render, get system operating with database
 
-2) Get embedded SW interaction.
+Render problem where its Database did not have new table_name -> user_accounts, created on latest changes
+
+I had to delete old database and start new one.
+
+Once New database up you can see in log "init db"
+
+
 
 
 
