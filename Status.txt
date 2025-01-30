@@ -4,6 +4,7 @@ https://www.codecademy.com/learn/learn-flask/modules/flask-templates-and-forms/c
 https://develie.hashnode.dev/exploring-flask-sqlalchemy-queries
 CAREFUL with checking Syntax of FALSK functions.
 https://stackoverflow.com/questions/55910565/python3-flask-function-missing-1-required-positional-argument-test-output
+
 Tools
 ------
 https://dbdiagram.io/d/Copy-of-Sample-DBD-for-Airbnb-66801bf49939893dae99e7f2
@@ -14,10 +15,44 @@ https://stackoverflow.com/questions/41448088/flask-app-getting-error-of-could-no
 Deployment Details Render
 -------------------------
 https://testdriven.io/blog/flask-render-deployment/
+ Render Environment variables
+ ----------------------------
+ 
+https://render.com/docs/configure-environment-variables
 
 Calling Routes with values
 ----------------------------
 https://www.digitalocean.com/community/tutorials/processing-incoming-request-data-in-flask
+
+Connect to database with pgadmin
+--------------------------------
+https://stackoverflow.com/questions/75470743/connect-render-db-to-pgadmin
+
+
+
+Latest -> creating new database in   (Render screen has a lot of the last used settings)
+----------------------------------------------------------------------------------------
+
+
+BUG
+----
+In Render version  10/12/24
+
+1) Register once ended up logged in
+2) adding device needs to revert to previous screen and see all devices listed
+
+
+
+10/12/24
+--------
+
+1) deployed latest App on Render
+
+Next to do
+
+2) Connect with pgadmin
+
+3) test using Urls for interfacing with Render App
 
 
 
@@ -25,7 +60,48 @@ https://www.digitalocean.com/community/tutorials/processing-incoming-request-dat
 09/12/24
 --------
 
+App updates as below with a new database
 
+1) Need to update git, 
+
+   git status
+
+   git add .
+
+   git commit -m"Mesage on updates"
+
+2) push updates, 
+
+    git push -u origin master
+
+3) make new database, 
+
+Normally when Render sees new file updates and I login it starts the new version.
+As it already has a populated db we get the debug prompt "db already initalised"
+
+Old Database name
+
+2T_PostgreSQL_db
+
+Try Restarting database to see if that clears old database ??       No
+
+I had to delete and start a new database
+
+Once databse up copy the local URL and add as an environment variable for the path to the database from the App.
+
+  Need to update environment variable with new database url
+  -----------------------------------------------------------
+  In the Render Dashboard, select the service you want to add an
+  environment variable to. Click Environment in the left pane. 
+  Under Environment Variables, click + Add Environment Variable.
+
+
+4) create database content
+
+
+5) check files on render have the right connection to the database
+
+5) Test App on Render
 
 
 
@@ -63,6 +139,14 @@ https://www.geeksforgeeks.org/how-to-keep-the-active-tab-when-navigating-between
 
 5) List username of person logged in on side bar, with email address.
 ====================================================================================
+
+10/12/24
+--------
+
+Latest App and db
+
+Registering causes us to be logging in ???
+
 
 
 28/11/24
