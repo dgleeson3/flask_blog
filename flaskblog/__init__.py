@@ -16,9 +16,11 @@ app = Flask(__name__)
 #                                           driver://user:pass@localhost/dbname
 
 # Now defined as an environment variable.
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dgleeson3:access45@localhost/vgr_12db'
+# this is what we use on the development machine.
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dgleeson3:access45@localhost/vgr_12db'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
+# this is what we are using on Render to point at the database
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
 
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 db = SQLAlchemy(app)

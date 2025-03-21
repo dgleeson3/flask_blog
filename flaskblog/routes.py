@@ -8,6 +8,10 @@ from flaskblog.models import UserAccount, Post, Site, PhoneNumber, OutOfHour, Ke
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import db
 
+
+# import 2nd set of routes for device
+#import routes2
+
 #
 #   Functions for now...
 #   Find a better location
@@ -478,3 +482,29 @@ def show_device(site_id):
 # 
 #    device = Device.query.get_or_404(site_id)
 #    return render_template('showdevices.html', site=site, form=form)    
+
+
+#########################################################################################
+#  Device Routes........................................................................#
+#########################################################################################
+
+@app.route("/home2")
+def home2():
+    return redirect(url_for('home'))
+
+
+######################################################
+# Purpose: 1)  A first test from the Device to get details 
+#              from the database on the first device in the 
+#              device table
+#          2) this is how i got it from psql command line db interface
+#          select * from device where id =1;  
+#
+@app.route("/getfirstdevice")
+def getfirstdevice():
+        print("getfirstdevice - Get - details first device ") 
+        devices = Device.query.filter_by(site_id=1)
+        return devices
+ #      line if called from web app
+ #       return redirect(url_for('home'))
+
