@@ -42,6 +42,543 @@ In Render version  10/12/24
 2) adding device needs to revert to previous screen and see all devices listed
 
 
+21/3/25
+-------
+
+New route created for device to do first test. Going to test with esp32 sketch on arduino
+
+push to git for use by render
+
+eval "$(ssh-agent -s)"
+ssh-add github_ssh
+ssh -T git@github.com
+git remote set-url origin git@github.com:dgleeson3/flask_blog.git
+git push -u origin master
+
+
+
+
+
+
+
+
+
+
+
+
+
+21/3/25   - Lamine Review
+--------
+
+===================================================================
+Below Sent in EMail 5    21/3/25
+===================================================================
+
+6) Voyager Voice Intercom (Continued ) 
+
+- If I am setting up OOH and press the back button I end up all the way back at the Site list of devices. AT most it should go back to this device page. This is the same throught the App and needs to be fixed. Completing a dialog box should bring you back to the page you came from. Hitting the Back button should take you back one level, NOT two.
+
+
+  -- Keypad codes ------------------------------------------------------
+
+- for keypad codes there are 4 options for type of code
+
+ 1) 24/7              2) there can also be a 24/7 time limited code. Called a Temporary code which lives for x days
+ 3) day & Time limited           4)  day and time limited  Temporary code
+
+ so that can be setup as you have it by adding another box to enter "Number of Days"
+
+- BUG. THere is a bug where "Day Limited Code"  is not being saved when setup. Or at least not displayed when I select 
+        'Show Keypad Codes.
+
+- A device can only have 10 Keypad codes at a maximum, so there needs to be a limit on how many can be set. This does need to be adjustable however as future devices may allow 100 or 200 Keypad codes.
+
+- Saving a keypad code should not change web page. We should still be on the 'Set Keypad code '  page. Only by pressing Back should we move to another page.
+
+- BUG pressing Cancel in the Set Keypad code should just clear the settings entered in this page.
+
+-----  Settings  ----------------------------------------------------------------
+
+- Security code should operate as commented previously.
+
+--------------------------------------------------------------------
+
+
+
+
+===================================================================
+Below Sent in EMail 4    21/3/25
+===================================================================
+
+
+5) Voyager Voice Intercom
+
+
+- Call in NUmber dialog and setup of users should be the same as I specified for the 4G-2R.
+
+There does need to be a maximum limit to the number of users that can be added. Right now all devices we sell can 
+have a maximum of 200 call in Number users. But in future some will only have 100.
+
+- Call Out Phone Number Setup
+
+Call out Numbers for an Intercom are the numbers the device calls when the button is pressed.
+
+A standard single button Intercom can have 5 phone numbers max that it will call in sequence until it gets a response.
+So the addition of Call Out phone numbers must stop when it gets to 5 added.
+
+The order they are saved in the list is important because this is the sequence the device calls the phone numbers.
+So for instance deleting the first number in the list would mean that we have freed the first call out phone number location and it is then empty.
+
+So adding Call out numbers needs to be done differently to adding Call in (User) numbers.
+
+I suggest the screen has a fixed table of 5 locations. Each row has 
+
+Add    Edit   Delete
+
+buttons.
+
+This will then match the way the device uses call out phone numbers.
+
+The only limitations on the call out phone number is that it is less that 20 digits and there are no spaces in the number. It can have international codes as 0044 or +00 or no international code if required. A check that it is a valid phone number is also sensible so the number should be more than 6 digits.
+
+
+
+Multi Button Intercoms only have 3 call out Phone numbers but that is per button so 2 x 3 or 4 x 3 phone numbers. 2x 3 for 2 button intercoms and 4 x 3 for 4 button intercoms.
+
+Appartment intercoms will have a lot more Call out phone numbers, so this needs to be done differently again. For example for a 100 appartment intercom we need 100 appartments x 3 phone numbers per appartment = 300 phone numbers in total. ( But Lets see if we can get the SIngle button and 2 and 4 button Intercoms correct first. )
+
+
+===================================================================
+Below Sent in EMail 3    21/3/25
+===================================================================
+
+
+4)  Voyager 4G-2R Switch configuration (Continued )
+
+When adding users it would have to be possible to add a number of users at the 
+"Users(Call in)" screen in one go.  So having added a user in the dialog box, we should be returned to the user list and
+not returned to the main device page. This operation is very annoying if adding 20 users in one go.
+
+Its the same in the settings page. Once we change a setting the screen returns to the main device screen. This is not
+what a user expects to happen. Changing a setting on a page should not lead to the page changing. 
+
+
+
+===================================================================
+Below Sent in EMail 2    21/3/25
+===================================================================
+
+3) Voyager 4G-2R Switch configuration (Continued )
+
+- The search box on the top of the first screen is redundant. PLease move it to the 
+User (Call in) list page and allow it to be used to search for a user in the list,
+
+We should do this on all user list screens as there can be up to 200 names, which would take some scrolling.
+
+
+- In the settings screen. At the Security code option, 
+ a) the default security code is 8531 for all of 2T products. So diaplay this not 0000
+ b) we should display the current security code if enabled when re entering this screen.
+
+
+===================================================================
+Below Sent in EMail 1 21/3/25
+===================================================================
+
+1) Voyager 4G-2R Switch configuration
+
+
+ - Where the phone number is entered
+
+please change the text from
+
+Phone Number (EU format)
+
+to
+
+Phone Number max 10 digits (use last 10 if more than 10)
+            leave no spaces between the numbers
+
+Note: For call in phone numbers we do not use country code or +XX format numbers.
+      THe fomat of the phone number entered must be 10 digits without spaces, no international codes.
+      Please change this and set the above as the validation check for this entry. 
+
+---------------------------
+- on the Output selection box on the top of the box change the text from
+
+output
+
+to
+
+Which output will this user trigger? 
+----------------------------
+
+- This dialog only needs one "Add User" button. Remove the one at the top of the dialog box
+
+
+2)  Login on the home screen crashes.
+Whether I have registered or not.
+
+I have to go to login to actually login.
+
+Also lets kill the two options for login. we probably dont need the login button
+
+
+
+18/3/25
+-------
+Considering a new database design
+
+Test existing setup by looking at devices tables that belong to different users.
+
+setup flaskblog to see my last db
+
+last db from my app flask_blog is:
+
+psql vgr_13db
+
+
+ONly have 1 user dgleeson, dgleeson3@gmail.com, access45
+
+create 
+
+dgleeson2 dgleeson@2t-tec.com,  Access45_xy!
+
+
+
+
+
+
+17/3/25
+-------
+
+Started to create a new routes file routes_device.py
+This would be used by the device for interaction with the database
+
+Need to determine how the device gets to its database instance
+
+WHat does device need to do
+
+Get OPen NUmbers            4G-2R and all
+Get Phone Numbers           All
+Get Schedules
+Get Settings
+
+
+What is the process of configuring the cloud device. 
+How do we sync devices and cloud settings ??
+Can we allow phone app configuration and cloud configuration ?? And how do they integrate ??
+--------------------------------------------------------------------------------------------
+
+
+
+
+Next
+-----
+
+1) Create a new routes file for connections from the device
+Return one value from the database in the first test route.
+
+2) Get list of users from the DB to return to device.
+
+3) start to modify the DB design, where each device has a unique ID ( the IMEI number )
+
+Test all with new arduino sketch on esp32
+
+
+
+
+16/3/25
+-------
+
+Trying to make Flask app available on the network. This way we could access web app from arduino for 
+testing.
+
+https://www.dell.com/support/kbdoc/en-ie/000147163/how-to-view-chromebook-network-properties-in-the-chrome-operating-system
+
+IP Address
+192.168.0.194
+
+https://stackoverflow.com/questions/72630563/how-to-give-a-linux-container-on-chromeos-an-outside-accesible-ip
+
+
+This isnt currently working. MOve on with using Render App. -> Update through Git
+
+
+13/3/25          Review Lamine, version from 11/3/25
+=======
+
+New user to test diagnostics
+
+Username x2450cc28
+email   dgleeson@2t-tec.com
+Password   Access45_xy!
+
+
+
+
+
+8/3/25          Review Lamine, version from 7/3/25
+=======
+
+1)  create user                 ok
+Dgleeson
+
+dgleeson3@gmail.com
+access45
+
+
+B) create site                  ok
+
+
+C) Create device                        ok
+
+Good idea to prompt that there are
+
+"No devices at this site. Yet."
+
+this prompt should dissapear when we have a list of sites to display.
+
+
+D) create some users            
+
+
+--------------- email 1 8/3/25 ---------------------------------------------
+
+You sent no update for Thursday and Friday. Please do not do this again. Its important to send an update every day. Whether I am in the office or not.
+
+I have been using your latest Git version. I have created a site and added an Intercom with Keypad.
+
+We need to change the place where call in and call out numbers are entered.
+
+This started, and is currently, at the device page, but this is not logical. 
+
+Call in numbers or Users should be added at the "Users" tab. It should not be possible to add Call out numbers at this tab. The ability to read in a list of users, to add to the database, from an excel sheet should be on this tab also.
+
+Call out numbers should be added at the "Call Out" tab. It should not be possible to add Call in numbers at this tab. The ability to read in a list of call out numbers, to add to the database, from an excel sheet should be on this tab also.
+
+In this way the addition of these configuration options for the database will be entered like OOH or other settings at the tab where they are displayed.
+
+Please prioritise this change, and let me know when it is ready for my testing and in the latest Git update.
+
+
+
+--------------- email 2 8/3/25 ---------------------------------------------
+
+On your latest version the visible availability of other tabs beyond the OOH tab has not improved. It still looks like there are 5 tabs and no more on my version of the App.
+
+We need to discuss how we will change and improve this as what we have wont work.
+---------------------------------
+
+
+
+2/3/25          Review Lamine
+=======
+
+1) Scrool ofsetting screens for intercoms not working well.
+
+2) Time picker should be limited to 15 minute segments. And use 24hr clock
+
+3) Put back button on left of the screen
+
+
+
+
+28/2/25_2
+-------  
+
+This app now working with DB operational ( although log on deployment shows a failure)
+
+https://twot-cloud-2.onrender.com/     is the link
+
+
+A) Register User
+-------------
+
+Dgleeson
+
+dgleeson3@gmail.com
+access45
+
+B) create site
+
+
+C) Create device
+
+
+D) create some users
+
+
+Tests on embedded side
+
+i)   Read phone numbers stored in db for storing in device
+ii)   Set a phone number value
+
+
+
+
+
+
+
+28/2/25
+-------
+
+
+Getting my render version back up by re creating the database.
+
+Objective:  To allow me to test embedde SW to setting items in the test app database
+
+A) the link to the database is on the Git file  __init__.py
+
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
+
+New database name   SQL_flask_db_3
+
+
+Your database will expire on March 30, 2025.
+-------------------------------------------
+
+Need to reset the URL for the database in the web service
+
+WEB SERVICE
+2T_Cloud_2
+
+Click on the Srevice and on left menu select the ' Environment '
+
+I already have the URL listed here
+
+Update the URL to the latest internal access URL
+
+
+SQLALCHEMY_DATABASE_URI  -> reset value
+
+
+
+
+
+20/2/25         Review only
+-------         ------------
+
+1) Registration should be dependant on activation after an email received
+
+2) 4G-2R screens
+
+Remove Unknown tab -> Or change it to Diagnostics and show a date related table with settings that the device uploads on request.
+
+The 4G-2R doesnt currently have a log. So we need to remove that tab for now. But it should be easy to add back in in the future. SO the code is there and can be included when the device is ready.
+
+Using +, there should be only one option.
+
+Remove Number Call Out on device main page.
+
+Note:   Get sample upload excel files so I can reproduce format
+
+Buttons should be labelled "Upload Users" and "Download Users"
+
+What is the Search box for ?
+
+Instead of a tab called "Call in" it should be named "Users (Call In)".
+
+The action of Deleting a User should bring up a dialog asking:  " Are you sure you want to remove user with Name = XXX  XXXX and Phone Number =  xxxxxxx.
+
+TO go back to the Site list of devices would be better with a back button. Using the Browser back button could take several presses to go back a step in the Application.
+
+
+20/2/25
+-------
+
+Import and export excel file
+
+See:
+
+https://www.geeksforgeeks.org/upload-and-read-excel-file-in-flask/
+
+For Jau Review use  =================================================================
+
+dgleeson
+dgleeson3@gmail.com
+access45
+                    Sites
+                    -----
+                    DG_1            4G-2R x 2  & 1 x VV-IKH
+
+                                    First 4G-2R
+                                    
+                                    4G-2R has 56 call in users
+                                    4G-2R has PULSE set to 7 seconds
+                                    4G-2R has security code turned on and changed to 1234
+
+                                    Second 4G-2R
+                                    
+                                    4G-2R has 5 call in users
+                                                                        
+                                    VV-IKH
+                                    VV-IKH has 16 call in users and 2 call out Numbers
+                                    VV-IKH has has an OOH set for no callls after 9.00pm
+                                    VV-IKH has a schedule auto opening the gate Mon to Fri 9.00am to 6.00pm
+                                    VV-IKH has 4 different Keypad codes with the last one limited to operate between 9.00am to 12.00 midday
+                                    
+                    DG_2            4G-2R
+                                    4G-2R has NO call in users, device should operate in Open Access Mode.
+
+                    
+                    DG_3            VV-IKLS
+                                    VV-IKLS has 6 call in users and 6 call out Numbers. The same phone numbers.
+                                    VV-IKLS has has TRADE button set from 8.00am to 7.00pm
+                                    VV-IKLS has a schedule auto opening the gate Mon to Sunday 9.00am to 2.00pm
+                    
+JimSmith                
+JimSmith@gmail.com  
+AxyBxyCxy_123
+                    Sites
+                    -----
+                    JS_1            VV-IH
+                                    VV-IH has 6 call in users and 4 call out Numbers
+                                    VV-IH has has an OOH set for no callls after 7.00pm
+                                    VV-IH has a schedule auto opening the gate Mon to Wed 9.00am to 4.00pm
+
+                    
+                    JS_2            4G-2R
+                    
+                                    4G-2R has 12 call in users
+                                    4G-2R has security code turned on and is using the default code
+                                    4G-2R has gate lock set to ON
+                                    
+                    JS_3            VV-ILS    
+                                    VV-ILS has 6 call in users and 6 call out Numbers. Different phone numbers.
+                                    VV-ILS has a schedule auto opening the gate Mon to Sunday 9.00am to 1600 
+
+===============================  END  ==========================================================================
+
+
+19/2/25
+--------
+
+How to run Lamines versions
+
+A) get from Git
+
+https://github.com/JauLamine/2Ttechnology/tree/main
+
+B)  Save zip on sdcard
+Extract into same downloads folder
+
+C) I need to start python virtual environment
+
+So go to my project and run VENV
+
+in the folder  /home/dgleeson3/flask_blog
+
+source venv/bin/activate
+
+Then go to lamines folder 
+
+/home/dgleeson3/2Ttechnology-main
+
+and do 
+
+python3 run.py
+
 
 10/12/24
 --------
@@ -382,6 +919,9 @@ password  parthus
 ----------------------------------------
 
 Set URI Environment variable build and deploy again
+
+
+
 
 
 19/11/24

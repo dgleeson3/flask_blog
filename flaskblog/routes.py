@@ -500,11 +500,13 @@ def home2():
 #          2) this is how i got it from psql command line db interface
 #          select * from device where id =1;  
 #
-@app.route("/getfirstdevice")
-def getfirstdevice():
+
+@app.route("/getfirstdevice/<int:site_id>", methods=['GET', 'POST'])
+def getfirstdevice(site_id):
         print("getfirstdevice - Get - details first device ") 
-        devices = Device.query.filter_by(site_id=1)
-        return devices
+        devices = Device.query.filter_by(site_id=site_id)
+        print(devices)
+        return '10'
+#        return redirect(url_for('home'))
  #      line if called from web app
  #       return redirect(url_for('home'))
-
