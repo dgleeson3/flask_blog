@@ -501,12 +501,15 @@ def home2():
 #          select * from device where id =1;  
 #
 
-@app.route("/getfirstdevice/<int:site_id>", methods=['GET', 'POST'])
-def getfirstdevice(site_id):
+@app.route("/getfirstdevice/<int:device_id_in>", methods=['GET', 'POST'])
+def getfirstdevice(device_id_in):
         print("getfirstdevice - Get - details first device ") 
-        devices = Device.query.filter_by(site_id=site_id)
-        print(devices)
-        return '10'
-#        return redirect(url_for('home'))
- #      line if called from web app
- #       return redirect(url_for('home'))
+#        devices = Device.query.filter_by(site_id=site_id)
+#        print(devices)
+        phones = PhoneNumber.query.filter_by(device_id=device_id_in)
+        for phone in phones:
+            print(str(phone))
+#        print(devices.device_id)
+#        print(devices.device_device_type_name)
+        return (str(phone))
+

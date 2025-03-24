@@ -22,6 +22,10 @@ app = Flask(__name__)
 # this is what we are using on Render to point at the database
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
 
+# struggling to see what queries are generating. I think this will output to the console
+# https://stackoverflow.com/questions/5631078/sqlalchemy-print-the-actual-query
+#app.config["SQLALCHEMY_ECHO"] = True
+
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 db = SQLAlchemy(app)
 # After the db declaration, you use the Migrate class to initiate a migration instance called migrate,

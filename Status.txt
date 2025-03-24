@@ -42,6 +42,59 @@ In Render version  10/12/24
 2) adding device needs to revert to previous screen and see all devices listed
 
 
+23/3/25
+-------
+
+1) get environment variable working on linux so its the same setup as pointing to the 
+ database is the same locally as for Render
+
+---------------
+printenv
+printenv PWD
+
+env
+echo $PATH
+
+set                              list environment variables
+export <name> ='value'          creates an environment variable
+printenv name                   confirm variable set
+
+done ----------------------------------------------
+
+export SQLALCHEMY_DATABASE_URI='postgresql://dgleeson3:access45@localhost/vgr_12db'
+printenv SQLALCHEMY_DATABASE_URI     postgresql://dgleeson3:access45@localhost/vgr_12db
+
+----------------------------------------------------
+
+This worked. so now the pointer to the database is the same locally as for Render
+-----------------------------
+
+2) get db data sent back to esp32
+
+
+
+
+
+
+
+
+
+22/3/25
+-------
+site on Render responding with fixed string to get request from esp32
+
+----------------------------------------------------
+
+@app.route("/getfirstdevice/<int:site_id>", methods=['GET', 'POST'])
+def getfirstdevice(site_id):
+        print("getfirstdevice - Get - details first device ") 
+        devices = Device.query.filter_by(site_id=site_id)
+        print(devices)
+        return '10'
+
+------------------------------------------------        
+
+
 21/3/25
 -------
 
@@ -56,15 +109,7 @@ git remote set-url origin git@github.com:dgleeson3/flask_blog.git
 git push -u origin master
 
 
-
-
-
-
-
-
-
-
-
+latest route in routes.py returning the string '10' to the esp32 http request
 
 
 21/3/25   - Lamine Review
@@ -879,6 +924,9 @@ Registering my first user in the db gives a NOT NULL Error for the id.
 Set and use environment variables so we can set the db USI in Render and on my machine as required
 
 https://stackoverflow.com/questions/56529391/setting-and-retrieving-environmental-variables-in-flask-applications
+
+
+
 
 ---------------------------------------
 Set your environment variable in the interpreter:
