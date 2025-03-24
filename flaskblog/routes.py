@@ -488,6 +488,52 @@ def show_device(site_id):
 #  Device Routes........................................................................#
 #########################################################################################
 
+
+## Function to Convert Phone Number to String
+
+# This function takes a phone number as input, handles various formats, and converts it into a standardized string representation. It also addresses invalid input gracefully.
+
+import re
+
+def phone_number_to_string(phone_number):
+  #  """Converts a phone number to a string, handling different formats.
+
+ #   Args:
+ #       phone_number (str): The phone number to convert.
+
+ #   Returns:
+ #       str: The standardized phone number string, or an error message if invalid.
+ #   """
+    if not isinstance(phone_number, str):
+        return "Error: Input must be a string."
+
+    # Remove all non-digit characters
+    digits_only = re.sub(r'\D', '', phone_number)
+
+    # Check for valid length after removing non-digits
+    if not 7 <= len(digits_only) <= 15: # covers most cases, including with country code
+        return "Error: Invalid phone number length."
+
+    # Standardize the format (example: +1-555-555-5555)
+    if len(digits_only) == 10:  # US number without country code
+        return f"{digits_only[:3]}-{digits_only[3:6]}-{digits_only[6:]}"
+    elif len(digits_only) == 11: # US number with country code
+        return f"+{digits_only[0]}-{digits_only[1:4]}-{digits_only[4:7]}-{digits_only[7:]}"
+    else:
+        return digits_only # Return as is if the formatting doesn't match, but is still valid length
+
+
+# Example Usage:
+#print(phone_number_to_string("123-456-7890"))  # Output: 123-456-7890
+#print(phone_number_to_string("+1-555-123-4567")) # Output: +1-555-123-4567
+#print(phone_number_to_string("5551234"))      # Output: 5551234
+#print(phone_number_to_string("invalid"))      # Output: Error: Invalid phone number length.
+#print(phone_number_to_string(1234567890))     # Output: Error: Input must be a string.
+
+
+
+
+
 @app.route("/home2")
 def home2():
     return redirect(url_for('home'))
@@ -504,12 +550,16 @@ def home2():
 @app.route("/getfirstdevice/<int:device_id_in>", methods=['GET', 'POST'])
 def getfirstdevice(device_id_in):
         print("getfirstdevice - Get - details first device ") 
-#        devices = Device.query.filter_by(site_id=site_id)
-#        print(devices)
         phones = PhoneNumber.query.filter_by(device_id=device_id_in)
         for phone in phones:
-            print(str(phone))
-#        print(devices.device_id)
-#        print(devices.device_device_type_name)
-        return (str(phone))
+           print(str(phone))
+        print(type(phone))        
+        
+        phone = phones[0] 
 
+#        str_phone = phone_number_to_string(phone)
+        str_phone = str(phone)
+        print(type(str_phone))
+        print(str_phone)
+        return(str_phone)
+        
