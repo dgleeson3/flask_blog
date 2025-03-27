@@ -7,6 +7,8 @@ from flask_migrate import Migrate
 from sqlalchemy import create_engine
 import sqlalchemy as sa
 from os import environ
+from flask_marshmallow import Marshmallow
+from flask import jsonify
 
 
 # now interfacing to postgresql db vgr_13db ( 181124 )
@@ -28,6 +30,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('SQLALCHEMY_DATABASE_URI')
 
 app.config['SECRET_KEY'] = '5791628bb0b13ce0c676dfde280ba245'
 db = SQLAlchemy(app)
+#init marshmallow
+ma = Marshmallow(app)
+
 # After the db declaration, you use the Migrate class to initiate a migration instance called migrate,
 #  passing it to the Flask app instance and the db database instance.
 migrate = Migrate(app,db)

@@ -45,9 +45,9 @@ https://www.google.com/search?q=setup+postman+app+for+command+line+on+chromebook
 
 3. Go to downloads folder   cd /mnt/chromeos/MyFiles/Downloads
 
-4. 
+4. couldnt extract on downloads folder ->  symlink errors
 
-
+---------------------------------------------
 
 BUG
 ----
@@ -79,8 +79,26 @@ dgleeson3@gmail.com
 username dgleeson3
 password parthus
 
+USe postman with render so upload changes and use web postman
 
+create script in my folder to execute
 
+eval "$(ssh-agent -s)"
+ssh-add github_ssh
+ssh -T git@github.com
+git remote set-url origin git@github.com:dgleeson3/flask_blog.git
+git push -u origin master
+-------------------------------------------
+
+script setup as upload.sh
+
+set it as executable    chmod +x upload.sh
+
+the execute it.
+
+./upload.sh
+
+Works !!!!
 
 
 
