@@ -7,6 +7,8 @@ from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, Post
 from flaskblog.models import UserAccount, Post, Site, PhoneNumber, OutOfHour, KeypadCode, Device
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import db
+from flask_marshmallow import Marshmallow
+from flask import jsonify
 
 
 # import 2nd set of routes for device
@@ -563,3 +565,38 @@ def getfirstdevice(device_id_in):
         print(str_phone)
         return(str_phone)
         
+
+
+
+######################################################
+# Purpose: 1)  A first test from the Device to get details 
+#              from the database on the first device in the 
+#              device table
+#          2) this is how i got it from psql command line db interface
+#          select * from device where id =1;  
+#
+
+@app.route("/get_first_device/<int:device_id_in>", methods=['GET'])
+def get_first_device(device_id_in):
+        print("get_first_device - Get - start ") 
+        phones = PhoneNumber.query.filter_by(device_id=device_id_in)
+        for phone in phones:
+           print(str(phone))
+        print(type(phone))        
+        
+        phone = phones[0] 
+
+#        str_phone = phone_number_to_string(phone)
+        str_phone = str(phone)
+        print(type(str_phone))
+        print(str_phone)
+        return(str_phone)
+
+######################################################
+# Purpose: 1)  A first test using jsonify
+# 
+
+@app.route("/test", methods=['GET'])
+def test():
+    return jsonify({'msg': 'Hello World'})
+

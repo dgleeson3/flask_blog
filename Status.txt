@@ -33,6 +33,21 @@ https://stackoverflow.com/questions/75470743/connect-render-db-to-pgadmin
 Latest -> creating new database in   (Render screen has a lot of the last used settings)
 ----------------------------------------------------------------------------------------
 
+Postman App running on chromeos linux.
+------------------------------------------
+
+https://www.google.com/search?q=setup+postman+app+for+command+line+on+chromebook+linux&rlz=1CAOERN_enES1114&oq=setup+postman+app+for+command+line+on+chromebook+linux&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCjI4OTE3ajBqMTWoAgiwAgE&sourceid=chrome&ie=UTF-8
+
+
+1. Download postman zip file
+
+2. share Downloads folder with linux. right click on folder and select share
+
+3. Go to downloads folder   cd /mnt/chromeos/MyFiles/Downloads
+
+4. 
+
+
 
 BUG
 ----
@@ -40,6 +55,33 @@ In Render version  10/12/24
 
 1) Register once ended up logged in
 2) adding device needs to revert to previous screen and see all devices listed
+
+
+
+
+
+
+26/3/25
+-------
+
+1)   Video on responding to get and POST taking details from db
+
+https://www.youtube.com/watch?app=desktop&v=PTZiDnuC86g&t=343s
+
+https://flask-marshmallow.readthedocs.io/en/latest/
+
+2)   PostMan account
+     ----------------
+     
+https://web.postman.co/home
+
+dgleeson3@gmail.com
+username dgleeson3
+password parthus
+
+
+
+
 
 
 23/3/25
@@ -1891,7 +1933,7 @@ Fixed home page problem.
 
 see contents of DB with psql command line
 
-1) OPen DB      psql vgr_9db
+1) OPen DB      pp
 
 2) see tables   \dt
 
