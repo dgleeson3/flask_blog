@@ -36,7 +36,6 @@ psycopg2-binary==2.9.9
 python-dateutil==2.9.0.post0
 pytz==2025.1
 six==1.17.0
-sqlacodegen==2.3.0.post1
 SQLAlchemy==2.0.31
 typeguard==4.3.0
 typing-extensions==4.12.2
