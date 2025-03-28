@@ -57,7 +57,12 @@ In Render version  10/12/24
 2) adding device needs to revert to previous screen and see all devices listed
 
 
+27/3/25
+--------
 
+Trying to get the \test working through postman. It works locally but not on Render site
+
+I need to update requirements and update the render site with it
 
 
 
