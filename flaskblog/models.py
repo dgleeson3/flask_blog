@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask_sqlalchemy import SQLAlchemy
-from flaskblog import db, login_manager
+from flaskblog import db, login_manager, ma
 from flask_login import UserMixin
 
 
@@ -47,6 +47,16 @@ class Device(db.Model):
     site_id = db.Column(db.ForeignKey('site.id'))
 
     site = db.relationship('Site', primaryjoin='Device.site_id == Site.id', backref='devices')
+
+#device schema for Marshmallow
+class DeviceSchema(ma.Schema):
+    class Meta:
+        fields = ('id','device_type_name','device_sim_number','access_point_name','site_id')
+
+#init schema, define variables,
+# note there used to be a strict=True setting but it is now obsolete, all schemas are strict
+device_schema = DeviceSchema()
+devices_schema = DeviceSchema(many=True)
 
 
 

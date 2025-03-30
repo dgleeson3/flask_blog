@@ -33,7 +33,20 @@ https://stackoverflow.com/questions/75470743/connect-render-db-to-pgadmin
 Latest -> creating new database in   (Render screen has a lot of the last used settings)
 ----------------------------------------------------------------------------------------
 
-Postman App running on chromeos linux.
+Video on responding to get and POST taking details from db
+----------------------------------------------------------
+
+https://www.youtube.com/watch?app=desktop&v=PTZiDnuC86g&t=343s
+
+https://flask-marshmallow.readthedocs.io/en/latest/
+
+SQLAlchemy Queries
+------------------
+https://www.google.com/search?q=flask+sqlalchemy+query+statement+samples&sca_esv=8568c3189e4a4419&rlz=1CAOERN_enES1114&sxsrf=AHTn8zpPJ0OTavgrSei8sH7EeiCVhCgu1Q%3A1743266052048&ei=BCHoZ_rXAqyihbIPypjYsAE&ved=0ahUKEwj66Z-O3K-MAxUsUUEAHUoMFhYQ4dUDCBA&uact=5&oq=flask+sqlalchemy+query+statement+samples&gs_lp=Egxnd3Mtd2l6LXNlcnAiKGZsYXNrIHNxbGFsY2hlbXkgcXVlcnkgc3RhdGVtZW50IHNhbXBsZXMyBRAhGKABSJtKUJAJWKNJcAF4AJABAJgBtQGgAYIVqgEEMjIuN7gBA8gBAPgBAZgCHaACxxnCAgkQABiwAxgHGB7CAggQABiABBiwA8ICBxAAGLADGB7CAgcQIxiwAhgnwgIGEAAYBxgewgIKEAAYBxgIGAoYHsICCBAAGAcYCBgewgIGEAAYDRgewgILEAAYgAQYhgMYigXCAgUQABjvBcICBBAAGB7CAgYQABgFGB7CAgYQABgWGB7CAgUQABiABMICCxAAGIAEGJECGIoFwgIIEAAYgAQYogTCAgUQIRifBcICBxAhGKABGAqYAwCIBgGQBgqSBwcxMC4xOC4xoAe8nAE&sclient=gws-wiz-serp#fpstate=ive&vld=cid:76bce470,vid:JKoxrqis0Co,st:0
+
+
+
+Postman App running on chromeos linux.  ---> ** didnt work. Use postman web and Render version of App
 ------------------------------------------
 
 https://www.google.com/search?q=setup+postman+app+for+command+line+on+chromebook+linux&rlz=1CAOERN_enES1114&oq=setup+postman+app+for+command+line+on+chromebook+linux&gs_lcrp=EgZjaHJvbWUyBggAEEUYOdIBCjI4OTE3ajBqMTWoAgiwAgE&sourceid=chrome&ie=UTF-8
@@ -57,13 +70,190 @@ In Render version  10/12/24
 2) adding device needs to revert to previous screen and see all devices listed
 
 
+
+=======================================================================================
+==================   STATUS ===========================================================
+=======================================================================================
+
+29/3/25         --> Lamine review  28/3/25 code
+-------
+
+C)   Add VV Intercom with Keypad
+
+Make display area  big enough to see 5 (Call out) Phone numbers & Users added
+
+------------------------ NOt sent ---------------------------------
+
+D) please explain to me, when in the office, why every saved setting is taking us back to the device screen and then back to the screen we were in.
+
+----------------------------------------------------------------------
+
+============================================
+Sent email 2 30/3/25
+============================================
+
+D) For 2 and 4 Button Intercoms the setting of Call out numbers is different.
+
+Each button ( or house) has 3 phone numbers.
+
+So each button has 3 call out phone numbers
+
+Button 1
+    Phone 1 
+    Phone 2
+    Phone 3
+Button 2
+    Phone 1 
+    Phone 2
+    Phone 3
+            ---------------------------- End for 2 Button Intercom -------------------
+Button 3
+    Phone 1 
+    Phone 2
+    Phone 3
+Button 4
+    Phone 1 
+    Phone 2
+    Phone 3
+                ---------------------------- End for 4 Button Intercom -------------------
+
+Additionally each Button has a Text String associated with it which gives the Persons Name who lives at that house
+
+Button 1
+    Name Button 1                   (for Example John Smith )
+Button 2
+    Name Button 2
+            ---------------------------- End for 2 Button Intercom -------------------
+Button 3
+    Name Button 3
+Button 4
+    Name Button 4
+                ---------------------------- End for 4 Button Intercom -------------------
+
+I think one scrollable screen with Phone and text settings per button is best here
+
+
+
+
+============================================
+Sent email 1 29/3/25
+============================================
+
+- The Home Page or Login Page needs a Register link at the bottom.
+
+- email not being sent for "Forgot password". I am executing locally so I assume thats the problem.
+  what are the requirements for this to work
+
+- what does APN mean in
+
+Type: Voyager 4G-2R switch
+SIM: 0872730966
+APN: Main Gate
+Site ID: 1
+
+
+A) Setup device 4G-2R
+
+- User Phone Numbers. We need to look at this again
+
+These are examples of the type of acceptable phon numbers we can have 
+--------------------------------------
+1) Ireland or UK Landline
+
+123 4567       ----> 7 digit phone number
+01 123 4567    --->  7 digit phone number + 2 digit area code(01)
+056 111 234          6 digit phone number and 3 digit area code
+
+2) Irish mobile number
+
+087 2730966
+089 1234567         all 10 digits
+
+3) UK mobile number
+
+077 123 45678           all 11 digits.
+--------------------------
+
+So the validation on User Phone numbers should be
+
+Any number of digits ( No characters)  >  6 digits
+Any number of digits ( No characters)  <  12 digits
+
+
+B) for the list of Users(Call in)  we need to be able to edit the details for any user.
+
+For example what happens if a user gets a new mobile phone number?  So to the right of the delete Button we need an Edit button.
+
+
+===================================================================
+
+On the Settings screen.
+
+It is possible to only enable the security code and accept the default setting of 8531.
+
+We need to change the button name 
+
+From
+
+Update Security Code
+
+to
+
+Save security code
+
+-------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==========================================================
+
+Next to do
+-----
+
+1) put app on render and check GET routes working
+
+2) get POST route working, i.e. write value to db
+
+3) Get esp32 requests working with coded routes.
+
+3) Get device specific operation working
+
+   a) add device ID as SN to the device database item
+   b) Send a Get from the device with the SN looking for the user phone numbers from the db
+      so we select from the devices list to find our device and then get the associated phone numbers
+
+
+
 27/3/25
 --------
 
-Trying to get the \test working through postman. It works locally but not on Render site
+1)  Trying to get the \test working through postman. It works locally but not on Render site
 
-I need to update requirements and update the render site with it
+I need to update requirements and update the render site with it  <-- this worked. Added requirements to git #
+still have to remove sqlacodegen
 
+" First off I dont need sqlacodegen for running the Web App it is used in models.py
+generation from the database "
+
+Uploading to Render allowed me to get /test route working through postman and directly on site
+
+2) Started coding schema stuff for marshmallow -> see models.py
+
+Got 3 queries working locally on db and coded at end of routes.py
 
 
 26/3/25
@@ -310,7 +500,7 @@ Phone Number max 10 digits (use last 10 if more than 10)
             leave no spaces between the numbers
 
 Note: For call in phone numbers we do not use country code or +XX format numbers.
-      THe fomat of the phone number entered must be 10 digits without spaces, no international codes.
+      THe format of the phone number entered must be 10 digits without spaces, no international codes.
       Please change this and set the above as the validation check for this entry. 
 
 ---------------------------
