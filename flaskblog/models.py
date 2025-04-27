@@ -35,7 +35,12 @@ class ConfigMisc(db.Model):
 
     device = db.relationship('Device', primaryjoin='ConfigMisc.device_id == Device.id', backref='config_miscs')
 
-
+############################################
+# Device db table
+#
+# 1) added unique_device_identifier to allow the device to find 
+#    
+# its configuration inside the database
 
 class Device(db.Model):
     __tablename__ = 'device'
@@ -44,6 +49,7 @@ class Device(db.Model):
     device_type_name = db.Column(db.Integer)
     device_sim_number = db.Column(db.String)
     access_point_name = db.Column(db.String)
+    unique_device_identifier = db.Column(db.String)
     site_id = db.Column(db.ForeignKey('site.id'))
 
     site = db.relationship('Site', primaryjoin='Device.site_id == Site.id', backref='devices')
@@ -51,7 +57,7 @@ class Device(db.Model):
 #device schema for Marshmallow
 class DeviceSchema(ma.Schema):
     class Meta:
-        fields = ('id','device_type_name','device_sim_number','access_point_name','site_id')
+        fields = ('id','device_type_name','device_sim_number','access_point_name','unique_device_identifier','site_id')
 
 #init schema, define variables,
 # note there used to be a strict=True setting but it is now obsolete, all schemas are strict
@@ -84,8 +90,9 @@ class OutOfHour(db.Model):
 
     device = db.relationship('Device', primaryjoin='OutOfHour.device_id == Device.id', backref='out_of_hours')
 
-
-
+#
+# CALL IN Phone Numbers
+#
 class PhoneNumber(db.Model):
     __tablename__ = 'phone_number'
 
@@ -95,6 +102,17 @@ class PhoneNumber(db.Model):
     user_name = db.Column(db.String)
 
     device = db.relationship('Device', primaryjoin='PhoneNumber.device_id == Device.id', backref='phone_numbers')
+
+#device schema for Marshmallow
+class PhoneNumberSchema(ma.Schema):
+    class Meta:
+        fields = ('id','device_id','phone_number','user_name')
+
+#init schema, define variables,
+# note there used to be a strict=True setting but it is now obsolete, all schemas are strict
+phone_number_schema = PhoneNumberSchema()
+phone_numbers_schema = PhoneNumberSchema(many=True)
+
 
 
 

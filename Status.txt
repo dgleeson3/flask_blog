@@ -1,3 +1,7 @@
+=======================================================================================
+==================   Helpful sites and Links for development ==========================
+=======================================================================================
+
 Good References:
 ----------------
 https://www.codecademy.com/learn/learn-flask/modules/flask-templates-and-forms/cheatsheet
@@ -7,6 +11,10 @@ https://stackoverflow.com/questions/55910565/python3-flask-function-missing-1-re
 
 Tools
 ------
+
+Database schema design
+----------------------
+
 https://dbdiagram.io/d/Copy-of-Sample-DBD-for-Airbnb-66801bf49939893dae99e7f2
 // Below is what I used for flask migrate.
 https://www.digitalocean.com/community/tutorials/how-to-perform-flask-sqlalchemy-migrations-using-flask-migrate
@@ -45,6 +53,12 @@ SQLAlchemy Queries
 https://www.google.com/search?q=flask+sqlalchemy+query+statement+samples&sca_esv=8568c3189e4a4419&rlz=1CAOERN_enES1114&sxsrf=AHTn8zpPJ0OTavgrSei8sH7EeiCVhCgu1Q%3A1743266052048&ei=BCHoZ_rXAqyihbIPypjYsAE&ved=0ahUKEwj66Z-O3K-MAxUsUUEAHUoMFhYQ4dUDCBA&uact=5&oq=flask+sqlalchemy+query+statement+samples&gs_lp=Egxnd3Mtd2l6LXNlcnAiKGZsYXNrIHNxbGFsY2hlbXkgcXVlcnkgc3RhdGVtZW50IHNhbXBsZXMyBRAhGKABSJtKUJAJWKNJcAF4AJABAJgBtQGgAYIVqgEEMjIuN7gBA8gBAPgBAZgCHaACxxnCAgkQABiwAxgHGB7CAggQABiABBiwA8ICBxAAGLADGB7CAgcQIxiwAhgnwgIGEAAYBxgewgIKEAAYBxgIGAoYHsICCBAAGAcYCBgewgIGEAAYDRgewgILEAAYgAQYhgMYigXCAgUQABjvBcICBBAAGB7CAgYQABgFGB7CAgYQABgWGB7CAgUQABiABMICCxAAGIAEGJECGIoFwgIIEAAYgAQYogTCAgUQIRifBcICBxAhGKABGAqYAwCIBgGQBgqSBwcxMC4xOC4xoAe8nAE&sclient=gws-wiz-serp#fpstate=ive&vld=cid:76bce470,vid:JKoxrqis0Co,st:0
 
 
+***** Postman for testing --> add to VScode  ********
+
+https://marketplace.visualstudio.com/items?itemName=Postman.postman-for-vscode
+
+ignore this, below
+\/\/\/\/\/\/\/\/\/\/\/\/\
 
 Postman App running on chromeos linux.  ---> ** didnt work. Use postman web and Render version of App
 ------------------------------------------
@@ -75,6 +89,447 @@ In Render version  10/12/24
 ==================   STATUS ===========================================================
 =======================================================================================
 
+27/4/25
+-------
+
+I have a version of esp 32 POST with JSON data.
+
+now
+
+1) Get database up again on renedre
+
+2) Update Git files 
+and push to GIT so render sees new version.
+
+
+
+26/4/25
+-------
+
+A) Get POST working to local site
+
+B) Get DB up on Render again
+
+C) get esp32 working on GET and POST interaction with Render Site
+
+
+A) Postman for testing --> add to VScode
+
+- I installed postman extension on VS code. Logging in was through web site so all a bit slow.
+  --------------------------------------- 
+
+email      dgleeson3@gmail.com
+Password    parthus
+username    dgleeson123
+
+choose account    dgleeson123
+
+
+THen creating "New http request"  on left and using 
+
+http://127.0.0.1:5000/get_device_with_udi/350123451234560
+
+gives response
+
+[
+  {
+    "access_point_name": "Main Gate",
+    "device_sim_number": "0872730968",
+    "device_type_name": 3,
+    "id": 15,
+    "site_id": 5,
+    "unique_device_identifier": "350123451234560"
+  }
+]
+
+Now for POST operation
+
+using https://www.youtube.com/watch?app=desktop&v=PTZiDnuC86g&t=343s
+
+setup post details and send
+
+
+WOrking and adding the NEW device every time. However function reporting an error.
+
+html code 200 returned but route showing some error occured.
+
+I finally got code to work -> it returns new device element to device sending post request.
+
+---------------------------------------
+@app.route("/ext_add_device", methods=['POST'])
+def ext_add_device():
+
+    device_type_in = request.json['device_type']
+    print(device_type_in)
+    sim_number_in = request.json['sim_number']
+    print(sim_number_in)
+    access_name_in = request.json['access_name']
+    print(access_name_in)
+    device_udi_in = request.json['device_udi']
+    print(device_udi_in)
+    site_id_in = request.json['site_id']
+    print(site_id_in)
+   
+     # Create New device element
+    device = Device(site_id=site_id_in,device_type_name=device_type_in, device_sim_number=sim_number_in, access_point_name=access_name_in, unique_device_identifier=device_udi_in )
+                
+    try:
+        db.session.add(device)
+        db.session.commit()
+        print("Your New Device has been saved for Site with id: ")
+        print(site_id_in)
+        # Use marshmallow to get json output for return       
+        #result = device_schema.dump(device)
+
+    except:
+        return 'There was an issue adding your New Device'
+
+    result = device_schema.jsonify(device)
+    return result 
+--------------------------------------------------------    
+
+
+
+19/4/25
+-------
+
+Still at:
+
+   a) setup some records with the db that have Unique identifiers                                   - ok
+
+   b) Send a Get from the device with the IMEI looking for the user phone numbers from the db              -  ok
+      so we select from the devices list to find our device and then get the associated phone numbers
+   
+   c) Manual will need to have printed label with IMEI number (alternativly we could use SN. Its on the device.  - To Do
+      But we would have to tell device in production what its SN is. And this could get mixed up)
+   
+   d) need new command to get IMEI number from device in case there is a miss match. i.e. manuals get mixed 
+      up between devices.  --> we can then check what is miss matched and get INstaller to re setup with correct IMEI  - To Do
+
+a) - complete
+
+so getting devices with udi = xxxxxxxxxxx   gives device table
+
+http://127.0.0.1:5000/get_device_with_udi/350123451234560
+
+
+[
+  {
+    "access_point_name": "Main Gate",
+    "device_sim_number": "0872730968",
+    "device_type_name": 3,
+    "id": 15,
+    "site_id": 5,
+    "unique_device_identifier": "350123451234560"
+  }
+]
+
+
+
+b) Now to get the call out phones given the device_id = 15
+
+------------------------------
+
+using PSQL
+
+vgr_12db=> select * from phone_number where  device_id=15; 
+
+ id | device_id | phone_number |  user_name  
+----+-----------+--------------+-------------
+  8 |        15 | 0852123111   | Jimmy Smith
+  9 |        15 | 0852123222   | James Gold
+(2 rows)
+-------------------------
+
+----------------------------
+** VERY IMPORTANT to have the MARSHMALLOW SCHEMAS defined to use in the route.
+-----------------------------
+
+
+------------------------------------------------------------------
+http://127.0.0.1:5000/get_call_in_phones_with_device_id/15
+
+[
+  {
+    "device_id": 15,
+    "id": 8,
+    "phone_number": "0852123111",
+    "user_name": "Jimmy Smith"
+  },
+  {
+    "device_id": 15,
+    "id": 9,
+    "phone_number": "0852123222",
+    "user_name": "James Gold"
+  }
+]
+------------------------------------------------------------------------
+
+
+
+11/04/25  =================================================================================
+--------
+
+Lamine Code review  -- Apartment Pages for review -  Coder from Git Friday morning at 8.30 11/4/25
+
+
+- 1 site setup with 1 device
+- device is apartment Intercom
+
+- Problems found
+
+
+A) Adding phone numbers and names to apartment 2, starts with order set to 3 with no option to change.
+
+Phone number and names added dont apper on apartment 2
+
+we always revert to a display for apartment 1 even though now setting apartment 2.
+
+B) we still need an option to show settings for all appartments
+
+
+
+06/04/25
+--------
+
+Lamine Code review
+
+A) How did he do the tab display for settings?
+B) How is the forgot password working through email?
+C) creating the pop up dialog for Call out Call in additions?
+D) Why are we going back to the device tab when we save a new input for call in call out numbers?
+
+
+
+
+04/04/25
+--------
+
+Lamine Review -> status: 2 and 4 button Intercom setup is done, he is working on the Appartment Intercom
+
+User 1
+
+dgleeson
+dgleeson3@gmail.com
+access45
+
+Number of sites = 4
+
+site 1   Concreete Factory           1 x 2 button intercoms
+
+site 2   Smiths Shoe store           1 x 4 button Intercom   
+
+site 3   Kennedys Main Store           1 x 1 button No Keypad intercom
+
+site 4   Marys Sweet shop               No Devices specified.
+
+----------------------------------------
+User 2
+
+2t
+lamine1
+dgleeson@2t-tec.com
+Access45_xy!
+
+Number of sites = 3p
+
+site 1    jim Smith      2 x 4G-2R
+
+site 2    Main Factory       1 x 2 button Intercom
+
+site 3    Johnsons  Pharmacy      1 x 1 button intercom
+
+--------------------------------------------
+====================================================================
+BUGs            ->  Item 1 below sent in email 1  5/4/25
+----                -------------------------------------
+=====================================================================
+
+
+1) Having setup sites for user 1 and 2 above. On occasion when I click on site 
+
+site 1   Concreete Factory 
+
+I get the following list of site devices
+------------
+Your Devices at This Site
+
+Type: Voyager Voice 2 button Intercom
+SIM: 0872730961
+Access Point Name: Door 1
+Site ID: 4
+
+Type: Voyager Voice 4 button Intercom
+SIM: 0872730999
+Access Point Name: Front Gate
+Site ID: 4
+
+Type: Voyager Voice Intercom No Keypad
+SIM: 0872730968
+Access Point Name: Door 1
+Site ID: 4
+---------------------
+
+This a list of all devices configured for this User, and not just the devices for "site 1   Concreete Factory "
+
+other sites specified for this user show the correct list of devices. BUt repeated checks on the list of devices for 
+"site 1   Concreete Factory " show all devices specified for all sites.
+
+
+======================================================================
+Sent email 3 A) to F) below  - 5/4/25
+=======================================================================
+A)  When we show the list of devices at a site we need to show the Site Name at the top of the page.
+
+eg:              Your Devices at This Site:      Kennedys Pharamcy        ( <------- this is SIte name )
+
+B) Also at this page we need a button that takes us back one screen ( the same as the "back to list of devices" button). Its the same effect as pressing Home currently.
+
+<-- back to list of sites
+
+Without obvious back buttons the User will revert to using the browser back and forward button. This can lead to some unexpected behaviour. Many online apps like banking Apps log the user out immediately if they use the browser buttons.
+
+
+C) the add New device page ("Add a New Device to This Site")   needs a cancel button. Using the cancel button should take us back to the list of devices at this site.
+
+
+D)   On the Login page, and the registration page. It would be good if we could see the password entered with an eye option (view password on/Off)
+
+E)   It would be nice to have a box to the right of the main display on every page. This would allow for the display of Status       and prompts. The status would show the current user name and email. Prompts would explain details on using the current page
+     to assist the user with what to do on this page or how to use this page. This is like what we have on our Phone Apps with       the "i" (information) button
+
+F)   If we add an "Intercom No Keypad" then there shouldnt be an option to set Keypad codes for that device. This menu option 
+     needs to be removed, but only for this device type.  
+     
+======================================================================
+Sent email 2 - 5/4/25
+=======================================================================
+G)   On the configuration screens for 2 and 4 button INtercoms
+
+on the setting "Call Out"
+-------------------------
+
+- the button to allow you to set the name text should be " Set Name for Intercom Display " instead of "Settings"
+- As the text given per button is displayed on an LCD screen on the device there is a maximum number of characters that can be entered as the name. This is 
+
+for 2 Button Intercom Max Text = 27 characters
+for 4 Button Intercom Max Text = 18 characters
+
+This needs to be a hard limit set by the app.
+
+The default text for setting names on the LCD display is Name 1, Name 2 ......   please use this text instead of No Name
+
+The search box is not working. I dont think we need it on a screen with max 12 names and numbers. Please remove it.
+
+
+On the dialog to set call out numbers. 
+----------------------------------------
+
+Its not very clear what button we are setting call out numbers for. That selection is at the bottom of the dialog box instead of at the top.
+Please move the "Select Button " option to the top of this dialog. And also if possible at the top of this dialog put the text "Button 1" to display what button we are setting Phone numbers for now. This will change with the selection of "Select Button"
+
+The save button on this dialog should simple say "Save"  not "Save Code"
+
+As you explained to me there is a problem with the order setting. Moving from Button 1 where the last order was 3 to Button 2 where we need the order to go back to 1 again, but its on 3. If you cant resolve this then please go back to a fixed display of 3 Names and numbers displayed, allowing editing to enter each name and number. Indeed this would be more intuitive for the installer.
+=========================================================================
+
+
+------------------------------------------------------------------------
+Next:
+-----
+   a) setup some records with the db that have Unique identifiers
+
+   b) Send a Get from the device with the IMEI looking for the user phone numbers from the db
+      so we select from the devices list to find our device and then get the associated phone numbers
+   
+   c) Manual will need to have printed label with IMEI number
+   
+   d) need new command to get IMEI number from device in case there is a miss match. i.e. manuals get mixed 
+      up between devices.
+
+
+
+02/04/25
+--------
+
+To add a new column to an existing table, we cant just add it to the models. If I do this I will have a conflict as the 
+database exists without that element in the table.
+
+So for now use psql tool to add the new item to the table.
+
+https://neon.tech/postgresql/postgresql-tutorial/postgresql-add-column
+
+https://www.google.com/search?q=psql+to+add+a+new+column+to+a+table&rlz=1CAOERN_enES1114&oq=psql+to+add+a+new+column+to+a+table&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIICAEQABgWGB4yDQgCEAAYhgMYgAQYigUyDQgDEAAYhgMYgAQYigUyCggEEAAYgAQYogQyCggFEAAYgAQYogQyCggGEAAYgAQYogTSAQo0ODAxM2owajE1qAIIsAIB&sourceid=chrome&ie=UTF-8
+
+
+What worked
+
+
+ALTER TABLE device
+ADD COLUMN unique_device_identifier VARCHAR(25);
+ALTER TABLE
+
+Although I wanted to create a NON NULL Field wasnt allowed as I guess table exists and field are there so a new column will have NULL values. SO trying to set it up gave an error. I had to remove the NON NULL requirement.
+
+
+CHecking if table has this new field
+
+------------------------------------------------------
+
+vgr_12db=> \d device
+                                            Table "public.device"
+          Column          |         Type          | Collation | Nullable |              Default               
+--------------------------+-----------------------+-----------+----------+------------------------------------
+ id                       | integer               |           | not null | nextval('device_id_seq'::regclass)
+ device_type_name         | integer               |           |          | 
+ device_sim_number        | character varying     |           |          | 
+ access_point_name        | character varying     |           |          | 
+ site_id                  | integer               |           |          | 
+ unique_device_identifier | character varying(25) |           |          | 
+Indexes:
+    "device_pkey" PRIMARY KEY, btree (id)
+Foreign-key constraints:
+    "device_site_id_fkey" FOREIGN KEY (site_id) REFERENCES site(id)
+Referenced by:
+...
+...
+
+-----------------------------------------------------------
+
+
+
+01/04/25
+--------
+
+---- Requirement  ------
+
+5) Get device specific operation working
+
+   a) add device ID as IMEI to the device database item                                             - OK
+   
+   b) Send a Get from the device with the IMEI looking for the user phone numbers from the db
+      so we select from the devices list to find our device and then get the associated phone numbers
+   
+   c) Manual will need to have printed label with IMEI number
+   
+   d) need new command to get IMEI number from device in case there is a miss match. i.e. manuals get mixed 
+      up between devices.
+
+-------------------------
+
+UDI:
+----
+A device unique identifier (UDI), also known as a device ID, is a unique string of numbers and letters assigned to a digital device, allowing it to be recognized and tracked within a network. 
+
+What SQL Alchemy data type to use
+https://stackoverflow.com/questions/41136136/what-is-the-difference-between-varchar-and-string-in-sqlalchemys-data-type
+
+looks like string will work
+https://www.experts-exchange.com/questions/28434405/Sql-data-type-for-IMEI-number-15-digit-number.html
+
+
+
+--------------------------------------------------------------
 29/3/25         --> Lamine review  28/3/25 code
 -------
 
@@ -85,8 +540,57 @@ Make display area  big enough to see 5 (Call out) Phone numbers & Users added
 ------------------------ NOt sent ---------------------------------
 
 D) please explain to me, when in the office, why every saved setting is taking us back to the device screen and then back to the screen we were in.
-
 ----------------------------------------------------------------------
+
+============================================
+Sent email 3 30/3/25
+============================================
+
+E) For an Apartment Intercom the setting of Call out numbers is different again.
+
+We haven't made one yet, but it is the main motivation behind creating this App. Setting 100's of phone numbers without a computer type interface would be very difficult indeed.
+
+Each Apartment has 3 phone numbers.
+
+Our first Apartment Intercom will be for a block with 50 Apartments
+
+So that is 50 x 3 Phone Numbers
+
+How we organise this, so that it is easy to use for the installer, using the App, is really important.
+
+What might work is to have a table for 3 phone numbers where the Apartment number is selected ( 1 to 50 ) or set
+and 
+
+a text box to allow the entrance of the Name for this apartment
+
+once the numbers required, and the name are entered we can save the updates.
+
+Below these controls for setting phone numbers,  we would also have a scroll able list of all 50 Apartments giving their 3 phone numbers as set for each apartment. Followed by the name for that appartment
+
+You can also see that the excel sheet of 3 phone numbers per apartment for 50 apartments is a bit different to what we have done so far
+
+We should be entering phone numbers into the excel as:
+
+Apartment 1            
+    Name :                   (example   john Smith)
+    Phone 1
+    Phone 2
+    Phone 3
+Apartment 2
+    Name : 
+    Phone 1
+    Phone 2
+    Phone 3
+Apartment 3
+    Name : 
+    Phone 1
+    Phone 2
+    Phone 3
+  ......
+....... and so on for 50 apartments
+
+
+
 
 ============================================
 Sent email 2 30/3/25
@@ -205,41 +709,34 @@ Save security code
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ==========================================================
 
 Next to do
 -----
 
-1) put app on render and check GET routes working
+1) put app on render and check GET routes working  --> ok working
 
-2) get POST route working, i.e. write value to db
 
-3) Get esp32 requests working with coded routes.
+2) Get esp32 requests working with coded routes.            ---> All working
 
-3) Get device specific operation working
+3) get POST route working, i.e. write value to db
 
-   a) add device ID as SN to the device database item
-   b) Send a Get from the device with the SN looking for the user phone numbers from the db
+4) Get esp32 requests working with coded post routes.      - GET routes working on esp32
+
+5) Get device specific operation working
+
+   a) add device ID as IMEI to the device database item
+   b) Send a Get from the device with the IMEI looking for the user phone numbers from the db
       so we select from the devices list to find our device and then get the associated phone numbers
-
+   c) Manual will need to have printed label with IMEI number
+   d) need new command to get IMEI number from device in case there is a miss match. i.e. manuals get mixed 
+      up between devices.
 
 
 27/3/25
 --------
+
+***** Postman for testing --> add to VScode  ********
 
 1)  Trying to get the \test working through postman. It works locally but not on Render site
 
@@ -2704,3 +3201,29 @@ if __name__ == '__main__':
 ---------------------------------------------   
 
 Prior to this see Green Folder big note book, and before that copy book
+
+
+===============================================================
+BUGS   ---------------------------------------------------
+===============================================================
+
+----------------------------------------
+App version / date
+Bug details
+
+Bug Significance  LOW/MEDIUM/HIGH
+---------------------------------------
+
+--------------------------------------------
+App version / date   - Lamine 5/4/25
+Bug details
+-----------
+Moving around the App using the back browser button creates a number of problems.
+
+- ON one occasion
+    - I logged out of user 2 and logged in as user 1 ( all setup as listed below)
+    - Using the  back button to get back from a site to get to the list of sites, I ended up with a list of sites for user 2.
+      I could then even access sites belongoing to user 2 and 
+      
+Bug Significance  LOW  - this bug is unlikely to happen when Installer using the app. As he would not login as different users.
+----------------------------------------------

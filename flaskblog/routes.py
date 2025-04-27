@@ -4,7 +4,9 @@ from PIL import Image
 from flask import render_template, url_for, flash, redirect, request, abort, redirect
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm, PostForm_Update, ShowSitesForm, AddDevice, ShowDevicesForm
-from flaskblog.models import UserAccount, Post, Site, PhoneNumber, OutOfHour, KeypadCode, Device, DeviceSchema, devices_schema,device_schema
+from flaskblog.models import UserAccount, Post, Site, PhoneNumber, OutOfHour, KeypadCode
+from flaskblog.models import Device, DeviceSchema, devices_schema,device_schema
+from flaskblog.models import PhoneNumber,phone_number_schema, phone_numbers_schema
 from flask_login import login_user, current_user, logout_user, login_required
 from flaskblog import db
 from flask_marshmallow import Marshmallow
@@ -275,11 +277,18 @@ def add_device(site_id):      # site_id is the name of the foreign key (pointing
         print("Device Type name ")
 
         print(device_type_name)
+        
+        identifier=request.form['Device_Identifier']
+        print("Device Unique Identifier is ")
+        print(identifier)
+        
         print("Site id foreign key is ")
         print(site_id)
 
 
-        device = Device(site_id=site_id,device_type_name=device_type_name, device_sim_number=phone_number, access_point_name=name )
+
+        # Create New device element
+        device = Device(site_id=site_id,device_type_name=device_type_name, device_sim_number=phone_number, access_point_name=name, unique_device_identifier=identifier )
                 
         try:
             db.session.add(device)
@@ -545,5 +554,119 @@ def get_all_devices():
 @app.route("/get_device/<int:device_id_in>", methods=['GET'])
 def get_device(device_id_in):
     device = Device.query.get(device_id_in)
+    print(device)
     result = device_schema.jsonify(device)
     return result    
+
+######################################################
+# Purpose: 1) get device details,  
+#              from the database on the device in the 
+#              device table for the device unique id given.
+#          2) this is how i got it from psql command line db interface
+#          select * from device where unique_device_identifier = 350123451234560;  
+#
+@app.route("/get_device_with_udi/<string:unique_device_identifier_in>", methods=['GET'])
+def get_device_with_udi(unique_device_identifier_in):
+
+    device_with_udi = Device.query.filter_by(unique_device_identifier=unique_device_identifier_in).all()
+    result = devices_schema.dump(device_with_udi)
+    return jsonify(result)
+
+ ######################################################
+# Purpose: 1) get list of phone numbers (call in )   
+#
+#          2) this is how i got it from psql command line db interface
+#          select * from device where unique_device_identifier = 350123451234560;  
+#
+#@app.route("/get_id_of_all_call_in_phones", methods=['GET'])
+#def get_id_of_all_call_in_phones():
+#
+#    all_call_in_phones = PhoneNumber.query.filter_by()
+#    result = devices_schema.dump(all_call_in_phones)
+#    return jsonify(result)  
+
+######################################################
+# Purpose: 1) get list of phone numbers (call in ) given device id  
+#
+#          2) this is how i got it from psql command line db interface
+#          select * from device where unique_device_identifier = 350123451234560;  
+#
+#@app.route("/get_call_in_phones_with_device_id/<int:device_id_in>", methods=['GET'])
+#def get_call_in_phones_with_device_id(device_id_in):#
+#
+#    all_site_call_in_phones = PhoneNumber.query.filter_by(device_id=device_id_in)
+#    result = phone_numbers_schema.dump(all_site_call_in_phones)
+#    return jsonify(result)
+
+######################################################
+# Purpose: 1) get list of all phone numbers (call in )  
+#
+#          2) Must have correct Marshmallow schema defined  
+#
+@app.route("/get_all_call_in_phones", methods=['GET'])
+def get_all_call_in_phones():
+
+#    site_call_in_phones = PhoneNumber.query.filter_by(id=id_in).all()
+    site_call_in_phones = PhoneNumber.query.all()
+    result = phone_numbers_schema.dump(site_call_in_phones)
+    return jsonify(result) 
+
+
+######################################################
+# Purpose: 1) get list of phone numbers (call in ) given id  
+#
+#          2) Must have correct Marshmallow schema defined 
+#          3) id here is the device id   
+#
+@app.route("/get_call_in_phones/<int:id_in>", methods=['GET'])
+def get_call_in_phones(id_in):
+
+#    site_call_in_phones = PhoneNumber.query.filter_by(id=id_in).all()
+    site_call_in_phones = PhoneNumber.query.filter_by(id=id_in)
+    result = phone_numbers_schema.dump(site_call_in_phones)
+    return jsonify(result)     
+
+######################################################
+# Purpose: 1) setup a new device given the site id  
+#
+#          2) Must have correct Marshmallow schema defined 
+#
+#          3) new addition to function names of ext_ to indicate coming from device.  
+#
+#           4) post method not with parameters
+#
+#           5)  I think SITE must exist if adding a device to it. Fails here if site_id not existing.
+#
+#           6)  ToDo
+#               - if device exists in the db dont allow it to be added again.
+#
+@app.route("/ext_add_device", methods=['POST'])
+def ext_add_device():
+
+    device_type_in = request.json['device_type']
+    print(device_type_in)
+    sim_number_in = request.json['sim_number']
+    print(sim_number_in)
+    access_name_in = request.json['access_name']
+    print(access_name_in)
+    device_udi_in = request.json['device_udi']
+    print(device_udi_in)
+    site_id_in = request.json['site_id']
+    print(site_id_in)
+   
+     # Create New device element
+    device = Device(site_id=site_id_in,device_type_name=device_type_in, device_sim_number=sim_number_in, access_point_name=access_name_in, unique_device_identifier=device_udi_in )
+                
+    try:
+        db.session.add(device)
+        db.session.commit()
+        print("Your New Device has been saved for Site with id: ")
+        print(site_id_in)
+        # Use marshmallow to get json output for return       
+        #result = device_schema.dump(device)
+
+    except:
+        return 'There was an issue adding your New Device'
+
+    result = device_schema.jsonify(device)
+    return result  
