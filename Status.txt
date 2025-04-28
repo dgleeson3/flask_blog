@@ -89,6 +89,81 @@ In Render version  10/12/24
 ==================   STATUS ===========================================================
 =======================================================================================
 
+
+28/4/25
+--------
+
+
+New database running. SO adding devices and details
+
+to see remote database on render from local terminal use PSQL tool with External URI connection
+
+psql postgresql://dgleeson3:VRrTWPoEP5txutZVVYOzs2TFUzKjdJcI@dpg-d0794kc9c44c739pu7p0-a.frankfurt-postgres.render.com/db_usbu
+-------------------------------------------------------
+db_usbu=> select * from device;
+ id | device_type_name | device_sim_number | access_point_name | unique_device_identifier | site_id 
+----+------------------+-------------------+-------------------+--------------------------+---------
+  1 |                3 | 0872730966        | Main Gate         | 101                      |       1
+(1 row)
+----------------------------------------------------------
+
+Then on web site 
+----------------
+As the device that knows the udi we ask for the device details. Then we can extract what we want from that device
+
+https://twot-cloud-2.onrender.com/get_device_with_udi/101
+
+we get
+
+[{"access_point_name":"Main Gate","device_sim_number":"0872730966","device_type_name":3,"id":1,"site_id":1,"unique_device_identifier":"101"}]
+---------------------
+
+For example get all Phone numbers for this device (using PSQL)
+
+-----------------------------------------------------------
+db_usbu=> select * from phone_number where device_id=1;
+ id | device_id | phone_number |   user_name   
+----+-----------+--------------+---------------
+  1 |         1 | 09823445555  | Tom Smith
+  2 |         1 | 0852123111   | Denis Gleeson
+  3 |         1 | 098 23445555 | James Gold
+(3 rows)
+----------------------------------------------------------
+
+
+https://twot-cloud-2.onrender.com/get_call_in_phones/1           <----- This route name changed
+
+
+[{"device_id":1,"id":1,"phone_number":"09823445555","user_name":"Tom Smith"}]       <------ ERROR  only giving 1 phone number,                                                                                              but 3 stored on this device ID
+
+Mistake in Route-> Using id and not device_id from phone_number table
+
+UPdated and uploaded now -> new route details,   get_call_in_phones 
+
+-------------------------------------------------
+@app.route("/get_call_in_phones/<int:id_in>", methods=['GET'])
+def get_call_in_phones(id_in):
+
+#    site_call_in_phones = PhoneNumber.query.filter_by(id=id_in).all()
+    site_call_in_phones = PhoneNumber.query.filter_by(device_id=id_in)
+    result = phone_numbers_schema.dump(site_call_in_phones)
+    return jsonify(result)     
+    
+-------------------------------    
+
+------------------------------------------------------------
+
+But  Route
+
+https://twot-cloud-2.onrender.com/get_all_call_in_phones
+
+
+Works correctly
+
+[{"device_id":1,"id":1,"phone_number":"09823445555","user_name":"Tom Smith"},{"device_id":1,"id":2,"phone_number":"0852123111","user_name":"Denis Gleeson"},{"device_id":1,"id":3,"phone_number":"098 23445555","user_name":"James Gold"}]
+
+
+
 27/4/25
 -------
 
@@ -96,10 +171,18 @@ I have a version of esp 32 POST with JSON data.
 
 now
 
-1) Get database up again on renedre
+1) Get database up again on render                      -  ok
 
-2) Update Git files 
-and push to GIT so render sees new version.
+2) Update Git files                                     -  ok
+and push to GIT so render sees new version.             - ok
+
+New user
+
+dgleeson
+dgleeson3@gmail.com
+access45
+
+
 
 
 
@@ -1240,11 +1323,11 @@ Need to reset the URL for the database in the web service
 WEB SERVICE
 2T_Cloud_2
 
-Click on the Srevice and on left menu select the ' Environment '
+Click on the Service and on left menu select the ' Environment '
 
 I already have the URL listed here
 
-Update the URL to the latest internal access URL
+Update the URL to the latest ** internal access ** URL
 
 
 SQLALCHEMY_DATABASE_URI  -> reset value

@@ -613,7 +613,7 @@ def get_all_call_in_phones():
 
 
 ######################################################
-# Purpose: 1) get list of phone numbers (call in ) given id  
+# Purpose: 1) get list of phone numbers (call in ) given device id  
 #
 #          2) Must have correct Marshmallow schema defined 
 #          3) id here is the device id   
@@ -622,7 +622,7 @@ def get_all_call_in_phones():
 def get_call_in_phones(id_in):
 
 #    site_call_in_phones = PhoneNumber.query.filter_by(id=id_in).all()
-    site_call_in_phones = PhoneNumber.query.filter_by(id=id_in)
+    site_call_in_phones = PhoneNumber.query.filter_by(device_id=id_in)
     result = phone_numbers_schema.dump(site_call_in_phones)
     return jsonify(result)     
 
