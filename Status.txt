@@ -90,6 +90,86 @@ In Render version  10/12/24
 =======================================================================================
 
 
+
+NEXT
+----
+
+1)  review  Arduino library 
+code for GET and POST operation.
+
+2) code details into VV Embedded code
+
+objective get call out phone numbers and save to flash in the device.
+
+3) Get call in phones and save to flash
+
+
+
+
+
+28/4/25_2
+--------
+
+Get POST working on esp32
+
+A) check get first
+
+- Use           sketch_esp32_http_2
+
+This does a get and returns the device setup using     route   /get_device/2
+
+
+B) test POST   ** Remember DO NOT TRY to add a device to a SITE that does not exist **
+               -----------------------------------------------------------------------
+               
+So changing the site ID to 1 I get the device added 
+
+db_usbu=> select * from device;
+ id | device_type_name | device_sim_number |  access_point_name   | unique_device_identifier | site_id 
+----+------------------+-------------------+----------------------+--------------------------+---------
+  1 |                3 | 0872730966        | Main Gate            | 101                      |       1
+ 18 |                1 | 0872730966        | Rear pedestrian gate | 01                       |       1
+
+
+C) Now trying the esp32 POST app   ---->>>  sketch_esp32_http_post
+
+Works !!!!
+
+db_usbu=> select * from device;
+ id | device_type_name | device_sim_number |  access_point_name   | unique_device_identifier | site_id 
+----+------------------+-------------------+----------------------+--------------------------+---------
+  1 |                3 | 0872730966        | Main Gate            | 101                      |       1
+ 18 |                1 | 0872730966        | Rear pedestrian gate | 01                       |       1
+ 19 |                2 | 0872730123        | Pedestrian Gate      | 25                       |       1
+ 20 |                2 | 0872730123        | Pedestrian Gate      | 25                       |       1
+(4 rows)
+
+
+D)   TO DO
+
+Dont allow the creation of the same device twice. This is the same for devices, Sites etc.....
+
+But we also need to output what the problem is --~>   
+
+Cant add device because site does not exist
+
+Cant add site because it exists already
+
+etc....
+
+E) Render Log  <<---- use to see whats happening
+
+Go to 2T_Cloud_2  and select logs
+
+
+
+
+
+
+
+
+
+
 28/4/25
 --------
 
@@ -138,7 +218,7 @@ https://twot-cloud-2.onrender.com/get_call_in_phones/1           <----- This rou
 
 Mistake in Route-> Using id and not device_id from phone_number table
 
-UPdated and uploaded now -> new route details,   get_call_in_phones 
+UPdated and uploaded now -> new route details,   get_call_in_phones  <-------- this fixed that problem
 
 -------------------------------------------------
 @app.route("/get_call_in_phones/<int:id_in>", methods=['GET'])
