@@ -91,6 +91,22 @@ In Render version  10/12/24
 
 
 
+1/6/25
+------
+
+1) Have DB paid for on Render. Still have delay on spin up time for site.
+
+2) Have SIM7600E working with a get to m2msupport web site but not to my site.
+
+3) continue to get 716 error 
+
+   Is it the spin up time.
+   Or the listening port. Setup PORT ENV variable as per directions on Render
+
+
+   
+
+
 NEXT
 ----
 
