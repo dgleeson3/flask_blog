@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+{% block content %}
+    <!-- Main container for the login form content -->
+    <div class="content-section">
+        <!-- The login form; method POST sends user data to the server -->
+        <form method="POST" action="">
+            <!-- Render hidden fields (e.g., CSRF token) -->
+            {{ form.hidden_tag() }}
+            <!-- Group form fields within a fieldset -->
+            <fieldset class="form-group">
+                <!-- The legend provides a title for the form -->
+                <legend class="border-bottom mb-4">Log In</legend>
+                
+                <!-- Email Field -->
+                <div class="form-group">
+                    <!-- Render the email label with Bootstrap styling -->
+                    {{ form.email.label(class="form-control-label") }}
+                    {% if form.email.errors %}
+                        <!-- If there are validation errors, render the email input with error styling -->
+                        {{ form.email(class="form-control form-control-lg is-invalid") }}
+                        <!-- Display each error message below the input field -->
+                        <div class="invalid-feedback">
+                            {% for error in form.email.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <!-- If no errors, render the email input normally -->
+                        {{ form.email(class="form-control form-control-lg") }}
+                    {% endif %}
+                </div>
+                
+                <!-- Password Field with Toggle Icon -->
+                <div class="form-group">
+                    <!-- Render the password label -->
+                    {{ form.password.label(class="form-control-label") }}
+                    <!-- Wrap the password field in an input group to include a toggle icon -->
+                    <div class="input-group">
+                        {% if form.password.errors %}
+                            <!-- If there are errors, add 'is-invalid' class for error styling -->
+                            {{ form.password(class="form-control form-control-lg is-invalid", id="login_password") }}
+                        {% else %}
+                            <!-- Render the password input without error styling -->
+                            {{ form.password(class="form-control form-control-lg", id="login_password") }}
+                        {% endif %}
+                        <!-- Input group append section for the toggle icon -->
+                        <div class="input-group-append">
+                            <!-- A clickable span that calls a JavaScript function to toggle visibility -->
+                            <span class="input-group-text" style="cursor: pointer;" onclick="togglePassword('login_password', this.querySelector('i'))">
+                                <!-- Default icon showing the password is hidden -->
+                                <i class="fas fa-eye-slash"></i>
+                            </span>
+                        </div>
+                    </div>
+                    {% if form.password.errors %}
+                        <!-- Display validation errors for the password field -->
+                        <div class="invalid-feedback">
+                            {% for error in form.password.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- "Remember Me" Checkbox -->
+                <div class="form-check">
+                    <!-- Render the checkbox field -->
+                    {{ form.remember(class="form-check-input") }}
+                    <!-- Render the checkbox label -->
+                    {{ form.remember.label(class="form-check-label") }}
+                </div>
+            </fieldset>
+            
+            <!-- Submit Button -->
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-info") }}
+            </div>
+            
+            <!-- Link for "Forgot Password?" -->
+            <small class="text-muted ml-2">
+                <a href="{{ url_for('forgot_password') }}">Forgot Password?</a>
+            </small>
+        </form>
+        
+        <!-- Link to the registration page shown at the bottom of the login form -->
+        <div class="text-center mt-3">
+            <small class="text-muted">
+                Don't have an account? <a href="{{ url_for('register') }}">Register</a>
+            </small>
+        </div>
+    </div>
+    
+    <!-- JavaScript function to toggle the visibility of the password field -->
+    <script>
+        function togglePassword(fieldId, icon) {
+            // Get the input field by its ID
+            var inputField = document.getElementById(fieldId);
+            // If the field type is 'password', change it to 'text' to reveal the content
+            if(inputField.type === "password") {
+                inputField.type = "text";
+                // Update icon: remove "fa-eye-slash" and add "fa-eye" to indicate visibility
+                icon.classList.remove("fa-eye-slash");
+                icon.classList.add("fa-eye");
+            } else {
+                // Otherwise, switch back to 'password' type to hide the content
+                inputField.type = "password";
+                // Update icon: remove "fa-eye" and add "fa-eye-slash" to indicate hidden state
+                icon.classList.remove("fa-eye");
+                icon.classList.add("fa-eye-slash");
+            }
+        }
+    </script>
+{% endblock content %}

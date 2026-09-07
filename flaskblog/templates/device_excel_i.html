@@ -1,0 +1,116 @@
+
+<!-- ========================================== -->
+<!-- Modal for "Users Excel" / Call In -->
+<div id="importModal_in" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white w-96 rounded-lg shadow-2xl p-6">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold">Import Excel</h2>
+      <!-- Close button calls closeImportModal_in() -->
+      <button onclick="closeImportModal_in()" class="text-gray-500 text-xl font-bold">
+        &times;
+      </button>
+    </div>
+    <!-- Form for "Call In" upload -->
+    <form action="{{ url_for('import_excel_in', device_id=device_info.id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+      {% if 'Voice' in device_info.device_type_name %}
+      <div class="space-y-2">
+        <label class="block text-gray-600 font-medium">Select Excel Type</label>
+        <div class="flex space-x-4">
+          <label class="flex items-center">
+            <input type="radio" name="excel_type" value="call_in" required class="mr-1">
+            <span>Call In</span>
+          </label>
+        </div>
+      </div>
+      {% endif %}
+      <div>
+        <label for="excelFile" class="block text-gray-600 font-medium mb-1">Select Excel File</label>
+        <input
+          type="file"
+          name="excel_file"
+          id="excelFile"
+          accept=".xlsx,.xls"
+          class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-400"
+          required
+        >
+      </div>
+      <button
+        type="submit"
+        class="bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white px-4 py-3 rounded-lg w-full shadow-md"
+      >
+        Import
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- ========================================== -->
+<!-- Modal for "Call Out" -->
+<div id="importModal_out" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white w-96 rounded-lg shadow-2xl p-6">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold">Import Excel</h2>
+      <!-- Close button calls closeImportModal_out() -->
+      <button onclick="closeImportModal_out()" class="text-gray-500 text-xl font-bold">
+        &times;
+      </button>
+    </div>
+    <!-- Form for "Call Out" upload -->
+    <form action="{{ url_for('import_excel_out', device_id=device_info.id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+      {% if 'Voice' in device_info.device_type_name %}
+      <div class="space-y-2">
+        <label class="block text-gray-600 font-medium">Select Excel Type</label>
+        <div class="flex space-x-4">
+          <label class="flex items-center">
+            <input type="radio" name="excel_type" value="call_out" required class="mr-1">
+            <span>Call Out</span>
+          </label>
+        </div>
+      </div>
+      {% endif %}
+      <div>
+        <label for="excelFile" class="block text-gray-600 font-medium mb-1">Select Excel File</label>
+        <input
+          type="file"
+          name="excel_file"
+          id="excelFile"
+          accept=".xlsx,.xls"
+          class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-green-400"
+          required
+        >
+      </div>
+      <button
+        type="submit"
+        class="bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white px-4 py-3 rounded-lg w-full shadow-md"
+      >
+        Import
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- ========================================== -->
+<!-- JavaScript to open/close modals by toggling the .hidden class -->
+<script>
+  // Show the "importModal_in" 
+  function openImportModal_in() {
+    document.getElementById('importModal_in').classList.remove('hidden');
+  }
+
+  // Hide the "importModal_in"
+  function closeImportModal_in() {
+    document.getElementById('importModal_in').classList.add('hidden');
+  }
+
+  // Show the "importModal_out"
+  function openImportModal_out() {
+    document.getElementById('importModal_out').classList.remove('hidden');
+  }
+
+  // Hide the "importModal_out"
+  function closeImportModal_out() {
+    document.getElementById('importModal_out').classList.add('hidden');
+  }
+</script>

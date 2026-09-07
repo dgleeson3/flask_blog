@@ -1,0 +1,580 @@
+<!-- Include jQuery and Select2 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link
+  href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+  rel="stylesheet"
+/>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<!-- Automatic Schedules Section -->
+<h2 class="text-xl font-bold mb-2 text-[#4A90E2]">Automatic Schedules</h2>
+<p class="text-gray-600 mb-6">
+  Configure schedules to automatically open/close gates or doors at specified days and times.
+</p>
+
+<!-- Top action buttons for switching between "Add" form and "List" of schedules -->
+<div class="flex space-x-3 mb-4">
+  <button
+    id="showAddFormBtn"
+    class="bg-[#4A90E2] hover:bg-blue-600 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    Add Automatic Schedule
+  </button>
+  <button
+    id="showListBtn"
+    class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+  >
+    List of Automatic Schedules
+  </button>
+</div>
+
+<!-- Section for adding a new Automatic Schedule -->
+<div id="addFormSection">
+  <form
+    method="POST"
+    action="{{ url_for('new_automatic_schedule', device_id=device_id) }}"
+    class="space-y-6"
+  >
+    <!-- Output Selection (e.g., which relay or port to trigger) -->
+    <div>
+      <label for="output" class="block text-gray-800 font-medium mb-1">
+        Select Output
+      </label>
+      <select
+        id="output"
+        name="output"
+        class="border border-gray-300 rounded px-3 py-2 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+      >
+        <option value="1">Output 1</option>
+        <option value="2">Output 2</option>
+      </select>
+    </div>
+
+    <!-- Days of the Week Selection -->
+    <div>
+      <span class="block text-gray-800 font-medium mb-2">Select Days</span>
+      <div class="flex flex-wrap gap-4 daysCheckBoxes">
+        <!-- Each label/input pair represents a day checkbox -->
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="days"
+            value="monday"
+            class="accent-[#4A90E2] w-5 h-5"
+          />
+          <span class="ml-2 text-gray-700">Monday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="days"
+            value="tuesday"
+            class="accent-[#4A90E2] w-5 h-5"
+          />
+          <span class="ml-2 text-gray-700">Tuesday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="days"
+            value="wednesday"
+            class="accent-[#4A90E2] w-5 h-5"
+          />
+          <span class="ml-2 text-gray-700">Wednesday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="days"
+            value="thursday"
+            class="accent-[#4A90E2] w-5 h-5"
+          />
+          <span class="ml-2 text-gray-700">Thursday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="days"
+            value="friday"
+            class="accent-[#4A90E2] w-5 h-5"
+          />
+          <span class="ml-2 text-gray-700">Friday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="days"
+            value="saturday"
+            class="accent-[#4A90E2] w-5 h-5"
+          />
+          <span class="ml-2 text-gray-700">Saturday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="days"
+            value="sunday"
+            class="accent-[#4A90E2] w-5 h-5"
+          />
+          <span class="ml-2 text-gray-700">Sunday</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Time Selection (Open/Close) -->
+    <div class="flex items-center space-x-4 overflow-visible">
+      <!-- Opening Time -->
+      <div class="relative">
+        <label for="startTimeHour" class="block text-gray-800 font-medium mb-1">
+          Open At
+        </label>
+        <div class="flex space-x-2">
+          <select
+            id="startTimeHour"
+            name="startTimeHour"
+            required
+            class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2] select2-time-select"
+          >
+            <!-- Hour options (e.g., 00-23) loaded by JS or templating -->
+          </select>
+          <span class="self-center text-gray-700">:</span>
+          <select
+            id="startTimeMinute"
+            name="startTimeMinute"
+            required
+            class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2] select2-time-select"
+          >
+            <!-- Minute options (e.g., 00-59) loaded by JS or templating -->
+          </select>
+        </div>
+      </div>
+      <!-- Closing Time -->
+      <div class="relative">
+        <label for="endTimeHour" class="block text-gray-800 font-medium mb-1">
+          Close At
+        </label>
+        <div class="flex space-x-2">
+          <select
+            id="endTimeHour"
+            name="endTimeHour"
+            required
+            class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2] select2-time-select"
+          >
+            <!-- Hour options -->
+          </select>
+          <span class="self-center text-gray-700">:</span>
+          <select
+            id="endTimeMinute"
+            name="endTimeMinute"
+            required
+            class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2] select2-time-select"
+          >
+            <!-- Minute options -->
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional: Number of Days (expiration) -->
+    <div>
+      <label for="numDays" class="block text-gray-800 font-medium mb-1">
+        Number of Days (Optional)
+      </label>
+      <input
+        type="number"
+        id="numDays"
+        name="numDays"
+        min="1"
+        class="border border-gray-300 rounded px-3 py-2 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+        placeholder="e.g. 7"
+      />
+      <p class="text-sm text-gray-500 mt-1">
+        If you want this schedule to expire after a certain number of days, enter a value here. Otherwise, leave it blank for no expiration.
+      </p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex space-x-3">
+      <button
+        type="submit"
+        class="bg-[#4A90E2] hover:bg-blue-600 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Set
+      </button>
+      <button
+        type="button"
+        onclick="resetAutomaticScheduleForm()"
+        class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Section displaying the list of existing Automatic Schedules -->
+<div id="listSection" class="hidden">
+  {% if a_s %}
+  <h2 class="text-lg font-semibold mb-4 text-[#4A90E2]">List of Automatic Schedules</h2>
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <table id="asTable" class="min-w-full">
+      <thead class="bg-gray-100 text-sm">
+        <tr>
+          <th class="px-4 py-3 text-center font-normal text-gray-600">ID</th>
+          <th class="px-4 py-3 text-center font-normal text-gray-600">Output</th>
+          <th class="px-4 py-3 text-center font-normal text-gray-600">Days</th>
+          <th class="px-4 py-3 text-center font-normal text-gray-600">Open At</th>
+          <th class="px-4 py-3 text-center font-normal text-gray-600">Close At</th>
+          <th class="px-4 py-3 text-center font-normal text-gray-600">Number Days</th>
+          <th class="px-4 py-3 text-center font-normal text-gray-600">Action</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200 text-sm">
+        {% for schedule in a_s %}
+        <tr class="hover:bg-gray-50 transition duration-300">
+          <td class="px-6 py-4 text-gray-700 text-center">{{ schedule.id }}</td>
+          <td class="px-6 py-4 text-gray-700 text-center">{{ schedule.output }}</td>
+          <td class="px-6 py-4 text-gray-700 text-center">
+            <!-- Convert stored days to abbreviations for display -->
+            {% if schedule.n_days %}
+              {% set ns = namespace(abbrev=[]) %}
+              {% for day in schedule.n_days.split(',') %}
+                {% set day = day.strip() %}
+                {% if day == "Monday" %}
+                  {% set ns.abbrev = ns.abbrev + ["Mon"] %}
+                {% elif day == "Tuesday" %}
+                  {% set ns.abbrev = ns.abbrev + ["Tue"] %}
+                {% elif day == "Wednesday" %}
+                  {% set ns.abbrev = ns.abbrev + ["Wed"] %}
+                {% elif day == "Thursday" %}
+                  {% set ns.abbrev = ns.abbrev + ["Thu"] %}
+                {% elif day == "Friday" %}
+                  {% set ns.abbrev = ns.abbrev + ["Fri"] %}
+                {% elif day == "Saturday" %}
+                  {% set ns.abbrev = ns.abbrev + ["Sat"] %}
+                {% elif day == "Sunday" %}
+                  {% set ns.abbrev = ns.abbrev + ["Sun"] %}
+                {% else %}
+                  {% set ns.abbrev = ns.abbrev + [day] %}
+                {% endif %}
+              {% endfor %}
+              {{ ns.abbrev | join(', ') }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+          <td class="px-6 py-4 text-gray-700 text-center">{{ schedule.start_time }}</td>
+          <td class="px-6 py-4 text-gray-700 text-center">{{ schedule.end_time }}</td>
+          {% if schedule.days %}
+            <td class="px-6 py-4 text-gray-700 text-center">{{ schedule.days }}</td>
+          {% else %}
+            <td class="px-6 py-4 text-gray-700 text-center">not limited</td>
+          {% endif %}
+          <td class="px-6 py-4 text-center">
+            <!-- Delete button (with a confirmation modal) -->
+            <form
+              action="{{ url_for('delete_automatic_schedule', schedule_id=schedule.id) }}"
+              method="POST"
+            >
+              <button
+                type="submit"
+                class="bg-red-50 text-red-500 hover:bg-red-100 px-3 py-1 rounded transition delete-btn-as"
+                data-schedule-id="{{ schedule.id }}"
+                data-output="{{ schedule.output }}"
+                data-days="{{ schedule.n_days }}"
+                data-start="{{ schedule.start_time }}"
+                data-end="{{ schedule.end_time }}"
+              >
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="text-gray-600">No automatic schedules found.</p>
+  {% endif %}
+</div>
+
+<!-- Modal for Deleting an Automatic Schedule -->
+<div
+  id="deleteModalAS"
+  class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden z-50"
+>
+  <div class="bg-white p-6 rounded-lg shadow-lg w-80">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
+    <!-- The message will be dynamically set with schedule details -->
+    <p id="deleteModalASMsg" class="text-gray-700 mb-6"></p>
+    <div class="flex justify-end space-x-4">
+      <button
+        id="cancelDeleteAS"
+        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+      >
+        Cancel
+      </button>
+      <button
+        id="confirmDeleteAS"
+        class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    /**
+     * populateTimeSelects()
+     * Dynamically populates the hour and minute <select> elements.
+     * - Hour ranges from 00 to 23.
+     * - Minutes appear in 5-minute increments (00, 05, 10, ... 55).
+     */
+    function populateTimeSelects() {
+      // Select elements for hours and minutes
+      const hourSelects = document.querySelectorAll('#startTimeHour, #endTimeHour');
+      const minuteSelects = document.querySelectorAll('#startTimeMinute, #endTimeMinute');
+
+      // Populate hour selects (00-23)
+      for (let i = 0; i < 24; i++) {
+        const hour = i.toString().padStart(2, '0');
+        hourSelects.forEach(select => {
+          const option = document.createElement('option');
+          option.value = hour;
+          option.textContent = hour;
+          select.appendChild(option);
+        });
+      }
+
+      // Populate minute selects in 5-minute intervals
+      for (let i = 0; i < 60; i += 5) {
+        const minute = i.toString().padStart(2, '0');
+        minuteSelects.forEach(select => {
+          const option = document.createElement('option');
+          option.value = minute;
+          option.textContent = minute;
+          select.appendChild(option);
+        });
+      }
+    }
+
+    console.log("Filling time selects...");
+    populateTimeSelects();
+    console.log("Time selects filled");
+
+    /**
+     * Apply Select2 to the time <select> elements for a nicer UI.
+     * minimumResultsForSearch = Infinity hides the search box.
+     */
+    console.log("Applying Select2...");
+    $('.select2-time-select').select2({
+      dropdownAutoWidth: true,
+      width: 'auto',
+      minimumResultsForSearch: Infinity,
+      dropdownPosition: 'below',
+    });
+    console.log("Select2 applied");
+
+    // Grab the schedule form (expected to be in #addFormSection)
+    const form = document.querySelector('form');
+    if (!form) {
+      console.error("Form not found!");
+      return;
+    }
+
+    /**
+     * On form submission, combine the hour:minute selects into hidden inputs
+     * named "startTime" and "endTime". If either is missing, alert and prevent submission.
+     */
+    form.addEventListener('submit', function(event) {
+      console.log("Form submission triggered");
+
+      const startHour = $('#startTimeHour').val();
+      const startMinute = $('#startTimeMinute').val();
+      console.log("startTimeHour:", startHour);
+      console.log("startTimeMinute:", startMinute);
+
+      // Validate 'Open At' time
+      if (!startHour || !startMinute) {
+        console.error("Missing startTime values");
+        event.preventDefault();
+        alert("Please select a valid 'Open At' time.");
+        return;
+      }
+
+      // Create hidden input for combined startTime
+      const startTimeInput = document.createElement('input');
+      startTimeInput.type = 'hidden';
+      startTimeInput.name = 'startTime';
+      startTimeInput.value = `${startHour}:${startMinute}`;
+      form.appendChild(startTimeInput);
+      console.log("Generated startTime:", startTimeInput.value);
+
+      const endHour = $('#endTimeHour').val();
+      const endMinute = $('#endTimeMinute').val();
+      console.log("endTimeHour:", endHour);
+      console.log("endTimeMinute:", endMinute);
+
+      // Validate 'Close At' time
+      if (!endHour || !endMinute) {
+        console.error("Missing endTime values");
+        event.preventDefault();
+        alert("Please select a valid 'Close At' time.");
+        return;
+      }
+
+      // Create hidden input for combined endTime
+      const endTimeInput = document.createElement('input');
+      endTimeInput.type = 'hidden';
+      endTimeInput.name = 'endTime';
+      endTimeInput.value = `${endHour}:${endMinute}`;
+      form.appendChild(endTimeInput);
+      console.log("Generated endTime:", endTimeInput.value);
+
+      // Log all form data for debugging
+      const formData = new FormData(form);
+      console.log("Form data before submission:", Object.fromEntries(formData));
+    });
+
+    console.log("Initializing checkbox requirements...");
+    handleAutomaticSchedule();
+
+    // Whenever a day checkbox changes, re-check if at least one day is required
+    var checkboxes = document.querySelectorAll('.daysCheckBoxes input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.addEventListener('change', handleAutomaticSchedule);
+    });
+    console.log("Checkbox handling initialized");
+  });
+
+  /**
+   * handleAutomaticSchedule()
+   * Ensures at least one day is selected by requiring the checkboxes if none are checked.
+   */
+  function handleAutomaticSchedule() {
+    var checkboxes = document.querySelectorAll('.daysCheckBoxes input[type="checkbox"]');
+    var anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+    // If no checkboxes are checked, force them to be required
+    if (!anyChecked) {
+      checkboxes.forEach(cb => cb.setAttribute('required', 'required'));
+    } else {
+      checkboxes.forEach(cb => cb.removeAttribute('required'));
+    }
+  }
+
+  /**
+   * resetAutomaticScheduleForm()
+   * Clears the "Add Automatic Schedule" form to its default state:
+   * - Unselects all days
+   * - Resets the time selects (hour/minute) to their first option
+   * - Removes hidden inputs for startTime/endTime if they exist
+   */
+  function resetAutomaticScheduleForm() {
+    const form = document.querySelector('#addFormSection form');
+    if (!form) return;
+  
+    // Reset select dropdowns (Output, Hours, Minutes) to default
+    form.querySelectorAll('select').forEach(select => {
+      select.selectedIndex = 0;
+      // If using Select2, reset it as well
+      $(select).val(null).trigger('change');
+    });
+  
+    // Clear text/number inputs like 'numDays'
+    form.querySelectorAll('input[type="text"], input[type="number"]').forEach(input => {
+      input.value = '';
+    });
+  
+    // Uncheck all day-of-week checkboxes
+    form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.checked = false;
+    });
+  
+    // Remove any hidden startTime/endTime inputs
+    form.querySelectorAll('input[name="startTime"], input[name="endTime"]').forEach(input => input.remove());
+  
+    // Reapply "required" logic for day checkboxes
+    handleAutomaticSchedule();
+  }
+</script>
+<style>
+
+/* Customize the appearance of Select2 dropdowns */
+.select2-container {
+  /* Ensure that the dropdown menus appear above other elements on the page */
+  z-index: 1000 !important;
+}
+
+/* Style for a single-select (Select2) box */
+.select2-container .select2-selection--single {
+  /* Match the border style to your existing design (e.g., tailwind’s border-gray-300) */
+  border: 1px solid #d1d5db;
+  /* Slightly rounded corners to match Tailwind’s rounded-md (0.375rem) */
+  border-radius: 0.375rem;
+  /* Set a fixed height that aligns with your form inputs */
+  height: 34px;
+  /* Make the selection box a flex container so the arrow and text align vertically */
+  display: flex;
+  align-items: center;
+}
+
+/* The rendered text (chosen item) inside the single-select box */
+.select2-container .select2-selection__rendered {
+  /* Match text color to, for instance, Tailwind’s text-gray-700 (#374151) */
+  color: #374151;
+  /* Provide horizontal padding to position text nicely */
+  padding: 0 0.5rem;
+}
+
+/* The arrow icon within the single-select box */
+.select2-container .select2-selection__arrow {
+  /* Ensure the arrow container matches the height of the select box */
+  height: 34px;
+}
+
+/* The dropdown list container itself */
+.select2-dropdown {
+  /* Higher stacking order so it appears on top of other elements */
+  z-index: 1001 !important;
+  /* Match the border style */
+  border: 1px solid #d1d5db;
+  /* Slightly rounded corners for consistency */
+  border-radius: 0.375rem;
+  /* White background for the dropdown */
+  background-color: white;
+  /* Force the dropdown to open downward */
+  top: 100% !important;
+}
+
+/* Each individual option in the dropdown list */
+.select2-results__option {
+  padding: 0.5rem;
+  /* Match text color to #374151 or a similar gray */
+  color: #374151;
+}
+
+/* Highlight color for the currently hovered or focused option */
+.select2-results__option--highlighted {
+  /* Tailwind’s custom color: #4A90E2 for background */
+  background-color: #4A90E2 !important;
+  /* White text on the highlighted background */
+  color: white !important;
+}
+
+/* Ensure parent containers do not hide or clip the dropdown */
+#addFormSection,
+.flex.items-center.space-x-4,
+.relative {
+  /* Allow overflow so the dropdown can appear outside the container’s bounds */
+  overflow: visible !important;
+  /* Set position to relative to control stacking context */
+  position: relative;
+  /* Raise the stacking order for these containers, preventing dropdown clipping */
+  z-index: 1000;
+}
+</style>

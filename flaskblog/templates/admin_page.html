@@ -1,0 +1,204 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- Container for the Admin Dashboard page -->
+<div class="container mt-5">
+    <!-- Main Title for the Admin Dashboard -->
+    <h1 class="text-center mb-4">Admin Dashboard</h1>
+    <p class="text-center text-muted mb-5">
+      Manage diagnostic tests and logs for the 2T Remote Configuration Tool.
+    </p>
+
+    <!-- Displaying flash messages (e.g., success or error) in a text-center style -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} text-center" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Row holding the three main card columns -->
+    <div class="row">
+
+        <!-- Test Diagnostics 1 (Live Diagnostics) -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <!-- Card Header with a custom background color class "bg-layout" -->
+                <div class="card-header bg-layout text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-stethoscope mr-2"></i> Test Diagnostics 1
+                    </h5>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <p class="card-text text-muted">
+                      Upload the results of Test Diagnostics 1 (Live Diagnostics) via Excel.
+                    </p>
+                    <!-- Form for uploading an Excel file -->
+                    <form
+                      method="POST"
+                      action="{{ url_for('diag_live', device_id=device_id) }}"
+                      enctype="multipart/form-data"
+                      id="diagnostics1Form"
+                    >
+                        <div class="form-group">
+                            <label for="diagnostics1File" class="form-label">Upload Excel File</label>
+                            <input
+                              type="file"
+                              class="form-control-file"
+                              id="diagnostics1File"
+                              name="file"
+                              accept=".xlsx, .xls"
+                              required
+                            >
+                        </div>
+                        <!-- Upload button styled with a custom "btn-layout" class -->
+                        <button type="submit" class="btn btn-layout btn-block">
+                            <i class="fas fa-upload mr-2"></i> Upload Results
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Diagnostics 2 (Diag Levels) -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <!-- Notice there's no custom header here; only a card body -->
+                <div class="card-body">
+                    <form
+                      method="POST"
+                      action="{{ url_for('diag_current', device_id=device_id) }}"
+                      enctype="multipart/form-data"
+                      id="diagnostics2Form"
+                    >
+                        <div class="form-group">
+                            <label for="diagnostics2File" class="form-label">Upload Excel File</label>
+                            <input
+                              type="file"
+                              class="form-control-file"
+                              id="diagnostics2File"
+                              name="file"
+                              accept=".xlsx, .xls"
+                              required
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-layout btn-block">
+                            <i class="fas fa-upload mr-2"></i> Upload Results
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Log Section -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <!-- Card Header with Title and Icon -->
+                <div class="card-header bg-layout text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-file-alt mr-2"></i> Test Log
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text text-muted">
+                      Upload diagnostic logs via Excel.
+                    </p>
+                    <!-- Another form for uploading a log file -->
+                    <form
+                      method="POST"
+                      action=""
+                      enctype="multipart/form-data"
+                      id="logForm"
+                    >
+                        <div class="form-group">
+                            <label for="logFile" class="form-label">Upload Excel File</label>
+                            <input
+                              type="file"
+                              class="form-control-file"
+                              id="logFile"
+                              name="file"
+                              accept=".xlsx, .xls"
+                              required
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-layout btn-block">
+                            <i class="fas fa-upload mr-2"></i> Upload Log
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inline Custom Styles for the Form and Cards -->
+<style>
+    /* Background color for certain card headers */
+    .bg-layout {
+        background: #5f788a; /* Specific layout color */
+    }
+    /* Button styling with consistent color scheme */
+    .btn-layout {
+        background: #5f788a;
+        border: none;
+        color: #fff;
+        transition: background 0.3s ease;
+    }
+    .btn-layout:hover {
+        background: #6b8ca0; /* Slightly lighter on hover */
+        color: #fff;
+    }
+    /* Card hover animations */
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    /* Enhanced focus for form controls */
+    .form-control:focus,
+    .form-control-file:focus {
+        outline: none;
+        box-shadow: 0 0 0 0.2rem rgba(95, 120, 138, 0.25);
+    }
+    /* Responsive spacing for small screens */
+    @media (max-width: 767px) {
+        .card {
+            margin-bottom: 1.5rem;
+        }
+    }
+</style>
+
+<!-- Client-side Form Validation Script (Optional) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // For each form, validate the file input before submission
+        const forms = document.querySelectorAll('form');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                const fileInput = form.querySelector('input[type="file"]');
+                const file = fileInput.files[0];
+                // Check that the user actually selected a file
+                if (!file) {
+                    event.preventDefault();
+                    alert('Please select a file to upload.');
+                    return;
+                }
+                // Restrict to .xlsx or .xls
+                const allowedExtensions = ['xlsx', 'xls'];
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+                if (!allowedExtensions.includes(fileExtension)) {
+                    event.preventDefault();
+                    alert('Please upload a valid Excel file (.xlsx or .xls).');
+                    return;
+                }
+            });
+        });
+    });
+</script>
+{% endblock content %}

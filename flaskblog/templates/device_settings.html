@@ -1,0 +1,190 @@
+<!-- Settings Tab Content -->
+<div id="settings" class="tab-content hidden">
+  <!-- Main title for the Settings tab -->
+  <h2 class="tab-title">
+    <i class="fas fa-cog text-indigo-500 mr-2"></i> Settings
+  </h2>
+
+  <!-- Container for various settings forms, spaced vertically -->
+  <div class="space-y-6">
+
+    <!-- Pulse Time Form -->
+    <!-- Allows the user to set the pulse time (in milliseconds) for the device's relay/pulse operation -->
+    <form
+      id="pulseTimeForm"
+      action="{{ url_for('set_pulse_time', device_id=device_info.id) }}"
+      method="POST"
+      class="form-container"
+    >
+      <h3 class="form-title">
+        <i class="fas fa-clock text-indigo-500 mr-2"></i> Set Pulse Time
+      </h3>
+      <div>
+        <label for="pulseTime" class="form-label">Pulse Time (in ms)</label>
+        <input
+          type="number"
+          name="pulse_time"
+          id="pulseTime"
+          placeholder="Enter pulse time"
+          required
+          min="1"
+          max="10"
+          step="1"
+          value="{{ device_info.pulse_time }}"
+          class="form-input"
+        >
+      </div>
+      <!-- Submit button to save the new pulse time value -->
+      <button
+        type="submit"
+        class="form-button bg-indigo-600 hover:bg-indigo-700"
+      >
+        <i class="fas fa-save mr-2"></i> Save Pulse Time
+      </button>
+    </form>
+
+    <!-- Security Code Management Form -->
+    <!-- Allows enabling, changing, or disabling a security code for the device -->
+    <form
+      id="securityCodeForm"
+      action="{{ url_for('manage_security_code', device_id=device_info.id) }}"
+      method="POST"
+      class="form-container"
+    >
+      <h3 class="form-title">
+        <i class="fas fa-shield-alt text-indigo-500 mr-2"></i> Manage Security Code
+      </h3>
+      <div>
+        <label for="securityCodeStatus" class="form-label">Security Code Status</label>
+        <select
+          name="security_code_status"
+          id="securityCodeStatus"
+          class="form-input"
+        >
+          <!-- "Enable" is selected if security_code_enable is True -->
+          <option
+            value="enable"
+            {% if device_info.security_code_enable %}selected{% endif %}
+          >
+            Enable
+          </option>
+          <option value="change">Change</option>
+          <!-- "Disable" is selected if security_code_enable is False -->
+          <option
+            value="disable"
+            {% if not device_info.security_code_enable %}selected{% endif %}
+          >
+            Disable
+          </option>
+        </select>
+      </div>
+
+      <!-- Display the current security code only if it's enabled -->
+      {% if device_info.security_code_enable %}
+      <div class="mt-2">
+        <span class="text-gray-600">Current Security Code: </span>
+        <span class="font-bold">{{ device_info.security_code }}</span>
+      </div>
+      {% endif %}
+
+      <!-- Hidden by default, becomes visible if user chooses "Change" code option -->
+      <div id="securityCodeFields" class="hidden">
+        <label for="newSecurityCode" class="form-label">New Security Code</label>
+        <input
+          type="text"
+          name="new_security_code"
+          id="newSecurityCode"
+          placeholder="Enter new security code"
+          value="{{ device_info.security_code }}"
+          class="form-input"
+          maxlength="4"
+          pattern="^\d{4}$"
+          required
+          title="Please enter exactly 4 digits."
+        >
+      </div>
+
+      <!-- Submit button to apply changes to the security code -->
+      <button
+        type="submit"
+        class="form-button bg-indigo-600 hover:bg-indigo-700"
+      >
+        <i class="fas fa-lock mr-2"></i> Save changes 
+      </button>
+    </form>
+
+    <!-- These forms are only displayed if the device supports "Voice" functionality -->
+    {% if 'Voice' in device_info.device_type_name %}
+
+      <!-- Ring Time Form -->
+      <!-- Controls how long the device rings (in seconds) before timing out -->
+      <form
+        id="ringTimeForm"
+        action="{{ url_for('set_ring_time', device_id=device_info.id) }}"
+        method="POST"
+        class="form-container"
+      >
+        <h3 class="form-title">
+          <i class="fas fa-clock text-indigo-500 mr-2"></i> Set Ring Time
+        </h3>
+        <div>
+          <label for="ringTime" class="form-label">Ring Time (in seconds)</label>
+          <input
+            type="number"
+            name="ring_time"
+            id="ringTime"
+            placeholder="Enter ring time"
+            required
+            min="1"
+            max="999"
+            step="1"
+            value="{{ device_info.ring_time }}"
+            class="form-input"
+          >
+        </div>
+        <!-- Submit button for ring time changes -->
+        <button
+          type="submit"
+          class="form-button bg-indigo-600 hover:bg-indigo-700"
+        >
+          <i class="fas fa-save mr-2"></i> Save Ring Time
+        </button>
+      </form>
+
+      <!-- Talk Time Form -->
+      <!-- Controls how long a user can talk (in seconds) before the call automatically ends -->
+      <form
+        id="talkTimeForm"
+        action="{{ url_for('set_talk_time', device_id=device_info.id) }}"
+        method="POST"
+        class="form-container"
+      >
+        <h3 class="form-title">
+          <i class="fas fa-phone text-indigo-500 mr-2"></i> Set Talk Time
+        </h3>
+        <div>
+          <label for="talkTime" class="form-label">Talk Time (in seconds)</label>
+          <input
+            type="number"
+            name="talk_time"
+            id="talkTime"
+            placeholder="Enter talk time"
+            required
+            min="1"
+            max="999"
+            step="1"
+            value="{{ device_info.talk_time }}"
+            class="form-input"
+          >
+        </div>
+        <!-- Submit button for talk time changes -->
+        <button
+          type="submit"
+          class="form-button bg-indigo-600 hover:bg-indigo-700"
+        >
+          <i class="fas fa-save mr-2"></i> Save Talk Time
+        </button>
+      </form>
+    {% endif %}
+  </div>
+</div>

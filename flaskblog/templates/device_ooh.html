@@ -1,0 +1,421 @@
+<!-- Out Of Hours (OOH) Configuration Form -->
+<form method="POST" action="{{ url_for('update_ooh', device_id=device_info.id) }}">
+  <!-- Main Title for Out Of Hours Setup (Do Not Disturb) -->
+  <h2 class="text-xl font-bold mb-2 text-[#4A90E2]">
+    Out Of Hours Setup (Do Not Disturb)
+  </h2>
+
+  <!-- Short Description -->
+  <p class="text-gray-600 mb-6">
+    Configure the times and days when the GSM Intercom should not make calls, or redirect calls to an alternate number.
+  </p>
+  
+  <!-- OOH Mode Toggle -->
+  <!-- This checkbox allows enabling or disabling OOH mode globally -->
+  <div class="mb-6">
+    <label for="oohModeToggle" class="inline-flex items-center space-x-2">
+      <span class="text-gray-800 font-medium">Enable OOH Mode:</span>
+      <input 
+        type="checkbox" 
+        id="oohModeToggle" 
+        name="oohModeToggle"
+        class="h-5 w-5 accent-[#4A90E2] cursor-pointer" 
+        {% if ooh and ooh.out_of_hours_enabled %}checked{% endif %}
+      />
+    </label>
+    <p class="text-sm text-gray-500 mt-1">
+      When enabled, calls will be restricted outside the defined times.
+    </p>
+  </div>
+  
+  <!-- OOH Configuration Section (shown only if OOH mode is enabled) -->
+  <div id="oohConfigData" class="{% if ooh and ooh.out_of_hours_enabled %}{% else %}hidden{% endif %}">
+    
+    <!-- Section Title: Allowed Call Days & Time -->
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold text-gray-800 mb-2">
+        Allowed Call Days & Time
+      </h3>
+      <p class="text-sm text-gray-500 mb-4">
+        Select the days when calls are permitted and choose the time range for all selected days.
+      </p>
+  
+      <!-- Days Selection -->
+      <!-- Each checkbox corresponds to a day of the week; if that day is stored in 'ooh.days', mark it as checked -->
+      <div class="flex flex-wrap items-center gap-4 mb-4">
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="mondayActive"
+            id="mondayActive"
+            class="accent-[#4A90E2] w-5 h-5"
+            {% if ooh and ooh.days and ('Monday' in ooh.days) %}checked{% endif %}
+          >
+          <span class="ml-2 text-gray-800">Monday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="tuesdayActive"
+            id="tuesdayActive"
+            class="accent-[#4A90E2] w-5 h-5"
+            {% if ooh and ooh.days and ('Tuesday' in ooh.days) %}checked{% endif %}
+          >
+          <span class="ml-2 text-gray-800">Tuesday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="wednesdayActive"
+            id="wednesdayActive"
+            class="accent-[#4A90E2] w-5 h-5"
+            {% if ooh and ooh.days and ('Wednesday' in ooh.days) %}checked{% endif %}
+          >
+          <span class="ml-2 text-gray-800">Wednesday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="thursdayActive"
+            id="thursdayActive"
+            class="accent-[#4A90E2] w-5 h-5"
+            {% if ooh and ooh.days and ('Thursday' in ooh.days) %}checked{% endif %}
+          >
+          <span class="ml-2 text-gray-800">Thursday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="fridayActive"
+            id="fridayActive"
+            class="accent-[#4A90E2] w-5 h-5"
+            {% if ooh and ooh.days and ('Friday' in ooh.days) %}checked{% endif %}
+          >
+          <span class="ml-2 text-gray-800">Friday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="saturdayActive"
+            id="saturdayActive"
+            class="accent-[#4A90E2] w-5 h-5"
+            {% if ooh and ooh.days and ('Saturday' in ooh.days) %}checked{% endif %}
+          >
+          <span class="ml-2 text-gray-800">Saturday</span>
+        </label>
+        <label class="inline-flex items-center">
+          <input
+            type="checkbox"
+            name="sundayActive"
+            id="sundayActive"
+            class="accent-[#4A90E2] w-5 h-5"
+            {% if ooh and ooh.days and ('Sunday' in ooh.days) %}checked{% endif %}
+          >
+          <span class="ml-2 text-gray-800">Sunday</span>
+        </label>
+      </div>
+  
+      <!-- Time Range Selection -->
+      <!-- Each input field is read-only; likely opened via a custom timepicker script -->
+      <div class="flex items-center space-x-4">
+        
+        <!-- From (Start Time) -->
+        <div class="relative">
+          <label for="globalStart" class="text-gray-700">From</label>
+          <input 
+            type="text"
+            id="globalStart"
+            name="globalStart"
+            readonly
+            class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+            value="{% if ooh and ooh.start_time %}{{ ooh.start_time }}{% endif %}"
+          />
+          <!-- Dropdown for selecting hours/minutes, displayed via JS -->
+          <div
+            id="globalStartDropdown"
+            class="time-dropdown absolute z-10 mt-1 w-64 bg-white border border-gray-300 rounded shadow-md hidden"
+          >
+            <div class="flex">
+              <div
+                id="globalStartHours"
+                class="w-1/2 border-r border-gray-300"
+                style="max-height:200px; overflow-y:auto;"
+              ></div>
+              <div
+                id="globalStartMinutes"
+                class="w-1/2"
+                style="max-height:200px; overflow-y:auto;"
+              ></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- To (End Time) -->
+        <div class="relative">
+          <label for="globalEnd" class="text-gray-700">to</label>
+          <input
+            type="text"
+            id="globalEnd"
+            name="globalEnd"
+            readonly
+            class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+            value="{% if ooh and ooh.end_time %}{{ ooh.end_time }}{% endif %}"
+          />
+          <!-- Dropdown for hours/minutes, similar to globalStartDropdown -->
+          <div
+            id="globalEndDropdown"
+            class="time-dropdown absolute z-10 mt-1 w-64 bg-white border border-gray-300 rounded shadow-md hidden"
+          >
+            <div class="flex">
+              <div
+                id="globalEndHours"
+                class="w-1/2 border-r border-gray-300"
+                style="max-height:200px; overflow-y:auto;"
+              ></div>
+              <div
+                id="globalEndMinutes"
+                class="w-1/2"
+                style="max-height:200px; overflow-y:auto;"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Alternate Phone Number Field -->
+    <!-- If OOH mode is enabled, calls will go to this number outside permitted times -->
+    <div class="mb-6">
+      <label for="alternateNumber" class="block text-gray-800 font-medium mb-2">
+        Alternate Phone Number
+      </label>
+      <input
+        type="text"
+        name="alternateNumber"
+        id="alternateNumber"
+        placeholder="e.g. +123456789"
+        class="border w-full rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+        value="{% if ooh and ooh.alternative_phone_no %}{{ ooh.alternative_phone_no }}{% endif %}"
+      />
+      <p class="text-sm text-gray-500 mt-1">
+        When OOH mode is enabled, calls will be redirected to this number outside permitted times.
+        Don't fill out if you don't want this feature.
+      </p>
+    </div>
+  </div>
+  
+  <!-- Action Buttons: Save and Cancel (or Reset) -->
+  <div class="flex space-x-3">
+    <!-- Submits the form and updates OOH configuration -->
+    <button
+      type="submit"
+      class="bg-[#4A90E2] hover:bg-blue-600 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      Save
+    </button>
+    <!-- Triggers a JS function to reset the form to default or close it -->
+    <button
+      type="button"
+      class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+      onclick="resetOOHForm()"
+    >
+      Cancel
+    </button>
+  </div>
+</form>
+
+  <!-- jQuery for handling OOH toggle -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  // When the document is ready, attach event handlers to manage the OOH (Out Of Hours) UI.
+  $(document).ready(function() {
+    var $oohToggle = $('#oohModeToggle');      // Checkbox for enabling/disabling OOH mode
+    var $oohConfig = $('#oohConfigData');      // Container showing OOH configuration fields
+    var $dayCheckboxes = $oohConfig.find('input[type="checkbox"]'); // Day selection checkboxes
+    var $globalStart = $('#globalStart');      // "From" time input
+    var $globalEnd = $('#globalEnd');          // "To" time input
+
+    // Function to handle toggling of OOH mode and setting required fields
+    function handleOOH() {
+      if ($oohToggle.is(':checked')) {
+        // If OOH mode is enabled, show the configuration and set required attributes
+        $oohConfig.removeClass('hidden');
+        // Check if any day checkbox is selected
+        if ($dayCheckboxes.is(':checked')) {
+          $dayCheckboxes.removeAttr('required');
+        } else {
+          $dayCheckboxes.attr('required', 'required');
+        }
+        $globalStart.attr('required', 'required');
+        $globalEnd.attr('required', 'required');
+      } else {
+        // If OOH mode is disabled, hide the configuration and remove requirements
+        $oohConfig.addClass('hidden');
+        $dayCheckboxes.removeAttr('required');
+        $globalStart.removeAttr('required');
+        $globalEnd.removeAttr('required');
+      }
+    }
+
+    // Initialize the OOH toggle UI on page load
+    handleOOH();
+
+    // Re-check OOH mode whenever the checkbox changes
+    $oohToggle.on('change', handleOOH);
+
+    // Also re-check if days are selected, which can change whether required attribute is needed
+    $dayCheckboxes.on('change', handleOOH);
+  });
+
+  // Custom Timepicker for setting the allowed time range
+  document.addEventListener("DOMContentLoaded", () => {
+    // A helper function that sets up a time picker for a given input and dropdown
+    function setupTimePicker(inputId, dropdownId, hoursId, minutesId) {
+      const input = document.getElementById(inputId);
+      const dropdown = document.getElementById(dropdownId);
+      const hoursContainer = document.getElementById(hoursId);
+      const minutesContainer = document.getElementById(minutesId);
+
+      // Generate a list of hours (00-23)
+      const hours = [];
+      for (let h = 0; h < 24; h++) {
+        hours.push(String(h).padStart(2, "0"));
+      }
+
+      // Generate minutes in 5-minute intervals
+      const minutes = [];
+      for (let m = 0; m < 60; m += 5) {
+        minutes.push(String(m).padStart(2, "0"));
+      }
+
+      let selectedHour = null;
+      let selectedMinute = null;
+
+      // Update the input field once both hour and minute are chosen
+      function updateInput() {
+        if (selectedHour !== null && selectedMinute !== null) {
+          input.value = `${selectedHour}:${selectedMinute}`;
+          dropdown.classList.add("hidden");
+        }
+      }
+
+      // Populate the hours container
+      hoursContainer.innerHTML = hours
+        .map(h => `<div class="p-2 hover:bg-gray-200 cursor-pointer" data-hour="${h}">${h}</div>`)
+        .join("");
+
+      // Populate the minutes container
+      minutesContainer.innerHTML = minutes
+        .map(m => `<div class="p-2 hover:bg-gray-200 cursor-pointer" data-minute="${m}">${m}</div>`)
+        .join("");
+
+      // Listen for clicks in the hour list
+      hoursContainer.addEventListener("click", (e) => {
+        if (e.target.dataset.hour !== undefined) {
+          selectedHour = e.target.dataset.hour;
+          updateInput();
+        }
+      });
+
+      // Listen for clicks in the minute list
+      minutesContainer.addEventListener("click", (e) => {
+        if (e.target.dataset.minute !== undefined) {
+          selectedMinute = e.target.dataset.minute;
+          updateInput();
+        }
+      });
+
+      // Toggle the dropdown when the input is clicked
+      input.addEventListener("click", (e) => {
+        // Close any other open time dropdowns
+        document.querySelectorAll(".time-dropdown").forEach(dd => dd.classList.add("hidden"));
+        // Toggle visibility of this particular dropdown
+        dropdown.classList.toggle("hidden");
+        e.stopPropagation();
+      });
+
+      // Close dropdown if clicking outside of it
+      document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.add("hidden");
+        }
+      });
+    }
+
+    // Initialize time pickers for Global Start and Global End inputs
+    setupTimePicker("globalStart", "globalStartDropdown", "globalStartHours", "globalStartMinutes");
+    setupTimePicker("globalEnd", "globalEndDropdown", "globalEndHours", "globalEndMinutes");
+  });
+
+  // Reset the form when the "Cancel" button is clicked
+  // This function clears the fields, hides the configuration, etc.
+  function resetOOHForm() {
+    const form = document.querySelector('form');
+    form.reset();
+    
+    // Clear the custom timepicker inputs
+    document.getElementById('globalStart').value = '';
+    document.getElementById('globalEnd').value = '';
+    
+    // Hide the OOH config section if it was shown
+    document.getElementById('oohConfigData').classList.add('hidden');
+  }
+</script>
+
+<!-- Custom Styles for Select2 (a jQuery-based enhanced select plugin) -->
+<style>
+  /* Ensure the select2 dropdown is visible above other elements */
+  .select2-container {
+    z-index: 1000 !important; /* Raises the dropdown above other elements */
+  }
+
+  /* Style single-select boxes to match your site’s design */
+  .select2-container .select2-selection--single {
+    border: 1px solid #d1d5db; /* Matches tailwind border-gray-300 */
+    border-radius: 0.375rem;   /* Rounded corners */
+    height: 34px;              /* Adjust height as needed */
+    display: flex;
+    align-items: center;
+  }
+
+  /* Adjust spacing and text color within the selection field */
+  .select2-container .select2-selection__rendered {
+    color: #374151; /* text-gray-700 equivalent */
+    padding: 0 0.5rem;
+  }
+
+  /* Position and style the arrow (caret) in the dropdown */
+  .select2-container .select2-selection__arrow {
+    height: 34px;
+  }
+
+  /* Style for the dropdown list itself */
+  .select2-dropdown {
+    z-index: 1001 !important; /* Ensure it's on top of other elements */
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    background-color: white;
+    top: 100% !important; /* Force it to open downwards */
+  }
+
+  /* Padding and text color for each option in the dropdown */
+  .select2-results__option {
+    padding: 0.5rem;
+    color: #374151;
+  }
+
+  /* Hover/focus state for dropdown options */
+  .select2-results__option--highlighted {
+    background-color: #4A90E2 !important; /* Tailwind text-indigo-500 or similar */
+    color: white !important;
+  }
+
+  /* Prevent parent containers from clipping the dropdown */
+  #addFormSection,
+  .flex.items-center.space-x-4,
+  .relative {
+    overflow: visible !important;
+    position: relative;
+    z-index: 1000;
+  }
+</style>

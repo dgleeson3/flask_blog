@@ -1,0 +1,43 @@
+<div id="downloadModalOut" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white w-80 rounded-lg shadow-2xl p-6">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold">Download Phone Numbers</h2>
+      <button onclick=" closeDownloadModal_Out()" class="text-gray-500 text-xl font-bold">&times;</button>
+    </div>
+      <a href="{{ url_for('download_phone_numbers', device_id=device_info.id, excel_type='call_out') }}" class="block bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700 text-white text-center py-2 rounded-lg shadow-md">
+        Download Call Out
+      </a>
+  </div>
+</div>
+
+
+<div id="downloadModalIn" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+  <div class="bg-white w-80 rounded-lg shadow-2xl p-6">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h2 class="text-lg font-semibold">Download Phone Numbers</h2>
+      <button onclick="closeDownloadModal_In()" class="text-gray-500 text-xl font-bold">&times;</button>
+    </div>
+      <a href="{{ url_for('download_phone_numbers', device_id=device_info.id, excel_type='call_in') }}" class="block bg-gradient-to-r from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700 text-white text-center py-2 rounded-lg shadow-md mb-2">
+        Download Call In
+      </a>
+  </div>
+</div>
+
+<script>
+  function openDownloadModal_In() {
+    document.getElementById('downloadModalIn').classList.remove('hidden');
+  }
+
+  function closeDownloadModal_In() {
+    document.getElementById('downloadModalIn').classList.add('hidden');
+  }
+
+  function closeDownloadModal_Out() {
+    document.getElementById('downloadModalOut').classList.add('hidden');
+  }
+
+  function openDownloadModal_Out() {
+    document.getElementById('downloadModalOut').classList.remove('hidden');
+  }
+ 
+</script>

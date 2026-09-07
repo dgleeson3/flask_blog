@@ -1,0 +1,572 @@
+<!-- Inclure Tailwind CSS et Font Awesome via CDN -->
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Section Device Diagnostics for administrator -->
+<div class="diagnostics-container">
+    <h2 class="diagnostics-title" data-aos="fade-down">
+        <i class="fas fa-tachometer-alt text-blue-700 mr-2"></i> Device Diagnostics
+    </h2>
+
+    <!-- Live Diagnostics -->
+<div class="diagnostics-section" data-aos="fade-up" data-aos-delay="100">
+    <h3 class="diagnostics-subtitle">
+        <i class="fas fa-bolt text-yellow-500 mr-2"></i> Live Diagnostics (24 Hour Diagnostics)
+    </h3>
+    <div class="table-wrapper {% if live_diags.count() > 1 %}scrollable{% endif %}">
+        <table class="diagnostics-table">
+            <thead>
+                <tr>
+                    <th scope="col">Device Type</th>
+                    <th scope="col">Date obtained</th>
+                    <th scope="col">SW Version</th>
+                    <th scope="col">Instantaneous Band</th>
+                    <th scope="col">Instantaneous Signal Strength</th>
+                    <th scope="col">State of Relay 1 and Relay 2</th>
+                    <th scope="col">Stored Device Phone Number</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if live_diags %}
+                    {% for live_diag in live_diags %}
+                        <tr class="diagnostics-row">
+                            <td>{{ live_diag.device_type }}</td>
+                            <td>{{ live_diag.date_diag }}</td>
+                            <td>{{ live_diag.sw_version }}</td>
+                            <td>{{ live_diag.instantaneous_band }}</td>
+                            <td class="signal-strength">
+                                {{ live_diag.instantaneous_signal_strength }} dBm
+                                {% if live_diag.instantaneous_signal_strength is not none %}
+                                    {% if live_diag.instantaneous_signal_strength > -70 %}
+                                        <span class="signal-badge signal-success">Good</span>
+                                    {% elif live_diag.instantaneous_signal_strength > -90 %}
+                                        <span class="signal-badge signal-warning">Moderate</span>
+                                    {% else %}
+                                        <span class="signal-badge signal-critical">Low</span>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                Relay 1:
+                                {% if live_diag.state_of_relay_1 == "ON" %}
+                                    <span class="state-on">
+                                        <i class="fas fa-check-circle mr-1"></i> ON
+                                    </span>
+                                {% else %}
+                                    <span class="state-off">
+                                        <i class="fas fa-times-circle mr-1"></i> OFF
+                                    </span>
+                                {% endif %}
+                                , Relay 2:
+                                {% if live_diag.state_of_relay_2 == "ON" %}
+                                    <span class="state-on">
+                                        <i class="fas fa-check-circle mr-1"></i> ON
+                                    </span>
+                                {% else %}
+                                    <span class="state-off">
+                                        <i class="fas fa-times-circle mr-1"></i> OFF
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <i class="fas fa-phone-alt mr-2 text-blue-600"></i> {{ live_diag.stored_device_phone_number }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr class="diagnostics-row">
+                            <td colspan="6">No Live Diagnostics available</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+ <!-- Current Diagnostics -->
+<div class="diagnostics-section" data-aos="fade-up" data-aos-delay="200">
+    <h3 class="diagnostics-subtitle">
+        <i class="fas fa-chart-line text-yellow-500 mr-2"></i> Diagnostic Levels (Current Diagnostics)
+    </h3>
+    <div class="table-wrapper {% if current_diags.count() > 1 %}scrollable{% endif %}">
+        <table class="diagnostics-table"> 
+            <thead>
+                <tr>
+                    <th scope="col">Device Type</th>
+                    <th scope="col">Date obtained</th>
+                    <th scope="col">SW Version</th>
+                    <th scope="col">Count of Signal Strength Too Low</th>
+                    <th scope="col">Count of NOT Checking Signal Strength</th>
+                    <th scope="col">Count of Can NOT Register</th>
+                    <th scope="col">Count of OS Problem</th>
+                    <th scope="col">Count of State Stuck</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if current_diags %}
+                    {% for current_diag in current_diags %}
+                        <tr class="diagnostics-row">
+                            <td>{{ current_diag.device_type }}</td>
+                            <td>{{ current_diag.date_diag }}</td>
+                            <td>{{ current_diag.sw_version }}</td>
+                            <td class="count-critical">{{ current_diag.count_signal_strength_too_low }}</td>
+                            <td class="count-warning">{{ current_diag.count_not_checking_signal_strength }}</td>
+                            <td class="count-warning">{{ current_diag.count_cannot_register }}</td>
+                            <td class="count-success">{{ current_diag.count_os_problem }}</td>
+                            <td class="count-critical">{{ current_diag.count_state_stuck }}</td>
+                        </tr>
+                    {% else %}
+                        <tr class="diagnostics-row">
+                            <td colspan="8">No Current Diagnostics available</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+   <!-- 5 Day Stored Diagnostics -->
+<div class="diagnostics-section" data-aos="fade-up" data-aos-delay="300">
+    <h3 class="diagnostics-subtitle">
+        <i class="fas fa-history text-yellow-500 mr-2"></i> Stored Diagnostics (5 day Diagnostics)
+    </h3>
+    <div class="table-wrapper {% if current_diags.count() > 1 %}scrollable{% endif %}">
+        <table class="diagnostics-table">
+            <thead>
+                <tr>
+                    <th scope="col">Device Type</th>
+                    <th scope="col">Date obtained</th>
+                    <th scope="col">SW Version</th>
+                    <th scope="col">Count of Signal Strength Too Low</th>
+                    <th scope="col">Count of NOT Checking Signal Strength</th>
+                    <th scope="col">Count of Can NOT Register</th>
+                    <th scope="col">Count of OS Problem</th>
+                    <th scope="col">Count of State Stuck</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if current_diags %}
+                    {% for current_diag in current_diags %}
+                        <tr class="diagnostics-row">
+                            <td>{{ current_diag.device_type }}</td>
+                            <td>{{ current_diag.date_diag }}</td>
+                            <td>{{ current_diag.sw_version }}</td>
+                            <td class="count-critical">{{ current_diag.count_signal_strength_too_low }}</td>
+                            <td class="count-warning">{{ current_diag.count_not_checking_signal_strength }}</td>
+                            <td class="count-warning">{{ current_diag.count_cannot_register }}</td>
+                            <td class="count-success">{{ current_diag.count_os_problem }}</td>
+                            <td class="count-critical">{{ current_diag.count_state_stuck }}</td>
+                        </tr>
+                    {% else %}
+                        <tr class="diagnostics-row">
+                            <td colspan="8">No Current Diagnostics available</td>
+                        </tr>
+                    {% endfor %}
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+    {% if current_user.administrator %}
+
+<div class="button-container text-center" data-aos="fade-up" data-aos-delay="400">
+    <button class="primary-button" id="openDiagnostics1">
+        <i class="fas fa-stethoscope mr-2"></i> Test Live Diagnostics
+    </button>
+    <button class="primary-button" id="openDiagnostics2">
+        <i class="fas fa-stethoscope mr-2"></i> Test Level Diagnostics
+    </button>
+</div>
+
+<!-- Modal for Test Diagnostics 1 -->
+<div class="modal" id="diagnostics1Modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; align-items: flex-start; justify-content: center; padding-top: 15vh; overflow: auto;">
+    <div class="modal-dialog" style="max-width: 400px; width: 90%; margin: 0 auto; position: relative;">
+        <div class="modal-content" style="background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: none;">
+            <div class="modal-header" style="padding: 15px 20px; background: #007bff; border-bottom: none; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <h5 class="modal-title" style="font-size: 1.1rem; font-weight: 600; margin: 0; color: #fff;">Upload Live Diag</h5>
+                <button type="button" class="close" id="closeDiagnostics1" style="background: none; border: none; font-size: 1.5rem; color: #fff; opacity: 0.8; transition: opacity 0.3s;">
+                    <span>×</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <form method="POST" action="{{ url_for('diag_live', device_id=device_id) }}" enctype="multipart/form-data">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="diagnostics1File" style="font-weight: 500; color: #333; font-size: 0.95rem;">Upload Excel File</label>
+                        <input type="file" class="form-control-file" id="diagnostics1File" name="file" accept=".xlsx, .xls" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; background: #fff; color: #333; margin-top: 8px; font-size: 0.9rem;">
+                    </div>
+                    <button type="submit" class="primary-button" style="width: 100%; padding: 10px; background: #007bff; border: none; border-radius: 5px; color: #fff; font-weight: 500; font-size: 0.95rem; transition: background 0.3s;">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Test Diagnostics 2 -->
+<div class="modal" id="diagnostics2Modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1050; align-items: flex-start; justify-content: center; padding-top: 15vh; overflow: auto;">
+    <div class="modal-dialog" style="max-width: 400px; width: 90%; margin: 0 auto; position: relative;">
+        <div class="modal-content" style="background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: none;">
+            <div class="modal-header" style="padding: 15px 20px; background: #007bff; border-bottom: none; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                <h5 class="modal-title" style="font-size: 1.1rem; font-weight: 600; margin: 0; color: #fff;">Upload Level Diag</h5>
+                <button type="button" class="close" id="closeDiagnostics2" style="background: none; border: none; font-size: 1.5rem; color: #fff; opacity: 0.8; transition: opacity 0.3s;">
+                    <span>×</span>
+                </button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <form method="POST" action="{{ url_for('diag_current', device_id=device_id) }}" enctype="multipart/form-data">
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="diagnostics2File" style="font-weight: 500; color: #333; font-size: 0.95rem;">Upload Excel File</label>
+                        <input type="file" class="form-control-file" id="diagnostics2File" name="file" accept=".xlsx, .xls" required style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; background: #fff; color: #333; margin-top: 8px; font-size: 0.9rem;">
+                    </div>
+                    <button type="submit" class="primary-button" style="width: 100%; padding: 10px; background: #007bff; border: none; border-radius: 5px; color: #fff; font-weight: 500; font-size: 0.95rem; transition: background 0.3s;">Upload</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to handle modal opening/closing -->
+<script>
+    // Ensure modals are hidden on page load
+    document.addEventListener("DOMContentLoaded", function() {
+        const modal1 = document.getElementById("diagnostics1Modal");
+        const modal2 = document.getElementById("diagnostics2Modal");
+        if (modal1) modal1.style.display = "none";
+        if (modal2) modal2.style.display = "none";
+    });
+
+    // Open modal 1
+    const openDiagnostics1 = document.getElementById("openDiagnostics1");
+    if (openDiagnostics1) {
+        openDiagnostics1.addEventListener("click", function() {
+            const modal1 = document.getElementById("diagnostics1Modal");
+            if (modal1) {
+                modal1.style.display = "flex";
+            }
+        });
+    }
+
+    // Close modal 1
+    const closeDiagnostics1 = document.getElementById("closeDiagnostics1");
+    if (closeDiagnostics1) {
+        closeDiagnostics1.addEventListener("click", function() {
+            const modal1 = document.getElementById("diagnostics1Modal");
+            if (modal1) {
+                modal1.style.display = "none";
+            }
+        });
+    }
+
+    // Open modal 2
+    const openDiagnostics2 = document.getElementById("openDiagnostics2");
+    if (openDiagnostics2) {
+        openDiagnostics2.addEventListener("click", function() {
+            const modal2 = document.getElementById("diagnostics2Modal");
+            if (modal2) {
+                modal2.style.display = "flex";
+            }
+        });
+    }
+
+    // Close modal 2
+    const closeDiagnostics2 = document.getElementById("closeDiagnostics2");
+    if (closeDiagnostics2) {
+        closeDiagnostics2.addEventListener("click", function() {
+            const modal2 = document.getElementById("diagnostics2Modal");
+            if (modal2) {
+                modal2.style.display = "none";
+            }
+        });
+    }
+
+    // Close modals when clicking outside
+    window.addEventListener("click", function(event) {
+        const modal1 = document.getElementById("diagnostics1Modal");
+        const modal2 = document.getElementById("diagnostics2Modal");
+        if (event.target === modal1) {
+            modal1.style.display = "none";
+        }
+        if (event.target === modal2) {
+            modal2.style.display = "none";
+        }
+    });
+</script>
+
+{% endif %}
+
+</div>
+
+<!-- Inclure AOS pour les animations (optionnel) -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+</script>
+
+<!-- Styles personnalisés -->
+<style>
+    .diagnostics-container {
+        padding: 2.5rem;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        min-height: 100vh;
+    }
+
+    .diagnostics-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        color: #1a202c;
+        margin-bottom: 3rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .diagnostics-section {
+        background-color: #ffffff;
+        border-radius: 1rem;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 3rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .diagnostics-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .diagnostics-subtitle {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #2d3748;
+        padding-bottom: 0.75rem;
+        border-bottom: 2px solid #e2e8f0;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .subtitle-note {
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: #a0aec0;
+        margin-left: 0.5rem;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .diagnostics-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .diagnostics-table thead {
+        background: linear-gradient(90deg, #4c51bf 0%, #667eea 100%);
+        color: #ffffff;
+    }
+
+    .diagnostics-table th {
+        padding: 1rem 1.5rem;
+        text-align: left;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .diagnostics-table tbody tr {
+        border-bottom: 1px solid #e2e8f0;
+        transition: background-color 0.3s ease;
+    }
+
+    .diagnostics-table tbody tr:hover {
+        background-color: #f7fafc;
+    }
+
+    .diagnostics-table td {
+        padding: 1.25rem 1.5rem;
+        color: #4a5568;
+        font-size: 0.875rem;
+    }
+
+    .signal-strength {
+        position: relative;
+    }
+
+    .signal-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        margin-left: 0.5rem;
+    }
+
+    .signal-warning {
+        background-color: #fefcbf;
+        color: #b7791f;
+    }
+
+    .signal-critical {
+        background-color: #fed7d7;
+        color: #e53e3e;
+    }
+
+    .state-on {
+        color: #38a169;
+        font-weight: 600;
+    }
+
+    .state-on i {
+        color: #38a169;
+    }
+
+    .state-off {
+        color: #e53e3e;
+        font-weight: 600;
+    }
+
+    .state-off i {
+        color: #e53e3e;
+    }
+
+    .count-critical {
+        color: #e53e3e;
+        font-weight: 600;
+    }
+
+    .count-warning {
+        color: #dd6b20;
+        font-weight: 600;
+    }
+
+    .count-success {
+        color: #38a169;
+        font-weight: 600;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .primary-button {
+        background: linear-gradient(90deg, #4c51bf 0%, #667eea 100%);
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+        display: flex;
+        align-items: center;
+    }
+
+    .primary-button:hover {
+        background: linear-gradient(90deg, #5a67d8 0%, #7f9cf5 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .primary-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.5);
+    }
+
+    .secondary-button {
+        background: #e2e8f0;
+        color: #2d3748;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+        display: flex;
+        align-items: center;
+    }
+
+    .secondary-button:hover {
+        background: #edf2f7;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .secondary-button:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(160, 174, 192, 0.5);
+    }
+
+    /* Réactivité pour petits écrans */
+    @media (max-width: 768px) {
+        .diagnostics-table thead {
+            display: none;
+        }
+
+        .diagnostics-table tbody tr {
+            display: block;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+        }
+
+        .diagnostics-table tbody td {
+            display: block;
+            text-align: left;
+            padding: 0.5rem 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+            padding-left: 50%;
+        }
+
+        .diagnostics-table tbody td:before {
+            content: attr(data-label);
+            position: absolute;
+            left: 1rem;
+            width: 40%;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .diagnostics-table tbody td:last-child {
+            border-bottom: none;
+        }
+
+        .button-container {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .primary-button, .secondary-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .signal-success {
+        background-color: #38a169; /* Vert */
+        color: #ffffff;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+      }
+      
+      .signal-critical {
+        background-color: #e53e3e; /* Rouge */
+        color: #ffffff;
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+      }
+
+
+    .table-wrapper.scrollable {
+        max-height: 400px; /* Ajustez la hauteur selon vos besoins */
+        overflow-y: auto;
+    }
+
+</style>

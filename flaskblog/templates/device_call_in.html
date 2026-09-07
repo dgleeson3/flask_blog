@@ -1,0 +1,186 @@
+<!-- User List Tab Content (Call In) -->
+<div id="users" class="p-6 hidden">
+  <!-- Header with title and action buttons -->
+  <div class="flex justify-between items-center mb-4">
+    <!-- Title -->
+    <h2 class="text-lg font-semibold text-[#4A90E2]">User List</h2>
+    <!-- Action Buttons -->
+    <div class="space-x-2">
+      <!-- Opens a modal to add a new call-in user -->
+      <button
+        class="bg-[#4A90E2] hover:bg-[#357ABD] transition text-white px-4 py-2 rounded-lg shadow-md"
+        onclick="openModalCallIn()"
+      >
+        Add
+      </button>
+      <!-- Import user data from Excel -->
+      <button
+        class="bg-green-600 hover:bg-green-700 transition text-white px-4 py-2 rounded-lg shadow-md"
+        onclick="openImportModal_in()"
+      >
+        Upload Excel
+      </button>
+      <!-- Export user data to Excel -->
+      <button
+        class="bg-purple-600 hover:bg-purple-700 transition text-white px-4 py-2 rounded-lg shadow-md"
+        onclick="openDownloadModal_In()"
+      >
+        Download Excel
+      </button>
+    </div>
+  </div>
+
+  <!-- If phone_numbers exist, display them in a searchable table -->
+  {% if phone_numbers %}
+  <div class="bg-white rounded-lg shadow overflow-hidden">
+    <!-- Search field for filtering the user table rows -->
+    <input
+      type="text"
+      id="userSearch"
+      placeholder="Search for a user..."
+      class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4A90E2] mb-4"
+    >
+    <!-- Scrollable area for the user table -->
+    <div class="max-h-96 overflow-y-auto">
+      <table id="userTable" class="min-w-full">
+        <thead class="bg-gray-100 text-sm">
+          <tr>
+            <th class="px-4 py-3 text-center font-normal text-gray-600">Name</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600">Phone Number</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600">Output</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600">Action</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200 text-sm">
+          {% for phone_number in phone_numbers %}
+          <tr class="hover:bg-gray-50 transition duration-300">
+            <!-- Name column -->
+            <td class="px-6 py-4 text-gray-700">
+              <div class="flex items-center justify-center">
+                <!-- Display a placeholder/profile image -->
+                <div class="flex-shrink-0 h-10 w-10">
+                  <img
+                    class="h-10 w-10 rounded-full object-cover"
+                    src="{{ url_for('static', filename='profile_pics/user.png') }}"
+                    alt="Profile Picture"
+                  >
+                </div>
+                <!-- If user_name is not provided, show "Unknown" -->
+                <div class="ml-4">
+                  <div class="font-medium text-gray-900">
+                    {{ phone_number.user_name if phone_number.user_name else 'Unknown' }}
+                  </div>
+                </div>
+              </div>
+            </td>
+            <!-- Phone Number column -->
+            <td class="px-6 py-4 text-gray-700">
+              {% if phone_number.user_name == "Unknown" %}
+                <!-- If user_name is 'Unknown', display a special badge -->
+                <span
+                  class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800"
+                >
+                  Not in list
+                </span>
+              {% else %}
+                {{ phone_number.phone_number }}
+              {% endif %}
+            </td>
+            <!-- Output column -->
+            <td class="px-6 py-4 text-gray-700">
+              {{ phone_number.output }}
+            </td>
+            <!-- Actions column (Delete and Edit) -->
+            <td class="px-6 py-4 text-center">
+              <!-- Delete Form -->
+              <form
+                class="delete-form"
+                action="{{ url_for('delete_call_in', number_id=phone_number.id) }}"
+                method="POST"
+                style="display:inline-block;"
+              >
+                <button
+                  type="submit"
+                  class="bg-red-50 text-red-500 hover:bg-red-100 px-3 py-1 rounded transition delete-button-callout"
+                  data-user-name="{{ phone_number.user_name }}"
+                  data-phone-number="{{ phone_number.phone_number }}"
+                  data-output="{{ phone_number.output }}"
+                >
+                  Delete
+                </button>
+              </form>
+              <!-- Edit button calls a JS function that opens an edit modal -->
+              <button
+                type="button"
+                class="bg-blue-50 text-blue-500 hover:bg-blue-100 px-3 py-1 rounded transition ml-2"
+                onclick="openEditCallInModal('{{ phone_number.id }}', '{{ phone_number.user_name }}', '{{ phone_number.phone_number }}', '{{ phone_number.output }}')"
+              >
+                Edit
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div
+  id="deleteModal"
+  class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 hidden z-50"
+>
+  <div class="bg-white rounded-lg shadow-lg p-6 w-80">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">Confirm Deletion</h3>
+    <!-- The message will be dynamically updated with the user name / phone number -->
+    <p id="deleteModalMessage" class="text-gray-700 mb-6"></p>
+    <div class="flex justify-end space-x-4">
+      <!-- Cancel button closes the modal without deleting -->
+      <button
+        id="cancelDelete"
+        class="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
+      >
+        Cancel
+      </button>
+      <!-- Confirm button submits the stored form to delete the user -->
+      <button
+        id="confirmDelete"
+        class="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // jQuery-based search filter for the user table
+  $(document).ready(function() {
+    $("#userSearch").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#userTable tbody tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    });
+  });
+
+  /**
+   * openEditCallInModal(id, name, number, output)
+   * Dynamically sets the edit form action to /edit_call_in/<id> and pre-fills fields.
+   * Then shows the modal for editing call-in user info.
+   */
+  function openEditCallInModal(id, name, number, output) {
+    // Update the form's action with the correct user ID
+    document.getElementById('editCallInForm').action = '/edit_call_in/' + id;
+
+    // Fill the modal's input fields with existing user data
+    document.getElementById('editCallInName').value = name;
+    document.getElementById('editCallInNumber').value = number;
+    document.getElementById('editCallInOutput').value = output;
+
+    // Show the edit modal
+    document.getElementById('modalContainerEditCallIn').classList.remove('hidden');
+  }
+</script>

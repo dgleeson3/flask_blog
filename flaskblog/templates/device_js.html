@@ -1,0 +1,619 @@
+<!-- Main script block for handling tab switching, modal functionality, and DataTables initialization -->
+<script>
+  /**
+   * setActive(tabName, button)
+   * Switches which tab is displayed and adjusts the styling of the clicked button to indicate the active tab.
+   *
+   * @param {string} tabName - The ID of the tab content to show.
+   * @param {HTMLElement} button - The button element that was clicked.
+   */
+  function setActive(tabName, button) {
+    // Remove the 'border-b-2' and related classes from all tab buttons
+    document.querySelectorAll('.border-b-2').forEach(btn => {
+      btn.classList.remove('border-b-2', 'border-[#5f788a]', 'font-semibold');
+    });
+    
+    // Add those classes to the newly active button
+    button.classList.add('border-b-2', 'border-[#5f788a]', 'font-semibold');
+    
+    // List of possible tab IDs
+    const tabs = ['general', 'diag', 'charts', 'users', 'settings', 'ooh', 'keypad', 'as'];
+    
+    // Hide all tabs by default
+    tabs.forEach(id => {
+      const tabElement = document.getElementById(id);
+      if (tabElement) {
+        tabElement.classList.add('hidden');
+      }
+    });
+    
+    // Show the tab corresponding to tabName
+    const activeTab = document.getElementById(tabName);
+    if (activeTab) {
+      activeTab.classList.remove('hidden');
+    }
+    
+    // If the user switches to the "Call Out" tab ('charts'), re-adjust the DataTable columns
+    if (tabName === 'charts') {
+      setTimeout(function() {
+        var table = $('#callOutTable').DataTable();
+        table.columns.adjust();
+        table.scroller.measure();
+      }, 100);
+    }
+    // If the user switches to the "Users" tab, adjust columns for its DataTable
+    else if (tabName === 'users') {
+      setTimeout(function() {
+        $('#userTable').DataTable().columns.adjust();
+      }, 100);
+    }
+  }
+  
+  /**
+   * switchForm(formId)
+   * Used to toggle between different forms within the same modal container.
+   *
+   * @param {string} formId - The ID of the form to display.
+   */
+  function switchForm(formId) {
+    const forms = ['callOutForm', 'userForm'];
+    forms.forEach(id => {
+      // Hide each form if it exists
+      document.getElementById(id)?.classList.add('hidden');
+    });
+    // Show the requested form
+    document.getElementById(formId)?.classList.remove('hidden');
+  }
+  
+  /**
+   * openModal(defaultForm = 'callOutForm')
+   * Displays a modal container (with ID 'modalContainer') and shows the specified form.
+   *
+   * @param {string} defaultForm - The ID of the form to display by default.
+   */
+  function openModal(defaultForm = 'callOutForm') {
+    switchForm(defaultForm);
+    document.getElementById('modalContainer').classList.remove('hidden');
+  }
+  
+  /**
+   * closeModal(modalId)
+   * Hides a modal by adding the 'hidden' class.
+   *
+   * @param {string} modalId - The ID of the modal element to hide.
+   */
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+  }
+  
+  /**
+   * openKeypad()
+   * Currently shows an alert. Function stub for opening keypad-related features.
+   */
+  function openKeypad() {
+    alert("Unknown clicked");
+  }
+  
+  /**
+   * openModalCallIn()
+   * Shows the 'modalContainerCallIn', presumably used for 'Call In' user additions.
+   */
+  function openModalCallIn() {
+    document.getElementById('modalContainerCallIn').classList.remove('hidden');
+  }
+  
+  /**
+   * updatePhoneStats(device_id)
+   * Fetches phone statistics from a server endpoint and updates the page elements.
+   *
+   * @param {number} device_id - The unique ID of the device.
+   */
+  function updatePhoneStats(device_id) {
+    fetch('/api/phone_stats/' + device_id)
+      .then(response => response.json())
+      .then(data => {
+        // Update the "Number Call In" and "Number Call Out" counters in the UI
+        document.getElementById("phoneCountIn").innerText = data.total_numbers_in;
+        document.getElementById("phoneCountOut").innerText = data.total_numbers_out;
+      })
+      .catch(error => console.error('Error:', error));
+  }
+  
+  // Immediately call updatePhoneStats with the current device ID.
+  // Replaced placeholder 'DEVICE_ID' with the actual device info ID from the server.
+  updatePhoneStats({{ device_info.id }});
+
+  // On document ready, initialize DataTables for 'callOutTable' and 'userTable' if they exist.
+  $(document).ready(function() {
+    // Determine how many rows are in the Call Out table body
+    var callOutRows = $('#callOutTable tbody tr').length;
+    
+    // If more than 5 rows, use advanced scrolling features
+    if (callOutRows > 5) {
+      $('#callOutTable').DataTable({
+        "pageLength": 5,
+        "lengthChange": false,
+        "ordering": false,
+        "searching": false,
+        "info": false,
+        "paging": true,
+        "scrollY": "200px",
+        "scrollCollapse": true,
+        "deferRender": true,
+        "scroller": true,
+        "pagingType": "simple_numbers",
+        // Hide pagination controls after initialization
+        "initComplete": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        },
+        "drawCallback": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        }
+      });
+    } else {
+      // If 5 rows or fewer, simpler initialization
+      $('#callOutTable').DataTable({
+        "pageLength": 5,
+        "lengthChange": false,
+        "ordering": false,
+        "searching": false,
+        "info": false,
+        "paging": true,
+        "pagingType": "simple_numbers",
+        "initComplete": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        },
+        "drawCallback": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        }
+      });
+    }
+  
+    // Similar logic for the User table
+    var userRows = $('#userTable tbody tr').length;
+    if (userRows > 5) {
+      $('#userTable').DataTable({
+        "pageLength": 5,
+        "lengthChange": false,
+        "ordering": false,
+        "searching": false,
+        "info": false,
+        "paging": true,
+        "scrollY": "200px",
+        "scrollCollapse": true,
+        "deferRender": true,
+        "scroller": true,
+        "pagingType": "simple_numbers",
+        "initComplete": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        },
+        "drawCallback": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        }
+      });
+    } else {
+      $('#userTable').DataTable({
+        "pageLength": 5,
+        "lengthChange": false,
+        "ordering": false,
+        "searching": false,
+        "info": false,
+        "paging": true,
+        "pagingType": "simple_numbers",
+        "initComplete": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        },
+        "drawCallback": function () {
+          $(this.api().table().container()).find('.dataTables_paginate').hide();
+        }
+      });
+    }
+  
+    // Toggle visibility of the user list section
+    $("#showUserListButton").on("click", function() {
+      $("#users").toggleClass("hidden");
+    });
+  });
+
+  /**
+   * Toggles visibility of the security code input field based on the selected option.
+   * If the user chooses "enable" or "change," show the input for entering a new security code.
+   * Otherwise, hide it.
+   */
+   document.getElementById('securityCodeStatus').addEventListener('change', function () {
+    const value = this.value;
+    const securityFields = document.getElementById('securityCodeFields');
+    if (value === 'enable' || value === 'change') {
+      securityFields.classList.remove('hidden');
+    } else {
+      securityFields.classList.add('hidden');
+    }
+  });
+  
+  // Fade out alerts after a short delay using jQuery
+  $(document).ready(function() {
+    setTimeout(function() {
+      $(".alert").fadeOut("slow");
+    }, 1000);
+  });
+  
+  // Keep track of which form is to be submitted for user deletion
+  let currentForm = null;
+  
+  /**
+   * Listen for clicks on delete buttons with class "delete-button."
+   * Show a custom confirmation modal before actually submitting the form.
+   */
+  document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      currentForm = this.closest('form'); // Store reference to the form to submit
+      const userName = this.dataset.userName;
+      const phoneNumber = this.dataset.phoneNumber;
+      const messageEl = document.getElementById('deleteModalMessage');
+      messageEl.textContent = `Are you sure you want to remove user with Name = ${userName} and Phone Number = ${phoneNumber}?`;
+      document.getElementById('deleteModal').classList.remove('hidden');
+    });
+  });
+  
+  // "Cancel" button on the user delete modal hides the modal
+  document.getElementById('cancelDelete').addEventListener('click', function() {
+    document.getElementById('deleteModal').classList.add('hidden');
+    currentForm = null;
+  });
+  
+  // "Confirm" button on the user delete modal submits the stored form
+  document.getElementById('confirmDelete').addEventListener('click', function() {
+    if (currentForm) {
+      currentForm.submit();
+    }
+  });
+  
+  // Similar logic for "call-out" delete buttons and modals
+  let currentFormCallOut = null;
+  document.querySelectorAll('.delete-button-callout').forEach(button => {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      currentFormCallOut = this.closest('form'); 
+      const userName = this.dataset.userName;
+      const phoneNumber = this.dataset.phoneNumber;
+      const messageEl = document.getElementById('deleteModalCallOutMessage');
+      messageEl.textContent = `Are you sure you want to remove user with Name = ${userName} and Phone Number = ${phoneNumber}?`;
+      document.getElementById('deleteModalCallOut').classList.remove('hidden');
+    });
+  });
+  
+  // "Cancel" and "Confirm" for call-out deletion
+  document.getElementById('cancelDeleteCallOut').addEventListener('click', function() {
+    document.getElementById('deleteModalCallOut').classList.add('hidden');
+    currentFormCallOut = null;
+  });
+  document.getElementById('confirmDeleteCallOut').addEventListener('click', function() {
+    if (currentFormCallOut) {
+      currentFormCallOut.submit();
+    }
+  });
+  
+  // Toggle between "Add Form" and "List" sections
+  const showAddFormBtn = document.getElementById('showAddFormBtn');
+  const showListBtn = document.getElementById('showListBtn');
+  const addFormSection = document.getElementById('addFormSection');
+  const listSection = document.getElementById('listSection');
+  
+  showAddFormBtn.addEventListener('click', () => {
+    listSection.classList.add('hidden');
+    addFormSection.classList.remove('hidden');
+  });
+  showListBtn.addEventListener('click', () => {
+    addFormSection.classList.add('hidden');
+    listSection.classList.remove('hidden');
+  });
+  
+  // For handling deletion of an automatic schedule (AS)
+  let currentFormAS = null;
+  document.querySelectorAll('.delete-btn-as').forEach(button => {
+    button.addEventListener('click', function(event) {
+      event.preventDefault();
+      currentFormAS = this.closest('form');
+      const scheduleId = this.dataset.scheduleId;
+      const output = this.dataset.output;
+      const days = this.dataset.days;
+      const startTime = this.dataset.start;
+      const endTime = this.dataset.end;
+      const msg = `Are you sure you want to delete the automatic schedule with ID = ${scheduleId}, Output = ${output}, Days = ${days}, Open at = ${startTime}, and Close at = ${endTime}?`;
+      document.getElementById('deleteModalASMsg').textContent = msg;
+      document.getElementById('deleteModalAS').classList.remove('hidden');
+    });
+  });
+  
+  // "Cancel" and "Confirm" buttons for automatic schedule deletion
+  document.getElementById('cancelDeleteAS').addEventListener('click', function() {
+    document.getElementById('deleteModalAS').classList.add('hidden');
+    currentFormAS = null;
+  });
+  document.getElementById('confirmDeleteAS').addEventListener('click', function() {
+    if (currentFormAS) {
+      currentFormAS.submit();
+    }
+  });
+  
+  /**
+   * On page load, check if a hash (#tabName) is present in the URL.
+   * If so, find the corresponding button to display that tab automatically.
+   */
+  document.addEventListener("DOMContentLoaded", function () {
+    const hash = window.location.hash;
+    if (hash) {
+      const tabName = hash.replace('#', '');
+      const button = document.querySelector(`.tab-button[data-tab="${tabName}"]`) ||
+                     document.querySelector(`#tabButtons button[onclick*="setActive('${tabName}'"]`);
+      if (button) {
+        setActive(tabName, button);
+      }
+    }
+  });
+  
+  // Search filter for "Call Out" table rows
+  $(document).ready(function() {
+    $("#callOutSearch").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#callOutTable tbody tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+      });
+    });
+  });
+  
+  // Fade out any alert messages after a short time, then remove the container
+  $(document).ready(function(){
+    setTimeout(function(){
+      $('.alert').fadeOut(250, function(){
+        $('#flash-container').remove();
+      });
+    }, 500);
+  });
+  
+  /**
+   * openEditModalCallOut(id, name, number, button)
+   * Opens a modal for editing an existing call-out record, populating fields 
+   * (name, phone number, associated button) with current values.
+   */
+  function openEditModalCallOut(id, name, number, button) {
+    document.getElementById('editCallOutName').value = name;
+    document.getElementById('editCallOutNumber').value = number;
+    if (document.getElementById('editCallOutButton')) {
+      document.getElementById('editCallOutButton').value = button;
+    }
+    document.getElementById('editCallOutForm').action = '/edit_call_out/' + id;
+    document.getElementById('modalContainerEditCallOut').classList.remove('hidden');
+  }
+  
+  /**
+   * renderCallOuts(apartment = 1)
+   * Dynamically builds and displays call-out entries in a table. 
+   * For apartment intercom devices, filters entries by apartment number.
+   */
+  function renderCallOuts(apartment = 1) {
+    const tbody = document.getElementById('callOutTableBody');
+    if (!tbody) return; // If in a multi-button scenario, there may be no table body with this ID
+    
+    tbody.innerHTML = ''; // Clear existing rows
+    let filteredCalls = callsOutData;
+    if (deviceType === "Voyager Voice Appartment Intercom") {
+      // Filter calls based on selected apartment number
+      filteredCalls = callsOutData.filter(call => call.apartment_device === apartment);
+    }
+    
+    // Populate table rows
+    filteredCalls.forEach(callOut => {
+      const row = document.createElement('tr');
+      row.className = 'hover:bg-gray-50 transition duration-300';
+      row.innerHTML = `
+        <td class="px-6 py-4 text-gray-700">
+          <div class="flex items-center justify-center">
+            <div class="flex-shrink-0 h-10 w-10">
+              <img class="h-10 w-10 rounded-full object-cover" src="{{ url_for('static', filename='profile_pics/user.png') }}" alt="Profile Picture">
+            </div>
+            <div class="ml-4">
+              <div class="font-medium text-gray-900">${callOut.user_name}</div>
+            </div>
+          </div>
+        </td>
+        <td class="px-6 py-4 text-gray-700">${callOut.phone_number}</td>
+        <td class="px-6 py-4 text-center">
+          <button class="bg-yellow-50 text-yellow-500 hover:bg-yellow-100 px-3 py-1 rounded transition edit-button-callout" 
+                  onclick="openEditModalCallOut('${callOut.id}', '${callOut.user_name}', '${callOut.phone_number}', '${callOut.apartment_device}')">
+            Edit
+          </button>
+          <form class="delete-form inline-block" action="${deleteCallOutUrlBase}${callOut.id}" method="POST">
+            <button type="submit" class="bg-red-50 text-red-500 hover:bg-red-100 px-3 py-1 rounded transition delete-button-callout" 
+                    data-user-name="${callOut.user_name}" data-phone-number="${callOut.phone_number}">
+              Delete
+            </button>
+          </form>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+  
+  // If the device is an apartment intercom, populate call-out entries based on the selected apartment
+  if (deviceType === "Voyager Voice Appartment Intercom") {
+    const apartmentSelector = document.getElementById('apartmentSelector');
+    apartmentSelector.addEventListener('change', (e) => {
+      renderCallOuts(parseInt(e.target.value));
+    });
+    // Default to apartment 1 at the start
+    renderCallOuts(1);
+  }
+  
+  /**
+   * openModalCallOut(buttonNum = null, orderNum = null)
+   * Opens the "Call Out" modal and optionally sets button/order values.
+   * - For apartment intercom, retrieves selected apartment from a dropdown.
+   * - For multi-button intercom, assigns the provided buttonNum and orderNum.
+   * - For simple devices, may only provide orderNum.
+   *
+   * @param {number|null} buttonNum - The button index (for multi-button intercoms).
+   * @param {number|null} orderNum - The order or position for the call-out entry.
+   */
+   function openModalCallOut(buttonNum = null, orderNum = null) {
+    // Get the modal element and show it
+    const modal = document.getElementById('modalContainerCallOut');
+    modal.classList.remove('hidden');
+    
+    // Reset the form for a fresh start
+    const form = document.getElementById('callOutForm');
+    form.reset();
+    
+    // If it's an apartment intercom, pull the current apartment from a dropdown
+    if (deviceType === "Voyager Voice Appartment Intercom") {
+      const apartmentSelector = document.getElementById('apartmentSelector');
+      const selectedApartment = parseInt(apartmentSelector.value);
+      document.getElementById('callOutApartment').value = selectedApartment;
+    }
+    
+    // For multi-button intercom: set both button and order
+    if (buttonNum !== null && orderNum !== null) {
+      const buttonField = document.getElementById('callOutButton');
+      const orderField = document.getElementById('callOutOrder');
+      const displayText = document.getElementById('callOutButtonDisplay');
+      
+      if (buttonField) buttonField.value = buttonNum;
+      if (orderField) orderField.value = orderNum;
+      if (displayText) displayText.textContent = "Button " + buttonNum;
+    }
+    // For simpler devices, if only an order value is given, set the order field
+    else if (orderNum !== null) {
+      const orderField = document.getElementById('callOutOrder');
+      if (orderField) orderField.value = orderNum;
+    }
+  }
+
+  /**
+   * openEditApartmentNameModal()
+   * Opens a modal for renaming the currently selected apartment.
+   * Reads the selected apartment from a dropdown, extracts its name, and pre-fills the modal fields.
+   */
+  function openEditApartmentNameModal() {
+    const apartmentSelector = document.getElementById('apartmentSelector');
+    const selectedApartment = apartmentSelector.value;
+    // Assuming the dropdown's text has a format like '3 - AptName', we split to retrieve the name
+    const currentName = apartmentSelector.options[apartmentSelector.selectedIndex].text.split(' - ')[1];
+    
+    document.getElementById('renameApartmentNumber').value = selectedApartment;
+    document.getElementById('renameApartmentName').value = currentName;
+    
+    const modal = document.getElementById('modalRenameApartment');
+    modal.classList.remove('hidden');
+  }
+
+  /**
+   * On DOM load, initialize a "Choices" instance for #apartmentSelector if present.
+   * "Choices" is a library that enhances select elements with better styling/UX.
+   */
+  document.addEventListener('DOMContentLoaded', function () {
+    const selector = document.getElementById('apartmentSelector');
+    const choices = new Choices(selector, {
+      shouldSort: false,
+      searchEnabled: false,
+      maxItemCount: -1,
+      placeholder: true,
+      itemSelectText: '',
+    });
+  });
+
+
+  /**
+   * handleApartmentChange(selectedApt)
+   * Shows only the container matching the chosen apartment and hides the others.
+   *
+   * @param {string|number} selectedApt - The apartment number as a string or numeric value.
+   */
+  function handleApartmentChange(selectedApt) {
+    // Hide all .apartment-container elements
+    const allAptContainers = document.querySelectorAll('.apartment-container');
+    allAptContainers.forEach(div => {
+      div.style.display = 'none';
+    });
+
+    // Show only the relevant container for the selected apartment
+    const targetDiv = document.getElementById(`apartment_${selectedApt}`);
+    if (targetDiv) {
+      targetDiv.style.display = 'block';
+    }
+  }
+
+  /**
+   * On DOM load, optionally select and display the correct apartment container based on
+   * the default or currently selected apartment in the #apartmentSelector.
+   */
+  document.addEventListener('DOMContentLoaded', () => {
+    const aptSelect = document.getElementById('apartmentSelector');
+    if (aptSelect) {
+      handleApartmentChange(aptSelect.value);
+    }
+  });
+
+  /**
+   * openModalCallOutForApartment(apartmentNum, orderNum)
+   * Specifically for apartment devices: opens the "Call Out" modal for a given apartment
+   * and sets the order field. Resets the form first.
+   *
+   * @param {number} apartmentNum - The apartment number to which this call-out belongs.
+   * @param {number} orderNum - The order or sequence number for the call-out.
+   */
+  function openModalCallOutForApartment(apartmentNum, orderNum) {
+    const modal = document.getElementById('modalContainerCallOut');
+    modal.classList.remove('hidden');
+
+    const form = document.getElementById('callOutForm');
+    form.reset();
+
+    // Set apartment field
+    const aptField = document.getElementById('callOutApartment');
+    if (aptField) {
+      aptField.value = apartmentNum;
+    }
+
+    // Set order field
+    const orderField = document.getElementById('callOutOrder');
+    if (orderField) {
+      orderField.value = orderNum;
+    }
+  }
+
+  /**
+   * On DOM load, checks if there is an "apartment" parameter in the URL (e.g. ?apartment=3).
+   * If so, it sets that apartment as selected and calls handleApartmentChange.
+   */
+  document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedApt = urlParams.get('apartment');
+
+    if (selectedApt) {
+      const aptSelector = document.getElementById('apartmentSelector');
+      if (aptSelector) {
+        aptSelector.value = selectedApt;
+        handleApartmentChange(selectedApt);
+      }
+    } else {
+      // Optionally, you can call handleApartmentChange(1) to default to apartment 1 if needed.
+      // handleApartmentChange(1);
+    }
+  });
+
+  // Re-define the handleApartmentChange function to ensure it matches the final usage
+  function handleApartmentChange(selectedApt) {
+    // Hide all .apartment-container divs, then show only the one with ID="apartment_XX"
+    const allAptContainers = document.querySelectorAll('.apartment-container');
+    allAptContainers.forEach(div => {
+      div.style.display = 'none';
+    });
+
+    const targetDiv = document.getElementById(`apartment_${selectedApt}`);
+    if (targetDiv) {
+      targetDiv.style.display = 'block';
+    }
+  }
+  
+</script>

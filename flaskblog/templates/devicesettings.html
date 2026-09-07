@@ -1,0 +1,578 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Interface</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.3/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/scroller/2.2.0/css/scroller.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='devicesettings.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css_device_header.css') }}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/scroller/2.2.0/js/dataTables.scroller.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</head>
+<body class="bg-gray-100">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+<!-- Application Header -->
+<div class="header-container">
+  <a href="{{ url_for('show_device', site_id=device_info.site_id) }}" class="header-back-btn" aria-label="Back to device list">
+      <i class="fas fa-arrow-left mr-1"></i> back to list of devices
+  </a>
+  <span class="header-title">{{ device_info.device_type_name }}</span>
+</div>
+
+<!-- Fixed and centered flash messages container, positioned higher -->
+<div id="flash-container" class="fixed inset-0 flex items-center justify-center pointer-events-none" style="transform: translateY(-40%);">
+  <div class="max-w-2xl mx-auto text-center">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert inline-block mx-auto px-4 py-2 rounded 
+            {% if category == 'error' or category == 'danger' %}
+              bg-red-500 text-white
+            {% elif category == 'success' %}
+              bg-green-500 text-white
+            {% else %}
+              bg-blue-500 text-white
+            {% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+</div>
+
+{% block content %}{% endblock %}
+
+<!-- Main Container for Device Settings -->
+<div class="max-w-4xl mx-auto mt-4 bg-white shadow-lg rounded-lg p-4">
+  
+  <!-- Tab Buttons -->
+  <!-- This div holds the buttons that switch between different content sections. 
+       If the device type name does not include "Voice", the buttons are centered; 
+       otherwise, they are spaced equally. -->
+  <div 
+    id="tabButtons" 
+    class="border-b flex flex-nowrap {% if 'Voice' not in device_info.device_type_name %}justify-center{% endif %} whitespace-nowrap cursor-grab select-none"
+  >
+    <!-- Always visible: "Device" tab button -->
+    <button 
+      class="{% if 'Voice' not in device_info.device_type_name %}p-2 text-center hover:bg-gray-200{% else %}flex-1 p-2 text-center hover:bg-gray-200{% endif %}"
+      onclick="setActive('general', this)"
+    >
+      Device
+    </button>
+  
+    <!-- Always visible: "Users (Call In)" tab button -->
+    <button 
+      class="tab-button p-2 text-center hover:bg-gray-200" 
+      data-tab="users"
+      onclick="setActive('users', this)"
+    >
+      Users (Call In)
+    </button>
+
+    <!-- Only visible if 'Voice' is in the device type name: "Call Out" tab button -->
+    {% if 'Voice' in device_info.device_type_name %}
+    <button 
+      class="flex-1 p-2 text-center hover:bg-gray-200"
+      onclick="setActive('charts', this)"
+    >
+      Call Out
+    </button>
+    {% endif %}
+  
+    <!-- "Diagnostic" tab button -->
+    <button 
+      class="{% if 'Voice' not in device_info.device_type_name %}p-2 text-center hover:bg-gray-200{% else %}flex-1 p-2 text-center hover:bg-gray-200{% endif %}"
+      onclick="setActive('diag', this)"
+    >
+      Diagnostic
+    </button>
+  
+    <!-- "OOH" tab button: visible only for voice-enabled devices -->
+    {% if 'Voice' in device_info.device_type_name %}
+      <button 
+        class="flex-1 p-2 text-center hover:bg-gray-200"
+        onclick="setActive('ooh', this)"
+      >
+        OOH
+      </button>
+    {% endif %}
+
+    <!-- "Keypad" tab button: visible only if 'Voice' is in device type name and "No Keypad" is not present -->
+    {% if 'Voice' in device_info.device_type_name and "No Keypad" not in device_info.device_type_name %}
+    <button 
+      class="flex-1 p-2 text-center hover:bg-gray-200"
+      onclick="setActive('keypad', this)"
+    >
+      Keypad
+    </button>
+    {% endif %}
+
+    <!-- "Automatic Schedules" tab button: visible only for voice-enabled devices -->
+    {% if 'Voice' in device_info.device_type_name %}
+    <button 
+      class="flex-1 p-2 text-center hover:bg-gray-200"
+      onclick="setActive('as', this)"
+    >
+      Automatic Schedules
+    </button>
+    {% endif %}
+  
+    <!-- Always visible: "Settings" tab button -->
+    <button 
+      class="{% if 'Voice' not in device_info.device_type_name %}p-2 text-center hover:bg-gray-200{% else %}flex-1 p-2 text-center hover:bg-gray-200{% endif %}"
+      onclick="setActive('settings', this)"
+    >
+      Settings
+    </button>
+  </div>
+
+  <!-- "General" Tab Content -->
+  <!-- By default, this section may be visible; 
+       it contains an overview of the device (image, call in/out count, SIM, etc.) -->
+  <div id="general" class="p-4 bg-white shadow-lg rounded-xl">
+    <div class="flex space-x-4">
+      <!-- Left panel: Device image -->
+      <div class="w-1/3 bg-gray-100 rounded-xl p-4 flex justify-center items-center shadow-md">
+        <img 
+          src="{{ url_for('static', filename=device_info.photo_url) }}" 
+          alt="Device" 
+          class="w-full h-auto rounded-lg"
+        >
+      </div>
+      <!-- Right panel: Device info stats -->
+      <div class="w-2/3 grid grid-cols-2 gap-4">
+        <!-- Call In statistic -->
+        <div class="bg-gray-50 p-3 rounded-lg text-center text-base font-medium shadow-sm">
+          <i class="fas fa-phone-alt text-[#4A90E2] text-lg"></i>
+          <div class="mt-1 text-gray-600 text-sm">Number Call In</div>
+          <div class="mt-1 text-[#4A90E2] text-lg font-bold" id="phoneCountIn">0</div>
+        </div>
+        <!-- Call Out statistic: displayed only if device supports 'Voice' -->
+        <div class="bg-gray-50 p-3 rounded-lg text-center text-base font-medium shadow-sm">
+          {% if 'Voice' in device_info.device_type_name %}
+          <i class="fas fa-phone-slash text-[#4A90E2] text-lg"></i>
+          <div class="mt-1 text-gray-600 text-sm">Number Call Out</div>
+          <div class="mt-1 text-[#4A90E2] text-lg font-bold" id="phoneCountOut">0</div>
+          {% endif %}
+        </div>
+        <!-- Access point info (e.g., Wi-Fi SSID or APN) -->
+        <div class="bg-gray-50 p-3 rounded-lg text-center text-base font-medium shadow-sm">
+          <i class="fas fa-wifi text-[#4A90E2] text-lg"></i>
+          <div class="mt-1 text-gray-600 text-sm">Access Point</div>
+          <div class="mt-1 text-gray-700 text-md italic">{{ device_info.access_point_name }}</div>
+        </div>
+        <!-- SIM Number / Device phone number -->
+        <div class="bg-gray-50 p-3 rounded-lg text-center text-base font-medium shadow-sm">
+          <i class="fas fa-sim-card text-[#4A90E2] text-lg"></i>
+          <div class="mt-1 text-gray-600 text-sm">Phone Number</div>
+          <div class="mt-1 text-gray-800 text-md font-semibold">{{ device_info.device_sim_number }}</div>
+        </div>
+      </div>        
+    </div>
+  </div>
+    
+  <!-- "Users (Call In)" Tab Content -->
+  {% include 'device_call_in.html' %}
+    
+  <!-- "Diagnostic" Tab Content -->
+  <div id="diag" class="p-6 hidden">
+    {% include 'device_diag.html' %}
+  </div>
+
+  <!-- "Call Out" Tab Content -->
+  {% include 'device_call_out.html' %}
+       
+  <!-- "OOH" (Out Of Hours) Tab Content -->
+  <div id="ooh" class="p-6 hidden">
+    <h2 class="text-lg font-semibold mb-4 text-[#4A90E2]">OOH</h2>
+    {% include "device_ooh.html" %}
+  </div>
+
+  <!-- "Keypad" Tab Content -->
+  <div id="keypad" class="p-6 hidden">
+    <h2 class="text-lg font-semibold mb-4 text-[#4A90E2]">Keypad</h2>
+    {% include "device_keypad.html" %}
+  </div>
+
+  <!-- "AS" (Automatic Schedules) Tab Content -->
+  <div id="as" class="p-6 hidden">
+    {% include "device_as.html" %}
+  </div>
+
+  <!-- "Settings" Tab Content -->
+  {% include "device_settings.html" %}
+
+
+ <!-- Modal Container for Call In (Add New User) -->
+<div id="modalContainerCallIn" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+  <!-- The modal content box, styled with Tailwind utility classes -->
+  <div class="bg-white p-6 rounded-2xl shadow-2xl w-96">
+    <!-- Modal header section with a close button -->
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <!-- Clicking this button closes the modal by calling a custom function -->
+      <button onclick="closeModal('modalContainerCallIn')" class="text-gray-500 text-xl font-bold">&times;</button>
+    </div>
+
+    <!-- Add User Form (Call In) -->
+    <!-- The action attribute points to a route that handles adding a new phone number (call-in) -->
+    <form id="userForm" action="{{ url_for('add_phone', device_id=device_info.id) }}" method="POST" class="space-y-4">
+      <!-- Hidden field to differentiate this form type on server-side (if needed) -->
+      <input type="hidden" name="form_type" value="user">
+
+      <!-- Username Field -->
+      <label for="userName" class="block text-gray-600 font-medium">
+        Name (max 20 chars)
+      </label>
+      <input
+        type="text"
+        name="content_name"
+        id="userName"
+        placeholder="User Name"
+        required
+        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        maxlength="20"
+        pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]{1,30}"
+        title="Letters and spaces only, up to 30 characters"
+      />
+
+      <!-- Phone Number Field -->
+      <label for="phone_number" class="block text-gray-600 font-medium">
+        Phone Number (7 to 11 digits)
+      </label>
+      <input
+        type="text"
+        name="content_number"
+        id="phone_number"
+        placeholder="Phone Number"
+        required
+        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        pattern="^\d{7,11}$"
+        title="Enter a valid phone number with 7 to 11 digits (numbers only)."
+      />
+
+      <!-- Output Selection (which relay/port will be triggered) -->
+      <label for="content_output" class="block text-gray-600 font-medium">
+        Which output will this user trigger?
+      </label>
+      <select
+        name="content_output"
+        id="content_output"
+        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+      >
+        <option value="1">Output 1</option>
+        <option value="2">Output 2</option>
+      </select>
+
+      <!-- Submit button to add a new user (call-in phone number) -->
+      <button
+        type="submit"
+        class="bg-[#4A90E2] text-white px-4 py-3 rounded-lg w-full shadow-md hover:bg-[#357ABD]"
+      >
+        Add User
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- Modal Container for Call In (Edit Existing User) -->
+<div id="modalContainerEditCallIn" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+  <!-- The modal content box for editing an existing call-in user -->
+  <div class="bg-white p-6 rounded-2xl shadow-2xl w-96">
+    <!-- Modal header with a close button -->
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <!-- Clicking this button closes the modal by calling a custom function -->
+      <button onclick="closeModal('modalContainerEditCallIn')" class="text-gray-500 text-xl font-bold">&times;</button>
+    </div>
+
+    <!-- Edit Call In Form -->
+    <!-- The form sends updated user details to the server via POST -->
+    <form id="editCallInForm" method="POST" class="space-y-4">
+      <!-- Hidden field to distinguish this form type on server-side (if needed) -->
+      <input type="hidden" name="form_type" value="editCallIn">
+
+      <!-- Edit Name Field -->
+      <label for="editCallInName" class="block text-gray-600 font-medium">
+        Edit Name (max 20 chars)
+      </label>
+      <input
+        type="text"
+        name="content_name"
+        id="editCallInName"
+        placeholder="User Name"
+        required
+        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        maxlength="20"
+        pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]{1,30}"
+        title="Letters and spaces only, up to 30 characters"
+      />
+
+      <!-- Edit Phone Number Field -->
+      <label for="editCallInNumber" class="block text-gray-600 font-medium">
+        Edit Phone Number (7 to 11 digits)
+      </label>
+      <input
+        type="text"
+        name="content_number"
+        id="editCallInNumber"
+        placeholder="Phone Number"
+        required
+        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        pattern="^\d{7,11}$"
+        title="Enter a valid phone number with 7 to 11 digits (numbers only)."
+      />
+
+      <!-- Edit Output Selection (relay/port) -->
+      <label for="editCallInOutput" class="block text-gray-600 font-medium">
+        Edit Output
+      </label>
+      <select
+        name="content_output"
+        id="editCallInOutput"
+        class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+      >
+        <option value="1">Output 1</option>
+        <option value="2">Output 2</option>
+      </select>
+
+      <!-- Submit button to save changes for the existing user -->
+      <button
+        type="submit"
+        class="bg-[#4A90E2] text-white px-4 py-3 rounded-lg w-full shadow-md hover:bg-[#357ABD]"
+      >
+        Save Changes
+      </button>
+    </form>
+  </div>
+</div>
+<!-- Modal Container for Call Out (Add) -->
+<div id="modalContainerCallOut" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+  <!-- Modal Content Box -->
+  <div class="bg-white p-4 rounded-2xl shadow-2xl w-80">
+    <div class="flex justify-between items-center border-b pb-2 mb-3">
+      <!-- Close button that calls a JavaScript function to hide the modal -->
+      <button onclick="closeModal('modalContainerCallOut')" class="text-gray-500 text-xl font-bold">×</button>
+    </div>
+    <!-- Call Out Add Form -->
+    <!-- Sends a POST request to add a new call-out contact for the given device -->
+    <form id="callOutForm" method="POST" action="{{ url_for('add_call_out', device_id=device_info.id) }}" class="space-y-2">
+      <!-- Hidden field indicating the form type (if used server-side for routing/logic) -->
+      <input type="hidden" name="form_type" value="callOut">
+      
+      <!-- Hidden field for specifying the order of call-outs, updated dynamically via JavaScript -->
+      <input type="hidden" name="content_order" id="callOutOrder">
+
+      <!-- Button selector, shown only if the device has multiple buttons -->
+      {% if device_info.number_button != 0 %}
+        <label for="callOutButton" class="block text-gray-600 font-medium">Select Button</label>
+        <select 
+          name="content_button" 
+          id="callOutButton" 
+          required 
+          class="select-button w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        >
+          {% for btn in range(1, device_info.number_button + 1) %}
+            <option value="{{ btn }}">Button {{ btn }}</option>
+          {% endfor %}
+        </select>
+        <!-- Display selected button in real time (could be updated by JS) -->
+        <p id="callOutButtonDisplay" class="text-sm text-center text-gray-500">Button 1</p>
+      {% endif %}
+
+      <!-- Call Out Name Field -->
+      <label for="callOutName" class="block text-gray-600 font-medium">Enter Name (max 20 chars)</label>
+      <input 
+        type="text" 
+        name="content_name" 
+        id="callOutName" 
+        placeholder="Name" 
+        required
+        class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        maxlength="20" 
+        pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]{1,30}"
+        title="Letters and spaces only, up to 30 characters"
+      >
+
+      <!-- Phone Number Field -->
+      <label for="callOutNumber" class="block text-gray-600 font-medium">Enter New Number</label>
+      <input 
+        type="text" 
+        name="content_number" 
+        id="callOutNumber" 
+        placeholder="Number" 
+        required
+        class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        pattern="^(?=.{7,20}$)(?!.*\s)(?:\+|00)?\d+$"
+        title="Phone number must be 7 to 20 characters, digits only, with optional + or 00 prefix, and no spaces"
+      >
+
+      <!-- Apartment selector, only displayed if it's an apartment intercom device -->
+      {% if device_info.device_type_name == "Voyager Voice Appartment Intercom" %}
+      <label for="callOutApartment" class="block text-gray-600 font-medium">Select Apartment</label>
+      <select 
+        name="content_apartment" 
+        id="callOutApartment" 
+        required 
+        class="select-apartment w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+      >
+        {% for apt in range(1, device_info.number_apartment + 1) %}
+          <option value="{{ apt }}">{{ apt }}</option>
+        {% endfor %}
+      </select>
+      {% endif %}
+
+      <!-- Submit button for saving a new call-out contact -->
+      <button 
+        type="submit" 
+        class="bg-[#4A90E2] text-white px-3 py-2 rounded-lg w-full shadow-md hover:bg-[#357ABD]"
+      >
+        Save Code
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- Modal Container for Renaming Apartment -->
+<div id="modalRenameApartment" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+  <!-- Modal Content Box -->
+  <div class="bg-white p-4 rounded-2xl shadow-2xl w-80">
+    <div class="flex justify-between items-center border-b pb-2 mb-3">
+      <h3 class="text-lg font-semibold text-[#4A90E2]">Rename Apartment</h3>
+      <!-- Close button for the modal -->
+      <button onclick="closeModal('modalRenameApartment')" class="text-gray-500 text-xl font-bold">×</button>
+    </div>
+    <!-- Form for renaming an apartment in an intercom device -->
+    <form 
+      id="renameApartmentForm" 
+      method="POST" 
+      action="{{ url_for('rename_apartment', device_id=device_info.id) }}" 
+      class="space-y-2"
+    >
+      <!-- Hidden field holding the selected apartment number to rename -->
+      <input type="hidden" name="apartment_number" id="renameApartmentNumber">
+      
+      <label for="renameApartmentName" class="block text-gray-600 font-medium">
+        New Apartment Name (max 50 chars)
+      </label>
+      <input 
+        type="text" 
+        name="new_name" 
+        id="renameApartmentName" 
+        placeholder="New Name" 
+        required
+        class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        maxlength="50"
+      >
+      <!-- Submit button to apply the new apartment name -->
+      <button 
+        type="submit" 
+        class="bg-[#4A90E2] text-white px-3 py-2 rounded-lg w-full shadow-md hover:bg-[#357ABD]"
+      >
+        Save
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- Modal Container for Call Out (Edit) -->
+<div id="modalContainerEditCallOut" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex justify-center items-center">
+  <!-- Modal Content Box for editing an existing call-out contact -->
+  <div class="bg-white p-4 rounded-2xl shadow-2xl w-80">
+    <div class="flex justify-between items-center border-b pb-2 mb-3">
+      <!-- Close button for the modal -->
+      <button onclick="closeModal('modalContainerEditCallOut')" class="text-gray-500 text-xl font-bold">&times;</button>
+    </div>
+    <!-- Edit Call Out Form -->
+    <form id="editCallOutForm" method="POST" class="space-y-2">
+      <!-- Hidden field to differentiate form type -->
+      <input type="hidden" name="form_type" value="editCallOut">
+      <!-- The action attribute will be set dynamically via JS if needed -->
+      
+      <!-- Button selector (if device supports multiple buttons) -->
+      {% if device_info.number_button != 0 %}
+        <label for="editCallOutButton" class="block text-gray-600 font-medium">Select Button</label>
+        <select 
+          name="content_button" 
+          id="editCallOutButton" 
+          required 
+          class="select-button w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        >
+          {% for btn in range(1, device_info.number_button + 1) %}
+            <option value="{{ btn }}">Button {{ btn }}</option>
+          {% endfor %}
+        </select>
+        <!-- Display which button is selected (could be updated dynamically) -->
+        <p id="editCallOutButtonDisplay" class="text-sm text-center text-gray-500">Button 1</p>
+      {% endif %}
+
+      <!-- Edit Call Out Name Field -->
+      <label for="editCallOutName" class="block text-gray-600 font-medium">
+        Edit Name (max 20 chars)
+      </label>
+      <input 
+        type="text" 
+        name="content_name" 
+        id="editCallOutName" 
+        placeholder="Name" 
+        required
+        class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        maxlength="20" 
+        pattern="[A-Za-zÀ-ÖØ-öø-ÿ\s]{1,30}"
+        title="Letters and spaces only, up to 30 characters"
+      >
+
+      <!-- Edit Call Out Number Field -->
+      <label for="editCallOutNumber" class="block text-gray-600 font-medium">Edit Number</label>
+      <input 
+        type="text" 
+        name="content_number" 
+        id="editCallOutNumber" 
+        placeholder="Number" 
+        required
+        class="w-full p-2 border rounded-lg focus:ring-2 focus:ring-[#4A90E2]"
+        pattern="^(?=.{7,20}$)(?!.*\s)(?:\+|00)?\d+$"
+        title="Phone number must be 7 to 20 characters, digits only, with optional + or 00 prefix, and no spaces"
+      >
+
+      <!-- Submit button to apply edited call-out details -->
+      <button 
+        type="submit" 
+        class="bg-[#4A90E2] text-white px-3 py-2 rounded-lg w-full shadow-md hover:bg-[#357ABD]"
+      >
+        Save Changes
+      </button>
+    </form>
+  </div>
+</div>
+
+
+
+  {% include 'device_js.html' %}
+  {% include 'device_excel_i.html' %}
+  {% include 'device_excel_e.html' %}
+  
+</body>
+</html>

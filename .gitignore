@@ -1,0 +1,10 @@
+venv/
+__pycache__
+PostgressSQLDesign/
+flask_blog/flaskblog/__pycache__
+*.bu*
+*.txt
+!Status.txt
+!Requirements.txt
+github_ssh
+github_ssh.pub

@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-10">
+
+      {# 
+         B) Back to list of sites button.
+         This button allows the user to navigate back one screen.
+         The link points to the home page (list of sites) instead of the device list.
+      #}
+      <a href="{{ url_for('home') }}" class="header-back-btn" aria-label="Back to list of sites" style="display: inline-block; margin-bottom: 20px;">
+        <i class="fas fa-arrow-left mr-1"></i> Back to list of sites
+      </a>
+
+      {# 
+         A) Page heading with site name.
+         The site name ({{ site.site_name }}) is added to the header so that the user knows which site 
+         they are viewing devices for.
+      #}
+      <h2 class="mb-4 text-center"
+          style="background: linear-gradient(90deg, #5f788a, #7a8fa2);
+                 -webkit-background-clip: text;
+                 -webkit-text-fill-color: transparent;
+                 text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);">
+          Your Devices at This Site: {{ site.site_name }}
+      </h2>
+
+      <!-- "Add New Device" button with a gradient background -->
+      <form action="{{ url_for('add_device', site_id=site_id) }}" method="GET" class="mb-4 text-center">
+        <input class="btn btn-primary btn-lg shadow-sm" type="submit" value="Add New Device"
+               style="background: linear-gradient(90deg, #5f788a, #7a8fa2);
+                      border: none;
+                      transition: transform 0.2s;"
+               onmouseover="this.style.transform='scale(1.05)'"
+               onmouseout="this.style.transform='scale(1)'">
+      </form>
+
+      <!-- Display the devices in a modern card if they exist -->
+      {% if devices %}
+      <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-body p-4">
+          {% for device in devices %}
+          <!-- Each device is shown inside an article with a hover effect -->
+          <article class="media content-section border-bottom py-3"
+                   style="transition: background-color 0.3s;"
+                   onmouseover="this.style.backgroundColor='#f8f9fa'"
+                   onmouseout="this.style.backgroundColor='white'">
+            <div class="media-body d-flex justify-content-between align-items-center">
+              <!-- Container for the two buttons (Configure and Delete) -->
+              <div style="display: inline-flex; align-items: center; gap: 10px;">
+                <!-- Configure Device button -->
+                <a class="btn btn-outline-primary btn-sm shadow-sm"
+                   href="{{ url_for('device_settings', device_id=device.id) }}"
+                   style="border-radius: 6px; 
+                          transition: background-color 0.3s; 
+                          padding: 8px 16px; 
+                          font-size: 0.85rem;"
+                   onmouseover="this.style.backgroundColor='#5f788a'; this.style.color='white';"
+                   onmouseout="this.style.backgroundColor='transparent'; this.style.color='#5f788a';">
+                  Configure Device
+                </a>
+
+                <!-- Delete Device button in a form to send a POST request -->
+                <form action="{{ url_for('delete_device', device_id=device.id) }}" method="POST">
+                  <button type="submit" class="btn btn-outline-danger btn-sm shadow-sm"
+                          style="border-radius: 6px; 
+                                 transition: background-color 0.3s; 
+                                 padding: 8px 16px; 
+                                 font-size: 0.85rem;"
+                          onmouseover="this.style.backgroundColor='#d9534f'; this.style.color='white';"
+                          onmouseout="this.style.backgroundColor='transparent'; this.style.color='#d9534f';"
+                          onclick="return confirm('Are you sure you want to delete this device?');">
+                    Delete
+                  </button>
+                </form>
+              </div>
+
+              <!-- Display the device details on the right side -->
+              <div class="text-right">
+                <p class="mb-1 text-muted">
+                  <strong>Type:</strong> {{ device.device_type_name }}<br>
+                  <strong>SIM:</strong> {{ device.device_sim_number }}<br>
+                  <strong>Access Point Name:</strong> {{ device.access_point_name }}<br>
+                  <strong>Site ID:</strong> {{ device.site_id }}
+                </p>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <!-- If no devices are found, show an informational alert -->
+      <div class="alert alert-info text-center shadow-sm" role="alert">
+        No devices found for this site. Click "Add New Device" to get started! 🚀
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

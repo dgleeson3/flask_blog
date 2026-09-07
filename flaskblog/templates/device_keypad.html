@@ -1,0 +1,501 @@
+<!-- Include Tailwind CSS and Font Awesome via CDN for styling and icons --> 
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Keypad Code Setup Section -->
+<div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
+
+  <!-- Main Title and Intro Text -->
+  <h2 class="text-xl font-bold mb-2 text-[#4A90E2]">Set Keypad Code</h2>
+  <p class="text-gray-600 mb-6">
+    Keypad codes are 4 digits and can be set up as one of four types:
+    <br>
+    1) 24/7 Code (always valid)
+    <br>
+    2) 24/7 Temporary Code (valid for a specified number of days)
+    <br>
+    3) Day &amp; Time Limited Code
+    <br>
+    4) Day &amp; Time Limited Temporary Code (valid for a specified number of days)
+    <br>
+    Only numeric characters (0-9) are allowed.
+  </p>
+
+  <!-- Form for creating a new keypad code -->
+  <form
+    id="keypadForm"
+    method="POST"
+    action="{{ url_for('new_keypad_code', device_id=device_info.id) }}"
+    class="space-y-6"
+  >
+    <!-- Keypad Code Input -->
+    <div>
+      <label for="keypadCode" class="block text-gray-800 font-medium mb-1">
+        Enter Keypad Code (4 digits)
+      </label>
+      <input
+        type="text"
+        id="keypadCode"
+        name="keypadCode"
+        pattern="^[0-9]{4}$"
+        maxlength="4"
+        required
+        placeholder="e.g. 1234"
+        class="border border-gray-300 rounded px-3 py-2 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+      />
+      <p class="text-sm text-gray-500 mt-1">
+        This code must be exactly 4 digits (0-9).
+      </p>
+    </div>
+
+    <!-- Code Type Selection -->
+    <div>
+      <span class="block text-gray-800 font-medium mb-1">Code Type</span>
+      <!-- Option 1: 24/7 Code -->
+      <div class="flex items-center mb-2">
+        <input
+          type="radio"
+          id="codeType24"
+          name="codeType"
+          value="24_7"
+          class="accent-[#4A90E2] w-5 h-5"
+          checked
+        >
+        <label for="codeType24" class="ml-2 text-gray-700">24/7 Code (always valid)</label>
+      </div>
+      <!-- Option 2: 24/7 Temporary Code -->
+      <div class="flex items-center mb-2">
+        <input
+          type="radio"
+          id="codeType24Temp"
+          name="codeType"
+          value="24_7_temp"
+          class="accent-[#4A90E2] w-5 h-5"
+        >
+        <label for="codeType24Temp" class="ml-2 text-gray-700">24/7 Temporary Code</label>
+      </div>
+      <!-- Option 3: Day & Time Limited Code -->
+      <div class="flex items-center mb-2">
+        <input
+          type="radio"
+          id="codeTypeLimited"
+          name="codeType"
+          value="day_limited"
+          class="accent-[#4A90E2] w-5 h-5"
+        >
+        <label for="codeTypeLimited" class="ml-2 text-gray-700">Day &amp; Time Limited Code</label>
+      </div>
+      <!-- Option 4: Day & Time Limited Temporary Code -->
+      <div class="flex items-center">
+        <input
+          type="radio"
+          id="codeTypeLimitedTemp"
+          name="codeType"
+          value="day_limited_temp"
+          class="accent-[#4A90E2] w-5 h-5"
+        >
+        <label for="codeTypeLimitedTemp" class="ml-2 text-gray-700">
+          Day &amp; Time Limited Temporary Code
+        </label>
+      </div>
+    </div>
+
+    <!-- Temporary Code Configuration (Number of Days) -->
+    <!-- Only displayed if user selects a temporary code option (24_7_temp or day_limited_temp) -->
+    <div id="tempDaysConfig" class="hidden">
+      <div>
+        <label for="numDays" class="block text-gray-800 font-medium mb-1">
+          Number of Days (Temporary Duration)
+        </label>
+        <input
+          type="number"
+          id="numDays"
+          name="numDays"
+          min="1"
+          placeholder="e.g. 7"
+          class="border border-gray-300 rounded px-3 py-2 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+        >
+      </div>
+    </div>
+
+    <!-- Day-Limited Code Configuration -->
+    <!-- This section is shown only if the user selects a day_limited code type -->
+    <div id="dayLimitedConfig" class="hidden">
+      <!-- Days Checkboxes -->
+      <div class="mt-4 daysCheckBoxes">
+        <span class="block text-gray-800 font-medium mb-2">Select Days</span>
+        <div class="flex flex-wrap gap-4">
+          <!-- Each label/input pair represents a day of the week -->
+          <label class="inline-flex items-center">
+            <input type="checkbox" name="monday" class="accent-[#4A90E2] w-5 h-5">
+            <span class="ml-2 text-gray-700">Monday</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" name="tuesday" class="accent-[#4A90E2] w-5 h-5">
+            <span class="ml-2 text-gray-700">Tuesday</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" name="wednesday" class="accent-[#4A90E2] w-5 h-5">
+            <span class="ml-2 text-gray-700">Wednesday</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" name="thursday" class="accent-[#4A90E2] w-5 h-5">
+            <span class="ml-2 text-gray-700">Thursday</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" name="friday" class="accent-[#4A90E2] w-5 h-5">
+            <span class="ml-2 text-gray-700">Friday</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" name="saturday" class="accent-[#4A90E2] w-5 h-5">
+            <span class="ml-2 text-gray-700">Saturday</span>
+          </label>
+          <label class="inline-flex items-center">
+            <input type="checkbox" name="sunday" class="accent-[#4A90E2] w-5 h-5">
+            <span class="ml-2 text-gray-700">Sunday</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Time Range -->
+      <div class="mt-4">
+        <span class="block text-gray-800 font-medium mb-2">Allowed Time Range</span>
+        <div class="flex items-center space-x-2">
+          <!-- "From" (startTime) -->
+          <div class="relative">
+            <label for="startTime" class="text-gray-700">From</label>
+            <input
+              type="text"
+              id="startTime"
+              name="startTime"
+              readonly
+              class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+            >
+            <!-- The dropdown for choosing hours/minutes, displayed via JS -->
+            <div
+              id="startTimeDropdown"
+              class="time-dropdown absolute z-10 mt-1 w-64 bg-white border border-gray-300 rounded shadow-md hidden"
+            >
+              <div class="flex">
+                <div
+                  id="startTimeHours"
+                  class="w-1/2 border-r border-gray-300"
+                  style="max-height: 200px; overflow-y: auto;"
+                ></div>
+                <div
+                  id="startTimeMinutes"
+                  class="w-1/2"
+                  style="max-height: 200px; overflow-y: auto;"
+                ></div>
+              </div>
+            </div>
+          </div>
+          <!-- "To" (endTime) -->
+          <div class="relative">
+            <label for="endTime" class="text-gray-700">to</label>
+            <input
+              type="text"
+              id="endTime"
+              name="endTime"
+              readonly
+              class="border border-gray-300 rounded px-2 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+            >
+            <!-- The dropdown for choosing hours/minutes, displayed via JS -->
+            <div
+              id="endTimeDropdown"
+              class="time-dropdown absolute z-10 mt-1 w-64 bg-white border border-gray-300 rounded shadow-md hidden"
+            >
+              <div class="flex">
+                <div
+                  id="endTimeHours"
+                  class="w-1/2 border-r border-gray-300"
+                  style="max-height: 200px; overflow-y: auto;"
+                ></div>
+                <div
+                  id="endTimeMinutes"
+                  class="w-1/2"
+                  style="max-height: 200px; overflow-y: auto;"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Output Selection -->
+    <div>
+      <label for="output" class="block text-gray-800 font-medium mb-2">Select Output</label>
+      <select
+        id="output"
+        name="output"
+        class="border border-gray-300 rounded px-3 py-2 w-full text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#4A90E2]"
+      >
+        <option value="1">Output 1</option>
+        <option value="2">Output 2</option>
+      </select>
+    </div>
+
+    <!-- Form Buttons: Save and Cancel -->
+    <div class="flex space-x-3">
+      <!-- Submit button to save the new keypad code -->
+      <button
+        type="submit"
+        class="bg-[#4A90E2] hover:bg-blue-600 text-white px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Save
+      </button>
+      <!-- Cancel button calls a JS function to clear the form -->
+      <button
+        type="button"
+        class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+        onclick="clearKeypadForm()"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Button to toggle visibility of existing Keypad Codes -->
+<div class="max-w-xl mx-auto mt-4">
+  <button
+    type="button"
+    class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-400"
+    onclick="document.getElementById('keypadCodesSection').classList.toggle('hidden')"
+  >
+    Show Keypad Codes
+  </button>
+</div>
+
+<!-- Existing Keypad Codes Section (initially hidden) -->
+<div id="keypadCodesSection" class="max-w-5xl mx-auto mt-4 hidden">
+  {% if keypad_code %}
+    <h2 class="text-lg font-semibold mb-4 text-[#4A90E2]">List of Keypad Codes</h2>
+    <div class="bg-white rounded-lg shadow overflow-x-auto">
+      <table class="min-w-full table-fixed">
+        <!-- Table Header -->
+        <thead class="bg-gray-100 text-sm">
+          <tr>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-24">Key Code</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-24">Code Type</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-16">Duration</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-48">Days<br>(abbr.)</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-24">Start Time</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-24">End Time</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-24">Output</th>
+            <th class="px-4 py-3 text-center font-normal text-gray-600 w-24">Action</th>
+          </tr>
+        </thead>
+        <!-- Table Body -->
+        <tbody class="bg-white divide-y divide-gray-200 text-sm">
+          {% set day_map = {
+            'Monday': 'Mon', 'Tuesday': 'Tue', 'Wednesday': 'Wed',
+            'Thursday': 'Thu', 'Friday': 'Fri', 'Saturday': 'Sat', 'Sunday': 'Sun'
+          } %}
+          {% for code in keypad_code %}
+          <tr class="hover:bg-gray-50 transition duration-300">
+            <td class="px-6 py-4 text-gray-700 text-center break-words">{{ code.key_code }}</td>
+            <td class="px-6 py-4 text-gray-700 text-center break-words">{{ code.code_type }}</td>
+            <td class="px-6 py-4 text-gray-700 text-center break-words">
+              {% if code.temp_days %}
+                {{ code.temp_days }} days
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <!-- Days Column: Maps full day names to abbreviations if present -->
+            <td class="px-6 py-4 text-gray-700 text-center break-words">
+              {% if code.days %}
+                {% set days_list = code.days.split(',') %}
+                {% set ns = namespace(abbrev=[]) %}
+                {% for d in days_list %}
+                  {% set d_stripped = d.strip() %}
+                  {% set d_abbr = day_map[d_stripped] if d_stripped in day_map else d_stripped %}
+                  {% set ns.abbrev = ns.abbrev + [d_abbr] %}
+                {% endfor %}
+                {{ ns.abbrev | join(', ') }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 text-gray-700 text-center break-words">
+              {{ code.start_time if code.start_time else '-' }}
+            </td>
+            <td class="px-6 py-4 text-gray-700 text-center break-words">
+              {{ code.end_time if code.end_time else '-' }}
+            </td>
+            <td class="px-6 py-4 text-gray-700 text-center break-words">{{ code.output }}</td>
+            <td class="px-6 py-4 text-center break-words">
+              <!-- Form for deleting a keypad code by ID -->
+              <form action="{{ url_for('delete_keypad_code', keypad_code_id=code.id) }}" method="POST">
+                <button
+                  type="submit"
+                  class="bg-red-50 text-red-500 hover:bg-red-100 px-3 py-1 rounded transition"
+                >
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="text-gray-600">No keypad codes found.</p>
+  {% endif %}
+</div>
+
+<!-- jQuery for handling dynamic field toggling -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  /**
+   * Toggles visibility of configuration sections based on the selected code type.
+   * Code types can include:
+   *   - 24_7, 24_7_temp: No day-limited settings required, but temporary duration might be needed.
+   *   - day_limited, day_limited_temp: Requires day checkboxes, startTime/endTime, and possibly temporary duration.
+   */
+  function toggleCodeTypeFields() {
+    const selectedType = document.querySelector('input[name="codeType"]:checked').value;
+    const dayLimitedConfig = document.getElementById('dayLimitedConfig');
+    const tempDaysConfig = document.getElementById('tempDaysConfig');
+
+    // Hide day-limited config for 24/7 and 24/7_temp
+    if (selectedType === '24_7' || selectedType === '24_7_temp') {
+      dayLimitedConfig.classList.add('hidden');
+      dayLimitedConfig.querySelectorAll('input').forEach(input => {
+        input.disabled = true;
+        input.removeAttribute('required');
+      });
+    } else {
+      // Show and require day-limited config for day_limited or day_limited_temp
+      dayLimitedConfig.classList.remove('hidden');
+      dayLimitedConfig.querySelectorAll('input[type="checkbox"]').forEach(input => {
+        input.disabled = false;
+        input.setAttribute('required', 'required');
+      });
+      document.getElementById('startTime').disabled = false;
+      document.getElementById('endTime').disabled = false;
+      document.getElementById('startTime').setAttribute('required', 'required');
+      document.getElementById('endTime').setAttribute('required', 'required');
+    }
+
+    // Show/hide temporary days field for *temp code types
+    if (selectedType === '24_7_temp' || selectedType === 'day_limited_temp') {
+      tempDaysConfig.classList.remove('hidden');
+      document.getElementById('numDays').disabled = false;
+      document.getElementById('numDays').setAttribute('required', 'required');
+    } else {
+      tempDaysConfig.classList.add('hidden');
+      document.getElementById('numDays').disabled = true;
+      document.getElementById('numDays').removeAttribute('required');
+    }
+  }
+
+  // Add event listeners to each radio button for codeType
+  document.querySelectorAll('input[name="codeType"]').forEach(radio => {
+    radio.addEventListener('change', toggleCodeTypeFields);
+  });
+
+  // Initialize fields on page load
+  window.addEventListener('DOMContentLoaded', toggleCodeTypeFields);
+</script>
+
+<script>
+  /**
+   * Custom timepicker setup for the Allowed Time Range inputs.
+   * Allows a user to select hours/minutes from dropdowns, filling the input automatically.
+   */
+  document.addEventListener("DOMContentLoaded", () => {
+    function setupTimePicker(inputId, dropdownId, hoursId, minutesId) {
+      const input = document.getElementById(inputId);
+      const dropdown = document.getElementById(dropdownId);
+      const hoursContainer = document.getElementById(hoursId);
+      const minutesContainer = document.getElementById(minutesId);
+
+      // Generate a list of hours from 00 to 23
+      const hours = [];
+      for (let h = 0; h < 24; h++) {
+        hours.push(String(h).padStart(2, "0"));
+      }
+
+      // Generate a list of minutes in 5-minute intervals
+      const minutes = [];
+      for (let m = 0; m < 60; m += 5) {
+        minutes.push(String(m).padStart(2, "0"));
+      }
+
+      let selectedHour = null;
+      let selectedMinute = null;
+
+      // Update the input once hour and minute are both selected
+      function updateInput() {
+        if (selectedHour !== null && selectedMinute !== null) {
+          input.value = `${selectedHour}:${selectedMinute}`;
+          dropdown.classList.add("hidden");
+        }
+      }
+
+      // Create hour elements in the hours container
+      hoursContainer.innerHTML = hours
+        .map(h => `<div class="p-2 hover:bg-gray-200 cursor-pointer" data-hour="${h}">${h}</div>`)
+        .join("");
+
+      // Create minute elements in the minutes container
+      minutesContainer.innerHTML = minutes
+        .map(m => `<div class="p-2 hover:bg-gray-200 cursor-pointer" data-minute="${m}">${m}</div>`)
+        .join("");
+
+      // Select an hour on click, then try to update the input
+      hoursContainer.addEventListener("click", (e) => {
+        if (e.target.dataset.hour !== undefined) {
+          selectedHour = e.target.dataset.hour;
+          updateInput();
+        }
+      });
+
+      // Select a minute on click, then try to update the input
+      minutesContainer.addEventListener("click", (e) => {
+        if (e.target.dataset.minute !== undefined) {
+          selectedMinute = e.target.dataset.minute;
+          updateInput();
+        }
+      });
+
+      // Show/hide the dropdown when clicking on the input
+      input.addEventListener("click", (e) => {
+        // Close all other time dropdowns first
+        document.querySelectorAll(".time-dropdown").forEach(dd => dd.classList.add("hidden"));
+        dropdown.classList.toggle("hidden");
+        e.stopPropagation();
+      });
+
+      // Close the dropdown if clicking outside it
+      document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target) && e.target !== input) {
+          dropdown.classList.add("hidden");
+        }
+      });
+    }
+
+    // Initialize time pickers for startTime and endTime inputs
+    setupTimePicker("startTime", "startTimeDropdown", "startTimeHours", "startTimeMinutes");
+    setupTimePicker("endTime", "endTimeDropdown", "endTimeHours", "endTimeMinutes");
+  });
+</script>
+
+<!-- Function to clear the keypad form on Cancel -->
+<script>
+  /**
+   * Clears the keypad form fields and hides dynamic configuration sections 
+   * (day-limited, temporary days, etc.).
+   */
+  function clearKeypadForm() {
+    document.getElementById('keypadForm').reset();
+    // Hide sections for day-limited code and temporary duration
+    document.getElementById('dayLimitedConfig').classList.add('hidden');
+    document.getElementById('tempDaysConfig').classList.add('hidden');
+  }
+</script>
+

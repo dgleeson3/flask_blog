@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags for proper character encoding and responsive design -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS for layout and styling -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+        crossorigin="anonymous">
+  <!-- Select2 CSS for enhanced select box features -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+  <!-- Font Awesome CSS for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" 
+        integrity="sha512-...your-integrity-hash..." crossorigin="anonymous" />
+
+  <!-- Custom CSS for additional styling specific to this project -->
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+
+  <!-- Dynamically set the title of the page using a provided title variable -->
+  {% if title %}
+    <title>2T Remote Configuration Tool - {{ title }}</title>
+  {% else %}
+    <title>2T Remote Configuration Tool</title>
+  {% endif %}
+</head>
+<body>
+  <!-- Site Header section -->
+  <header class="site-header">
+    <!-- Navbar using Bootstrap classes; it is fixed to the top -->
+    <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
+      <div class="container">
+        <!-- Brand/logo link; clicking returns to home -->
+        <a class="navbar-brand mr-4" href="/">2T Remote Configuration Tool</a>
+        <!-- Toggle button for collapsing navbar on smaller screens -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" 
+                aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Collapsible Navbar content -->
+        <div class="collapse navbar-collapse" id="navbarToggle">
+          <!-- Left side of the navbar: links to Home and About pages -->
+          <div class="navbar-nav mr-auto">
+            <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
+            <a class="nav-item nav-link" href="{{ url_for('about') }}">About</a>
+          </div>
+          <!-- Right side of the navbar: conditional links based on authentication status -->
+          <div class="navbar-nav">
+            {% if current_user.is_authenticated %}
+              <!-- Authenticated users see links to add a new site, account, and logout -->
+              <a class="nav-item nav-link" href="{{ url_for('new_site') }}">Add New Site</a>
+              <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
+              <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+              <!-- If not logged in, show only the Register link -->
+              <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content Area -->
+  <!-- Added inline style to add top margin to account for fixed navbar height -->
+  <main role="main" class="container" style="margin-top: 6rem;">
+    <div class="row">
+      <div class="col-md-8">
+        <!-- Flash Messages: display session messages such as alerts or notifications -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Block for page-specific content -->
+        {% block content %}{% endblock %}
+      </div>
+      <!-- Optional Sidebar can be added here -->
+    </div>
+  </main>
+
+  <!-- Optional JavaScript -->
+  <!-- Load jQuery, then Popper.js, then Bootstrap JS for interactive components -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" 
+          integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" 
+          crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" 
+          integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" 
+          crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" 
+          integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" 
+          crossorigin="anonymous"></script>
+  <!-- Load Select2 JS for enhanced select elements if needed -->
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+</body>
+</html>

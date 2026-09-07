@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- Reduced top margin to raise the form -->
+<div class="content-section" style="margin-top: 1rem;">
+    <div class="card border-0 rounded-lg p-3" style="max-width: 500px; margin: 0 auto;">
+        <form method="POST" action="" class="needs-validation" novalidate>
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <!-- Legend with gradient styling and icon -->
+                <legend class="text-center mb-3"
+                        style="background: linear-gradient(90deg, #5f788a, #5f788a);
+                               -webkit-background-clip: text;
+                               -webkit-text-fill-color: transparent;
+                               font-size: 1.5rem;">
+                    <i class="fas fa-edit mr-2"></i>{{ legend }}
+                </legend>
+
+                <!-- Title field -->
+                <div class="form-group mb-3">
+                    <label for="title" class="form-control-label d-flex align-items-center">
+                        <i class="fas fa-heading mr-2" style="color: #5f788a;"></i>
+                        {{ form.title.label.text }}
+                    </label>
+                    {% if form.title.errors %}
+                        {{ form.title(id="title", class="form-control", placeholder="Enter title") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.title.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.title(id="title", class="form-control", placeholder="Enter title") }}
+                    {% endif %}
+                </div>
+
+                <!-- Content field -->
+                <div class="form-group mb-3">
+                    <label for="content" class="form-control-label d-flex align-items-center">
+                        <i class="fas fa-paragraph mr-2" style="color: #5f788a;"></i>
+                        {{ form.content.label.text }}
+                    </label>
+                    {% if form.content.errors %}
+                        {{ form.content(id="content", class="form-control", placeholder="Enter content", rows="4") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.content.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {{ form.content(id="content", class="form-control", placeholder="Enter content", rows="4") }}
+                    {% endif %}
+                </div>
+            </fieldset>
+
+            <!-- Submit button with enhanced styling -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary position-relative"
+                        style="background: linear-gradient(90deg, #5f788a, #5f788a); border: none; padding: 8px 25px; transition: transform 0.2s, box-shadow 0.3s;">
+                    <i class="fas fa-save mr-2"></i> {{ form.submit.label.text }}
+                    <i class="fas fa-check-circle position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%); color: rgba(255, 255, 255, 0.7);"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- Flex container to center the card horizontally and align it at the top -->
+<div class="d-flex align-items-start justify-content-center" style="background-color: #f8f9fa; padding-top: 0.5rem;">
+    <!-- Card container with constrained width -->
+    <div class="card shadow-lg border-0 rounded-lg" style="max-width: 800px; width: 90%; padding: 20px;">
+        <div class="card-body p-4">
+            <!-- Form heading with a gradient text effect -->
+            <h2 class="mb-4 text-center"
+                style="background: linear-gradient(90deg, #5f788a, #7a8fa2);
+                       -webkit-background-clip: text;
+                       -webkit-text-fill-color: transparent;
+                       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);">
+                Add a New Device to This Site
+            </h2>
+
+            <!-- Form to add a new device -->
+            <form action="{{ url_for('add_device', site_id=site_id) }}" method="POST" class="row g-3">
+                <div class="row">
+                    <!-- Left column: Device Type Selection importante value -->
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <h5 class="mb-3 text-muted text-center">Select Device Type</h5>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="radio_option"
+                                   id="device1" value="Voyager 4G-2R switch" required>
+                            <label class="form-check-label" for="device1">Voyager 4G-2R Switch</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="radio_option"
+                                   id="device2" value="Voyager Voice Intercom with Keypad">
+                            <label class="form-check-label" for="device2">Voyager Voice Intercom with Keypad</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="radio_option"
+                                   id="device3" value="Voyager Voice Intercom No Keypad">
+                            <label class="form-check-label" for="device3">Voyager Voice Intercom No Keypad</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="radio_option"
+                                   id="device4" value="Voyager Voice 2 button Intercom">
+                            <label class="form-check-label" for="device4">Voyager Voice 2 Button Intercom</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="radio_option"
+                                   id="device5" value="Voyager Voice 4 button Intercom">
+                            <label class="form-check-label" for="device5">Voyager Voice 4 Button Intercom</label>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="radio" name="radio_option"
+                                   id="device6" value="Voyager Voice Appartment Intercom">
+                            <label class="form-check-label" for="device6">Voyager Voice Apartment Intercom</label>
+                        </div>
+                    </div>
+                    
+                    <!-- Right column: Device Details and Submit/Cancel Buttons -->
+                    <div class="col-md-6">
+                        <h5 class="mb-3 text-muted text-center">Device Details</h5>
+                        <div class="form-group mb-3">
+                            <label for="simPhoneNumber" class="form-label text-center d-block">SIM Phone Number</label>
+                            <input type="text" class="form-control shadow-sm"
+                                   name="SIM_Phone_Number" id="simPhoneNumber"
+                                   placeholder="Enter the device's SIM phone number" required>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label for="localName" class="form-label text-center d-block">Access Point Name</label>
+                            <input type="text" class="form-control shadow-sm"
+                                   name="Local_Name" id="localName"
+                                   placeholder="Enter a local name (e.g., front gate)" required>
+                        </div>
+                        <!-- Submit and Cancel Buttons centered within the column -->
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary shadow-sm"
+                                    style="background: linear-gradient(90deg, #5f788a, #7a8fa2); border: none; transition: transform 0.2s;"
+                                    onmouseover="this.style.transform='scale(1.05)'"
+                                    onmouseout="this.style.transform='scale(1)'">
+                                Add This Device to the Site
+                            </button>
+                            <!-- Updated Cancel button with smaller size -->
+                            <a href="{{ url_for('show_device', site_id=site_id) }}"
+                               class="btn shadow-sm"
+                               style="background: linear-gradient(90deg, #6c757d, #adb5bd); border: none; transition: transform 0.2s; margin-left: 10px;"
+                               onmouseover="this.style.transform='scale(1.05)'"
+                               onmouseout="this.style.transform='scale(1)'">
+                                Cancel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div> <!-- /card-body -->
+    </div> <!-- /card -->
+</div> <!-- /flex container -->
+
+{% endblock content %}
